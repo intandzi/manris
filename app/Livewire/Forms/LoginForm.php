@@ -30,8 +30,17 @@ class LoginForm extends Form
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only(['email', 'password']), $this->remember)) {
+        if (!Auth::attempt(['email' => $this->email, 'password' => $this->password, 'status' => true], $this->remember)) {
             RateLimiter::hit($this->throttleKey());
+
+            if ($user = Auth::getProvider()->retrieveByCredentials(['email' => $this->email])) {
+                if (!$user->status) {
+                    throw ValidationException::withMessages([
+                        'form.email'        => 'Akun Anda telah dinonaktifkan!',
+                        'form.password'     => 'Email atau kata sandi salah!',
+                    ]);
+                }
+            }
 
             throw ValidationException::withMessages([
                 'form.email' => trans('auth.failed'),
@@ -54,12 +63,29 @@ class LoginForm extends Form
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
+        // throw ValidationException::withMessages([
+        //     'form.email' => trans('auth.throttle', [
+        //         'seconds' => $seconds,
+        //         'minutes' => ceil($seconds / 60),
+        //     ]),
+        // ]);
         throw ValidationException::withMessages([
-            'form.email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'form.email' => $this->getThrottleMessage($seconds),
         ]);
+    }
+
+    /**
+     * Get the authentication rate limiting throttle message.
+     */
+    protected function getThrottleMessage(int $seconds): string
+    {
+        $minutes = ceil($seconds / 120);
+
+        if ($seconds < 120) {
+            return "Terlalu banyak percobaan login. Silakan coba lagi dalam {$seconds} detik.";
+        } else {
+            return "Terlalu banyak percobaan login. Silakan coba lagi dalam {$minutes} menit.";
+        }
     }
 
     /**
