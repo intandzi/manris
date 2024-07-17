@@ -38,11 +38,11 @@ class ManajemenUser extends Component
 
         $this->units = Unit::where('unit_activeStatus', true)->get();
 
-        $users = \App\Models\User::with('unit')->search($this->search)
+        $users = User::with('unit')->search($this->search)
             ->orderBy($this->orderBy, $this->orderAsc ? 'asc' : 'desc')
             ->paginate($this->perPage);
         
-        return view('livewire.pages.u-m-r.manajemen-user.manajemen-user', [
+        return view('livewire.pages.umr.manajemen-user.manajemen-user', [
             'users'             => $users,
             'paginationInfo'    => $users->total() > 0
             ? "Showing " . ($users->firstItem()) . " to " . ($users->lastItem()) . " of " . ($users->total()) . " entries"
@@ -64,12 +64,18 @@ class ManajemenUser extends Component
     {
         $validated = $this->validate([
             'name'              => ['required', 'string', 'max:255'],
-            // 'email'             => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.\App\Models\User::class],
             'email'             => ['required', 'string', 'lowercase', 'email', 'max:255'],
             'selectedRoles'     => ['required'],
             'unit_id'           => ['required'],
             'jabatan'           => ['required'],
-            'password'          => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'password'          => [
+                'required', 
+                'string', 
+                'min:8', 
+                'regex:/[A-Z]/',   // at least one uppercase letter
+                'regex:/[0-9]|[\W]/', // at least one number or special character
+                'confirmed'
+            ],
         ],[
             'name.required'             => 'Nama User Wajib di Isi!',
             'name.string'               => 'Nama User harus berupa teks!',
@@ -90,8 +96,9 @@ class ManajemenUser extends Component
 
             'password.required'         => 'Password Wajib di Isi!',
             'password.string'           => 'Password harus berupa teks!',
+            'password.min'              => 'Password minimal 8 karakter!',
+            'password.regex'            => 'Password harus mengandung setidaknya satu huruf besar dan satu angka atau karakter khusus!',
             'password.confirmed'        => 'Konfirmasi Password tidak sesuai!',
-            // If using default password rules from Laravel, additional custom messages may not be required, but can be added as needed.
         ]);
     }
 
@@ -104,36 +111,64 @@ class ManajemenUser extends Component
         // VALIDATING DATA
         $this->validatingInputs();
 
-        $user = User::updateOrCreate([
-            'user_id'       => $this->user_id,
-        ],
-        [
-            'unit_id'       => $this->unit_id,
-            'name'          => $this->name,
-            'email'         => $this->email,
-            'jabatan'       => $this->jabatan,
-            'role'          => json_encode($this->selectedRoles),
-            'password'      => Hash::make($this->password),
-            'created_by'    => Auth::user()->user_id,
-        ]);
+        // VALIDATE IF RISK OWNER HAS ALREADY ASSIGNED FOR THAT UNIT
+        $checkRoleRiskOwner = User::where('unit_id', $this->unit_id)->get();
 
-        // Revoke all existing roles from the user
-        $user->syncRoles([]);
+        $roleExists = false;
+        foreach ($checkRoleRiskOwner as $check) {
+            $roles = json_decode($check->role, true); // Assuming roles are stored as a JSON array
+            if (in_array('risk owner', $roles)) {
+                $roleExists = true;
+                break;
+            }
+        }
 
-        // Assign the new roles to the user
-        $user->assignRole($this->selectedRoles);
+        if ($roleExists && in_array('risk owner', $this->selectedRoles)) {
 
-        // close modal
-        $this->isOpen = false;
+            // Return an error message or handle the validation failure
 
-        // Reset form fields and close the modal
-        $this->resetForm();
+            // close modal
+            $this->closeModal();
 
-        // send notification success
-        flash()
-            ->option('position', 'bottom-right')
-            ->option('timeout', 3000)
-            ->success('Data Anda telah disimpan!');
+
+            // send notification success
+            flash()
+                ->option('position', 'bottom-right')
+                ->option('timeout', 3000)
+                ->error('A Risk Owner has already been assigned for this unit!');
+                
+        }else{
+
+            // Proceed to store or update the user
+            $user = User::updateOrCreate([
+                'user_id' => $this->user_id,
+            ],
+            [
+                'unit_id'    => $this->unit_id,
+                'name'       => $this->name,
+                'email'      => $this->email,
+                'jabatan'    => $this->jabatan,
+                'role'       => json_encode($this->selectedRoles),
+                'password'   => Hash::make($this->password),
+                'created_by' => Auth::user()->user_id,
+            ]);
+    
+            // Revoke all existing roles from the user
+            $user->syncRoles([]);
+    
+            // Assign the new roles to the user
+            $user->assignRole($this->selectedRoles);
+    
+            // close modal
+            $this->closeModal();
+    
+            // send notification success
+            flash()
+                ->option('position', 'bottom-right')
+                ->option('timeout', 3000)
+                ->success('Data Anda telah disimpan!');
+        }
+
     }
 
     // UPDATE DATA USER
@@ -177,7 +212,7 @@ class ManajemenUser extends Component
         $user = User::find($userId);
         
         // Toggle the status between 0 and 1 (assuming 0 represents inactive and 1 represents active)
-        $user->update(['status' => !$user->status]);
+        $user->update(['status' => !$user->status, 'updated_by' => Auth::user()->user_id]);
 
         flash()
             ->option('position', 'bottom-right')
@@ -206,6 +241,24 @@ class ManajemenUser extends Component
     public function closeModal()
     {
         $this->isOpen = false;
+
+        // Reset form fields and close the modal
+        $this->resetForm();
+
+        // Reset form validation
+        $this->resetValidation();
+    } 
+
+    // CLOSE MODAL
+    public function closeXModal()
+    {
+        $this->isOpen = false;
+
+        // Reset form fields and close the modal
+        $this->resetForm();
+
+        // Reset form validation
+        $this->resetValidation();
     } 
 
     // RESET PAGINATION AFTER SEARCH

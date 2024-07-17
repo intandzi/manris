@@ -4,10 +4,17 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title mt-0">User Form</h5>
-                    <button type="button" class="btn-close" wire:click='closeModal' data-bs-dismiss="modal"
+                    <button type="button" class="btn-close" wire:click='closeXModal' data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            @foreach ($errors->all() as $error)
+                                <p>{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
                     <form>
                         <div class="mb-3">
                             <label class="form-label" for="formrow-firstname-input">Nama User <span
@@ -110,10 +117,17 @@
                         </div> <!-- end row -->
                         <div class="mt-3 border-top mb-3"></div>
                         <div class="mt-4 text-end">
-                            <button type="button" class="btn btn-secondary" wire:click='closeModal'>Close</button>
+                            <button type="button" class="btn btn-secondary" wire:click='closeModal'
+                                wire:loading.attr="disabled" wire:target="closeModal">
+                                Close
+                                <span wire:loading class="ms-2" wire:target="closeModal">
+                                    <span class="spinner-border spinner-border-sm" role="status"
+                                        aria-hidden="true"></span>
+                                </span>
+                            </button>
+
                             <button type="button" wire:click.prevent='storeUser' wire:loading.attr="disabled"
-                                wire:target="storeUser"
-                                class="btn btn-primary w-md waves-effect waves-light">Submit
+                                wire:target="storeUser" class="btn btn-primary w-md waves-effect waves-light">Submit
                                 <span wire:loading class="ms-2" wire:target="storeUser">
                                     <span class="spinner-border spinner-border-sm" role="status"
                                         aria-hidden="true"></span>

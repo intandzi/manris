@@ -35,7 +35,7 @@ new #[Layout('layouts.guest')] class extends Component {
 
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard.index', absolute: false), navigate: true);
+        $this->redirectIntended(default: route('select-role', absolute: false), navigate: true);
     }
 }; ?>
 

@@ -19,6 +19,10 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    
+    Volt::route('portal-login', 'user-role-portal')
+        ->name('select-role');
+
     Volt::route('verify-email', 'pages.auth.verify-email')
         ->name('verification.notice');
 

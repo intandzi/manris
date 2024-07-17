@@ -19,21 +19,21 @@ class UserSeeder extends Seeder
             'jabatan'       => 'Lembaga123',
             'email'         => 'lembaga@gmail.com',
             'password'      => bcrypt('password'),
-            'role'          => json_encode(['lembaga', 'unit manajemen resiko', 'risk owner', 'risk officer']),
+            'role'          => json_encode(['lembaga', 'unit manajemen risiko', 'risk owner', 'risk officer']),
         ]);
 
-        $lembaga->assignRole(['lembaga', 'unit manajemen resiko', 'risk owner', 'risk officer']);
+        $lembaga->assignRole(['lembaga', 'unit manajemen risiko', 'risk owner', 'risk officer']);
 
-        $unitmanajemenresiko = User::create([
+        $unitmanajemenrisiko = User::create([
             'unit_id'       => 2,
-            'name'          => 'Unit Manajemen Resiko',
-            'jabatan'       => 'unitmanajemenresiko55',
-            'email'         => 'unitmanajemenresiko@gmail.com',
+            'name'          => 'Unit Manajemen risiko',
+            'jabatan'       => 'unitmanajemenrisiko55',
+            'email'         => 'unitmanajemenrisiko@gmail.com',
             'password'      => bcrypt('password'),
-            'role'          => json_encode(['unit manajemen resiko', 'risk owner', 'risk officer']),
+            'role'          => json_encode(['unit manajemen risiko', 'risk owner', 'risk officer']),
         ]);
 
-        $unitmanajemenresiko->assignRole(['unit manajemen resiko', 'risk owner', 'risk officer']);
+        $unitmanajemenrisiko->assignRole(['unit manajemen risiko', 'risk owner', 'risk officer']);
 
         $riskowner = User::create([
             'unit_id'       => 3,

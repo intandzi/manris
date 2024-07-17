@@ -63,10 +63,11 @@ new #[Layout('layouts.guest')] class extends Component {
                 <i class="mdi mdi-menu"></i>
             </button>
 
-            <!-- Page Title -->
+            {{-- <!-- Page Title -->
             <span class="page-title d-none d-sm-block">
-                Selamat Datang, <span class="user-name" style="font-weight: bold">{{ ucwords(Auth::user()->name) }}!</span>
-            </span>
+                Selamat Datang, <span class="user-name"
+                    style="font-weight: bold">{{ ucwords(Auth::user()->name) }}!</span>
+            </span> --}}
 
         </div>
 
@@ -181,13 +182,13 @@ new #[Layout('layouts.guest')] class extends Component {
                         <img src="{{ asset('assets/images/users/avatar-1.jpg') }}" alt="user-image" width="32"
                             class="rounded-circle">
                     </span>
-                    <span class="d-lg-block d-none">
-                        <h5 class="my-0 fw-normal">Adams<i
-                                class="ri-arrow-down-s-line fs-22 d-none d-sm-inline-block align-middle"></i>
+                    {{-- <span class="d-lg-block d-none">
+                        <h5 class="my-0 fw-normal">Adams
+                            <i class="ri-arrow-down-s-line fs-22 d-none d-sm-inline-block align-middle"></i>
                         </h5>
-                    </span>
+                    </span> --}}
                 </a>
-                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
+                {{-- <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
                     <!-- item-->
                     <div class=" dropdown-header noti-title">
                         <h6 class="text-overflow m-0">Welcome !</h6>
@@ -222,7 +223,7 @@ new #[Layout('layouts.guest')] class extends Component {
                         <i class="ri-logout-circle-r-line align-middle me-1"></i>
                         <span>Logout</span>
                     </a>
-                </div>
+                </div> --}}
             </li>
         </ul>
     </div>
