@@ -36,7 +36,7 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>No</th>
-                                <th wire:click.live="doSortRisk('risk_kode')" style="cursor: pointer; width:120px;">
+                                <th wire:click.live="doSortRisk('risk_kode')" style="cursor: pointer; width:50px;">
                                     Kode Risiko
                                     <x-sorting-table :orderAsc="$orderAscRisk" :orderBy="$orderByRisk" :columnName="'risk_kode'" />
                                 </th>
@@ -44,18 +44,12 @@
                                     Risiko
                                 </th>
                                 <th>
-                                    Kemungkinan
-                                </th>
-                                <th>
-                                    Dampak
-                                </th>
-                                <th>
-                                    Deteksi
-                                </th>
-                                <th>
                                     RPN
                                 </th>
-                                <th>Tindak Lanjut</th>
+                                <th>
+                                    Derajat Risiko
+                                </th>
+                                <th style="cursor: pointer; width:500px;">Tindak Lanjut yang Diperlukan</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -63,50 +57,17 @@
                                 $no = 1;
                             @endphp
                             @if ($evaluasis && count($evaluasis) > 0)
-                                @forelse ($evaluasis as $index => $item)
+                                {{-- @forelse ($evaluasis as $index => $item)
                                     <tr>
                                         <td>{{ $no++ }}</td>
                                         <td>
                                             {{ $item->risk_kode }}
                                         </td>
-                                        <td>
-                                            {{ Str::limit($item->risk_riskDesc, 100, '...') }}
+                                        <td style="word-break: break-word;">
+                                            {{ $item->risk_riskDesc }}
                                         </td>
                                         <td>
-                                            @if ($item->controlRisk->isNotEmpty())
-                                                <button class="btn btn-secondary">
-                                                    {{ $item->controlRisk->first()->kemungkinan->kemungkinan_scale }}
-                                                </button>
-                                            @else
-                                                <button class="btn btn-secondary">
-                                                    -
-                                                </button>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($item->controlRisk->isNotEmpty())
-                                                <button class="btn btn-secondary">
-                                                    {{ $item->controlRisk->first()->dampak->dampak_scale }}
-                                                </button>
-                                            @else
-                                                <button class="btn btn-secondary">
-                                                    -
-                                                </button>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($item->controlRisk->isNotEmpty())
-                                                <button class="btn btn-secondary">
-                                                    {{ $item->controlRisk->first()->deteksiKegagalan->deteksiKegagalan_scale }}
-                                                </button>
-                                            @else
-                                                <button class="btn btn-secondary">
-                                                    -
-                                                </button>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($item->controlRisk->isNotEmpty())
+                                            @if ($item->first()->controlRisk->isNotEmpty())
                                                 @php
                                                     $controlRiskRPN = $item->controlRisk->first()->controlRisk_RPN;
                                                     $background = '';
@@ -131,60 +92,94 @@
 
                                         </td>
                                         <td>
-                                            <div class="btn-group gap-2" role="group">
-                                                @if ($item->controlRisk->isNotEmpty())
-                                                    @if ($item->controlRisk->first()->controlRisk_lockStatus)
-                                                        <span
-                                                            class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                    @else
-                                                        <button type="button"
-                                                            wire:click.prevent="editEvaluasi({{ $item->risk_id }})"
-                                                            wire:loading.attr="disabled"
-                                                            wire:target="editEvaluasi({{ $item->risk_id }})"
-                                                            class="btn btn-warning btn-sm d-flex text-center align-items-center">
-                                                            <i class="ri-pencil-line" wire:loading.remove
-                                                                wire:target='editEvaluasi({{ $item->risk_id }})'>
-                                                            </i>
-                                                            <span wire:loading
-                                                                wire:target="editEvaluasi({{ $item->risk_id }})">
-                                                                <span class="spinner-border spinner-border-sm"
-                                                                    role="status" aria-hidden="true"></span>
-                                                            </span>
-                                                        </button>
-                                                        <button type="button"
-                                                            wire:click.prevent="openModalConfirmEvaluasi({{ $item->risk_id }})"
-                                                            wire:loading.attr="disabled"
-                                                            wire:target="openModalConfirm({{ $item->risk_id }})"
-                                                            class="btn btn-danger btn-sm d-flex text-center align-items-center">
-                                                            <i class="ri-lock-fill" wire:loading.remove
-                                                                wire:target='openModalConfirmEvaluasi({{ $item->risk_id }})'>
-                                                            </i>
-                                                            <span wire:loading
-                                                                wire:target="openModalConfirmEvaluasi({{ $item->risk_id }})">
-                                                                <span class="spinner-border spinner-border-sm"
-                                                                    role="status" aria-hidden="true"></span>
-                                                            </span>
-                                                        </button>
-                                                    @endif
-                                                @else
-                                                    <button type="button"
-                                                        wire:click.prevent="createEvaluasi({{ $item->risk_id }})"
-                                                        wire:loading.attr="disabled"
-                                                        wire:target="createEvaluasi({{ $item->risk_id }})"
-                                                        class="btn btn-primary btn-sm d-flex text-center align-items-center">
-                                                        <i class="ri-add-line" wire:loading.remove
-                                                            wire:target='createEvaluasi({{ $item->risk_id }})'>
-                                                        </i>
-                                                        <span wire:loading
-                                                            wire:target="createEvaluasi({{ $item->risk_id }})">
-                                                            <span class="spinner-border spinner-border-sm"
-                                                                role="status" aria-hidden="true"></span>
-                                                        </span>
-                                                    </button>
-                                                @endif
-                                            </div>
+                                            {{ ucwords($item->controlRisk->first()->derajatRisiko->derajatRisiko_desc) }}
                                         </td>
+                                        
+                                        @php //GET ACTIVE SELERA RISIKO
+                                            $tindakLanjut = '';
+                                            $controlRisk = $item->controlRisk->first(); // Assuming controlRisk is a relationship that returns a collection or null
 
+                                            if ($controlRisk) {
+                                                $derajatRisiko = $controlRisk->derajatRisiko; // Assuming derajatRisiko is a relationship
+                                                if ($derajatRisiko) {
+                                                    foreach ($derajatRisiko->seleraRisiko as $data) {
+                                                        if ($data->seleraRisiko_activeStatus) {
+                                                            $tindakLanjut = $data->seleraRisiko_tindakLanjut;
+                                                            break; // Exit the loop as we found the first active seleraRisiko
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        @endphp
+
+                                        <td style="word-break: break-word;">
+                                            {{ ucwords($tindakLanjut) }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <div class="alert alert-danger mt-2 mb-2">
+                                        No data available.
+                                    </div>
+                                @endforelse --}}
+                                @php
+                                    $groupedEvaluasis = $evaluasis->groupBy('risk_id')->map(function ($group) {
+                                        return $group->first();
+                                    });
+                                @endphp
+
+                                @forelse ($groupedEvaluasis as $index => $item)
+                                    <tr>
+                                        <td>{{ $no++ }}</td>
+                                        <td>{{ $item->risk_kode }}</td>
+                                        <td style="word-break: break-word;">
+                                            {{ $item->risk_riskDesc }}
+                                        </td>
+                                        <td>
+                                            @if ($item->controlRisk->isNotEmpty())
+                                                @php
+                                                    $controlRiskRPN = $item->controlRisk->first()->controlRisk_RPN;
+                                                    $background = '';
+
+                                                    if ($controlRiskRPN <= 250) {
+                                                        $background = 'success';
+                                                    } elseif ($controlRiskRPN <= 500) {
+                                                        $background = 'warning';
+                                                    } elseif ($controlRiskRPN <= 1000) {
+                                                        $background = 'danger';
+                                                    }
+                                                @endphp
+
+                                                <button class="btn btn-{{ $background }}">
+                                                    {{ $controlRiskRPN }}
+                                                </button>
+                                            @else
+                                                <button class="btn btn-secondary">
+                                                    -
+                                                </button>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            {{ ucwords($item->controlRisk->first()->derajatRisiko->derajatRisiko_desc) }}
+                                        </td>
+                                        <td style="word-break: break-word;">
+                                            @php
+                                                $tindakLanjut = '';
+                                                $controlRisk = $item->controlRisk->first();
+
+                                                if ($controlRisk) {
+                                                    $derajatRisiko = $controlRisk->derajatRisiko;
+                                                    if ($derajatRisiko) {
+                                                        foreach ($derajatRisiko->seleraRisiko as $data) {
+                                                            if ($data->seleraRisiko_activeStatus) {
+                                                                $tindakLanjut = $data->seleraRisiko_tindakLanjut;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            @endphp
+                                            {{ ucwords($tindakLanjut) }}
+                                        </td>
                                     </tr>
                                 @empty
                                     <div class="alert alert-danger mt-2 mb-2">
@@ -243,7 +238,7 @@
 </div><!-- end row -->
 
 
-@if ($isOpenConfirmEvaluasi)
+{{-- @if ($isOpenConfirmEvaluasi)
     <div class="modal" tabindex="-1" role="dialog" style="display: block;" aria-modal="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
@@ -277,4 +272,4 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
     <div class="modal-backdrop fade show"></div>
-@endif
+@endif --}}

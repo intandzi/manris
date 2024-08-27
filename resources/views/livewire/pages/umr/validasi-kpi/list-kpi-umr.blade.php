@@ -7,50 +7,11 @@
             <ol class="breadcrumb mb-0 p-2">
                 <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
                         App</a></li>
-                <li class="breadcrumb-item"><a
-                        href="{{ route('riskRegisterOw.index', ['role' => request()->query('role')]) }}" wire:navigate>
-                        Risk Register</a></li>
                 <li class="breadcrumb-item active"><a href="#">KPI Unit
                         {{ $title }}</a>
                 </li>
             </ol>
         </nav>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <h4>Visi</h4>
-                                @if ($unit->visimisi && $unit->visimisi->isEmpty())
-                                    <div class="alert alert-danger mt-2 mb-2">
-                                        No data available.
-                                    </div>
-                                @else
-                                    @if ($unit->visimisi)
-                                        <p>
-                                            {!! $unit->visimisi->last()->visimisi_visi !!}
-                                        </p>
-                                    @endif
-                                @endif
-                            </div>
-                            <div class="col-md-12">
-                                <h4>Misi</h4>
-                                @if ($unit->visimisi && $unit->visimisi->isEmpty())
-                                    <div class="alert alert-danger mt-2 mb-2">
-                                        No data available.
-                                    </div>
-                                @else
-                                    <p>
-                                        {!! $unit->visimisi->last()->visimisi_misi !!}
-                                    </p>
-                                @endif
-                            </div>
-                        </div>
-                    </div> <!-- end card body-->
-                </div> <!-- end card -->
-            </div><!-- end col-->
-        </div><!-- end row -->
 
         <div class="row">
             <div class="col-12">
@@ -156,7 +117,7 @@
                                                 {{ $kpi->kpi_tanggalMulai }}
                                             </td>
                                             <td>
-                                                {{ date('Y', strtotime($kpi->kpi_periode)) }}
+                                                {{ $kpi->kpi_periode }}
                                             </td>
                                             <td>
                                                 <div class="btn-group gap-2" role="group">
@@ -168,33 +129,34 @@
                                                         <i class="ri-login-box-line me-1" wire:loading.remove
                                                             wire:target='konteksRisiko({{ $kpi->kpi_id }})'>
                                                         </i>
-                                                        Mulai
+                                                        Lihat
+                                                        <span
+                                                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                                            style="font-size: 12px;">
+                                                            {{ $this->countKontekssWithStatusTrue($kpi) }}
+                                                            <span class="visually-hidden">unread messages</span>
+                                                        </span>
                                                         <span class="ms-2" wire:loading
                                                             wire:target="konteksRisiko({{ $kpi->kpi_id }})">
                                                             <span class="spinner-border spinner-border-sm"
                                                                 role="status" aria-hidden="true"></span>
                                                         </span>
                                                     </button>
-                                                    @if ($kpi->kpi_sendUMRStatus)
-                                                        <span
-                                                            class="badge badge-outline-danger rounded-pill mt-2">Selesaikan!</span>
-                                                    @else
-                                                        <button type="button"
-                                                            wire:click.prevent="openModalConfirm({{ $kpi->kpi_id }})"
-                                                            wire:loading.attr="disabled"
-                                                            wire:target="openModalConfirm({{ $kpi->kpi_id }})"
-                                                            class="btn btn-success btn-sm d-flex text-center align-items-center">
-                                                            <i class="ri-send-plane-line me-1" wire:loading.remove
-                                                                wire:target='openModalConfirm({{ $kpi->kpi_id }})'>
-                                                            </i>
-                                                            UMR
-                                                            <span wire:loading
-                                                                wire:target="openModalConfirm({{ $kpi->kpi_id }})">
-                                                                <span class="spinner-border spinner-border-sm"
-                                                                    role="status" aria-hidden="true"></span>
-                                                            </span>
-                                                        </button>
-                                                    @endif
+                                                    <button type="button"
+                                                        wire:click.prevent="openHistoryPengembalian({{ $kpi->kpi_id }})"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="openHistoryPengembalian({{ $kpi->kpi_id }})"
+                                                        class="btn btn-secondary btn-sm d-flex text-center align-items-center">
+                                                        <i class="ri-login-box-line me-1" wire:loading.remove
+                                                            wire:target='openHistoryPengembalian({{ $kpi->kpi_id }})'>
+                                                        </i>
+                                                        History
+                                                        <span class="ms-2" wire:loading
+                                                            wire:target="openHistoryPengembalian({{ $kpi->kpi_id }})">
+                                                            <span class="spinner-border spinner-border-sm"
+                                                                role="status" aria-hidden="true"></span>
+                                                        </span>
+                                                    </button>
                                                 </div>
                                             </td>
 
@@ -219,5 +181,82 @@
         </div><!-- end row -->
 
     </div> <!-- container -->
+
+
+    @if ($isOpenHistoryPengembalian)
+        <div class="modal" tabindex="-1" role="dialog" style="display: block;" aria-modal="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">History Pengembalian</h5>
+                        <button type="button" class="btn-close" aria-label="Close"
+                            wire:click="closeXHistoryPengembalian"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive mb-2">
+                                    <table class="table table-centered mb-0">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Tanggal Control</th>
+                                                <th style="cursor: pointer; width:500px;">Alasan Pengembalian</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if ($historyPengembalian && $historyPengembalian->konteks->isNotEmpty())
+                                                @php
+                                                    $hasHistory = false;
+                                                @endphp
+                                                @foreach ($historyPengembalian->konteks as $konteks)
+                                                    @forelse ($konteks->historyPengembalian as $history)
+                                                        @php
+                                                            $hasHistory = true;
+                                                        @endphp
+                                                        <tr>
+                                                            <td>
+                                                                {{ $history->historyPengembalian_tgl }}
+                                                            </td>
+                                                            <td style="word-break: break-word;">
+                                                                {{ $history->historyPengembalian_alasan }}
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        {{-- Continue to the next konteks if no history found --}}
+                                                    @endforelse
+                                                @endforeach
+
+                                                @if (!$hasHistory)
+                                                    <div class="alert alert-danger mt-2 mb-2">
+                                                        No data available.
+                                                    </div>
+                                                @endif
+                                            @else
+                                                <div class="alert alert-danger mt-2 mb-2">
+                                                    No data available.
+                                                </div>
+                                            @endif
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" wire:click='closeHistoryPengembalian'
+                            wire:loading.attr="disabled" wire:target="closeHistoryPengembalian">
+                            Tutup
+                            <span wire:loading class="ms-2" wire:target="closeHistoryPengembalian">
+                                <span class="spinner-border spinner-border-sm" role="status"
+                                    aria-hidden="true"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <div class="modal-backdrop fade show"></div>
+    @endif
 
 </div>

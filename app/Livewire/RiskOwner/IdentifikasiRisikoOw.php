@@ -3,6 +3,9 @@
 namespace App\Livewire\RiskOwner;
 
 use App\Models\ControlRisk;
+use App\Models\DerajatRisiko;
+use App\Models\DetailEfektifitasKontrol;
+use App\Models\EfektifitasKontrol;
 use App\Models\JenisPerlakuan;
 use App\Models\KonteksRisiko;
 use App\Models\KPI;
@@ -10,6 +13,7 @@ use App\Models\KriteriaDampak;
 use App\Models\KriteriaDeteksiKegagalan;
 use App\Models\KriteriaKemungkinan;
 use App\Models\PerlakuanRisiko;
+use App\Models\PenilaianEfektifitas;
 use App\Models\RencanaPerlakuan;
 use App\Models\Risk;
 use Illuminate\Support\Facades\Auth;
@@ -46,18 +50,21 @@ class IdentifikasiRisikoOw extends Component
     public $role, $encryptedRole, $encryptedKPI;
 
     // VARIABLE TOOGLE TABS
-    public $tabActive                   = 'rencanaPerlakuanContent';
-    public $showIdentifikasiContent     = false;
+    public $tabActive                   = 'identifikasiContent';
+    public $showIdentifikasiContent     = true;
     public $showKriteriaContent         = false;
+    public $showAnalisisContent         = false;
     public $showEvaluasiContent         = false;
-    public $showRencanaPerlakuanContent = true;
+    public $showRencanaPerlakuanContent = false;
 
+    // TOGGLE TAB
     public function toggleTab($tab)
     {
         // DYNAMIC TAB
         $this->tabActive                    = $tab;
         $this->showIdentifikasiContent      = $tab === 'identifikasiContent';
         $this->showKriteriaContent          = $tab === 'kriteriaContent';
+        $this->showAnalisisContent          = $tab === 'analisisContent';
         $this->showEvaluasiContent          = $tab === 'evaluasiContent';
         $this->showRencanaPerlakuanContent  = $tab === 'rencanaPerlakuanContent';
 
@@ -66,9 +73,12 @@ class IdentifikasiRisikoOw extends Component
             $this->title2       = 'Kriteria Risiko';
             $this->titleDesc    = 'Pada tahap ini Anda diminta  untuk membuat kriteria risiko  dengan cara melakukan pemeringkatan dampak, kemungkinan risiko, dan deteksi kegagalan dengan memperhatikan parameter pengukuran dalam Key Performance Indicator atau target';
             
+        }elseif($tab === 'analisisContent'){
+            $this->title2 = 'Analisis Risiko';
+            $this->titleDesc    = 'Pada tahap ini Anda diminta  untuk melakukan evaluasi apakah kendali dilaksanankan dengan efektif atau bahkan tidak ada kendali sama sekali yang dilakukan terhadap risiko yang telah diidentifikasi. Melakukan penentuan dampak dan kemungkinan berdasarkan kriteria risiko yang telah dibuat pada tahap sebelumnya.';
         }elseif($tab === 'evaluasiContent'){
             $this->title2 = 'Evaluasi Risiko';
-            $this->titleDesc    = 'Pada tahap ini Anda diminta  untuk melakukan evaluasi apakah kendali dilaksanankan dengan efektif atau bahkan tidak ada kendali sama sekali yang dilakukan terhadap risiko yang telah diidentifikasi. Melakukan penentuan dampak dan kemungkinan berdasarkan kriteria risiko yang telah dibuat pada tahap sebelumnya.';
+            $this->titleDesc    = 'Pada tahap ini Anda mendapatkan hasil <span style="color:red;">PRIORITAS RISIKO</span> dan tindak lanjut yang sudah ditetapkan sesuai dengan perhitungan pada tahap analisis risiko.';
         }elseif($tab === 'rencanaPerlakuanContent'){
             $this->title2 = 'Rencana Perlakuan Risiko';
             $this->titleDesc    = 'Pada tahap ini Anda diminta  untuk membuat rencana perlakuan risiko pada perhitungan sebelumnya, dan menentukan jenis perlakuan risiko ';
@@ -165,15 +175,15 @@ class IdentifikasiRisikoOw extends Component
             ->orderBy($this->orderByRisk, $this->orderAscRisk ? 'asc' : 'desc')
             ->paginate($this->perPage);
 
-        // KRITERIA DATA
+        // KRITERIA RISIKO DATA
         $kriterias = Risk::with(['dampak', 'kemungkinan', 'deteksiKegagalan'])->where('konteks_id', $this->konteks_id)
             ->where('risk_lockStatus', true)
             ->search($this->searchRisk)
             ->orderBy($this->orderByRisk, $this->orderAscRisk ? 'asc' : 'desc')
             ->paginate($this->perPage);
 
-        // EVALUASI DATA    
-        $evaluasis = Risk::with(['controlRisk.dampak', 'controlRisk.kemungkinan', 'controlRisk.deteksiKegagalan'])
+        // ANALISIS RISIKO DATA    
+        $dataAnalisis = Risk::with(['controlRisk.dampak', 'controlRisk.kemungkinan', 'controlRisk.deteksiKegagalan', 'efektifitasKontrol'])
         ->where('konteks_id', $this->konteks_id)
         ->where('risk_lockStatus', true)
         ->where('risk_kriteriaLockStatus', true)
@@ -181,7 +191,22 @@ class IdentifikasiRisikoOw extends Component
         ->orderBy($this->orderByRisk, $this->orderAscRisk ? 'asc' : 'desc')
         ->paginate($this->perPage);
 
-        // RENCANA PERLAKUAN DATA    
+        // EVALUASI RISIKO DATA
+        $evaluasis = Risk::whereHas('controlRisk', function ($query) {
+            $query->where('controlRisk_lockStatus', true);
+        })
+        ->with([
+            'controlRisk.derajatRisiko.seleraRisiko'
+        ])
+        ->where('konteks_id', $this->konteks_id)
+        ->where('risk_lockStatus', true)
+        ->where('risk_kriteriaLockStatus', true)
+        ->search($this->searchRisk)
+        ->orderByControlRiskRPN($this->orderAscRisk ? 'desc' : 'asc')
+        ->paginate($this->perPage);
+
+
+        // RENCANA PERLAKUAN RISIKO DATA    
         $rencanaPerlakuans = Risk::whereHas('controlRisk', function ($query) {
             $query->where('controlRisk_lockStatus', true);
         })
@@ -196,7 +221,7 @@ class IdentifikasiRisikoOw extends Component
         ->where('risk_lockStatus', true)
         ->where('risk_kriteriaLockStatus', true)
         ->search($this->searchRisk)
-        ->orderBy($this->orderByRisk, $this->orderAscRisk ? 'asc' : 'desc')
+        ->orderByControlRiskRPN($this->orderAscRisk ? 'desc' : 'asc')
         ->paginate($this->perPage);
 
         return view('livewire.pages.risk-owner.risk-register.risk-register.risk-register-ow', [
@@ -210,6 +235,10 @@ class IdentifikasiRisikoOw extends Component
             ? "Showing " . ($kriterias->firstItem()) . " to " . ($kriterias->lastItem()) . " of " . ($kriterias->total()) . " entries"
             : "No entries found",
 
+            'dataAnalisis'               => $dataAnalisis,
+            'paginationInfoDataAnalisis' => $dataAnalisis->total() > 0
+            ? "Showing " . ($dataAnalisis->firstItem()) . " to " . ($dataAnalisis->lastItem()) . " of " . ($dataAnalisis->total()) . " entries"
+            : "No entries found",
             'evaluasis'                 => $evaluasis,
             'paginationInfoEvaluasis'   => $evaluasis->total() > 0
             ? "Showing " . ($evaluasis->firstItem()) . " to " . ($evaluasis->lastItem()) . " of " . ($evaluasis->total()) . " entries"
@@ -306,6 +335,28 @@ class IdentifikasiRisikoOw extends Component
 
         // IS EDIT
         $this->isEditRisk = true;
+
+        // FIND risk
+        $risk = Risk::find($id);
+        
+        // PASSING KPI
+        $this->risk_id          = $risk->risk_id;
+        $this->risk_riskDesc    = $risk->risk_riskDesc;
+        $this->risk_penyebab    = $risk->risk_penyebab;
+        
+    }
+
+    // SHOW IDENTIFIKASI RISIKO
+    public function showRisk($id)
+    {
+        // OPEN MODAL
+        $this->openModalRisk();
+
+        // IS SHOW
+        $this->isShowRisk = true;
+
+        // IS EDIT
+        $this->isEditRisk = false;
 
         // FIND risk
         $risk = Risk::find($id);
@@ -1351,15 +1402,16 @@ class IdentifikasiRisikoOw extends Component
 
 
     /**
-     * EVALUASI FUNCTIONS
+     * ANALISIS FUNCTIONS
      *
      */
 
-    // VARIABLES EVALUASI EVALUASI
-    public $evaluasi;
-    
-    // CREATE KEMUNGKINAN EVALUASI
-    public function createEvaluasi($id)
+    // VARIABLES ANALISIS
+    public $analisis, $lastAnalisis;
+    // VARIABLES ANALISIS
+    public $controlRisk_id, $kemungkinan_id, $dampak_id, $deteksiKegagalan_id, $derajatRisiko_id;
+    // CREATE KEMUNGKINAN ANALISIS
+    public function createAnalisis($id)
     {
         // FIND RISK
         $risk                   = Risk::with(['kemungkinan', 'dampak', 'deteksiKegagalan'])->where('risk_id', $id)->first();
@@ -1370,19 +1422,48 @@ class IdentifikasiRisikoOw extends Component
         // SET RISK ID
         $this->risk_id          = $risk->risk_id;
 
+        // IS EFEKTIFITAS
+        $this->isEfektifitas    = 0;
+
         // PASSING DATA KRITERIA
         $this->dataKemungkinan  = $risk->kemungkinan;
         $this->dataDampak       = $risk->dampak;
         $this->dataDeteksi      = $risk->deteksiKegagalan;
 
-        // OPEN MODAL EVALUASI
-        $this->openModalEvaluasi();
+        // OPEN MODAL ANALISIS
+        $this->openModalAnalisis();
     }
 
-    // VARIABLES EVALUASI
-    public $controlRisk_id, $kemungkinan_id, $dampak_id, $deteksiKegagalan_id;
-    // VALIDATE INPUT EVALUASI RISIKO
-    protected function validatingInputsEvaluasi()
+    // VARIABLES EFEKTIFITAS KONTROL
+    public $penilaianEfektifitas, $efektifitasKontrol_id, $efektifitasKontrol_kontrolStatus, $efektifitasKontrol_kontrolDesc, $efektifitasKontrol_totalEfektifitas = 0;
+    public $penilaianEfektifitas_id = [], $penilaianEfektifitas_jawaban, $penilaianEfektifitas_skor = [];
+    
+    // CREATE EFEKTIFITAS KONTROL
+    public function createEfektifitas($id)
+    {
+        // FIND RISK
+        $risk                   = Risk::with(['kemungkinan', 'dampak', 'deteksiKegagalan'])->where('risk_id', $id)->first();
+
+        // SET RISK DESC
+        $this->risk_spesific    = $risk->risk_riskDesc;
+
+        // SET RISK ID
+        $this->risk_id          = $risk->risk_id;
+        
+        // IS EFEKTIFITAS
+        $this->isEfektifitas    = 1;
+
+        // PASSING PENILAIAN EFEKTIFITAS
+        $this->penilaianEfektifitas     = PenilaianEfektifitas::where('penilaianEfektifitas_activeStatus', true)->get();
+
+        $this->penilaianEfektifitas_id  = PenilaianEfektifitas::where('penilaianEfektifitas_activeStatus', true)
+                                            ->pluck('penilaianEfektifitas_id');
+        // OPEN MODAL ANALISIS
+        $this->openModalAnalisis();
+    }
+
+    // VALIDATE INPUT ANALISIS RISIKO
+    protected function validatingInputsAnalisis()
     {
         $validated = $this->validate([
             'kemungkinan_id'                => ['required'],
@@ -1395,11 +1476,11 @@ class IdentifikasiRisikoOw extends Component
         ]);
     }
 
-    // STORE EVALUASI RISIKO
-    public function storeEvaluasi()
+    // STORE ANALISIS RISIKO
+    public function storeAnalisis()
     {
-        // VALIDATION INPUTS EVALUASI
-        $this->validatingInputsEvaluasi();
+        // VALIDATION INPUTS ANALISIS
+        $this->validatingInputsAnalisis();
 
         // FIND KEMUNGKINAN
         $kemungkinan    = KriteriaKemungkinan::find($this->kemungkinan_id);
@@ -1408,8 +1489,21 @@ class IdentifikasiRisikoOw extends Component
 
         // CALCULATE RPN
         $rpn = $kemungkinan->kemungkinan_scale * $dampak->dampak_scale * $deteksi->deteksiKegagalan_scale;
-        
-        // STORE EVALUASI
+
+        // FIND DERAJAT RISIKO BASED ON RPN
+        $derajatRisiko = DerajatRisiko::where('derajatRisiko_nilaiTingkatMin', '<=', $rpn)
+                                    ->where('derajatRisiko_nilaiTingkatMax', '>=', $rpn)
+                                    ->first();
+
+        if ($derajatRisiko) {
+            $derajatRisiko_id = $derajatRisiko->derajatRisiko_id;
+            // You can now use $derajatRisiko_id as needed
+        } else {
+            // Handle the case where no matching record is found
+            $derajatRisiko_id = null;
+        }
+
+        // STORE ANALISIS
         $controlRisk = ControlRisk::updateOrCreate([
             'controlRisk_id'    => $this->controlRisk_id,
         ],[
@@ -1418,12 +1512,13 @@ class IdentifikasiRisikoOw extends Component
             'dampak_id'             => $this->dampak_id,
             'deteksiKegagalan_id'   => $this->deteksiKegagalan_id,
             'controlRisk_RPN'       => $rpn,
+            'derajatRisiko_id'      => $derajatRisiko_id,
             'created_by'            => Auth::user()->user_id,
             'updated_by'            => Auth::user()->user_id,
         ]);
 
         // CLOSE MODAL
-        $this->closeModalEvaluasi();
+        $this->closeModalAnalisis();
 
         // send notification success
         flash()
@@ -1432,14 +1527,17 @@ class IdentifikasiRisikoOw extends Component
             ->success('Data Anda telah disimpan!');
     }
 
-    // EDIT EVALUASI
-    public function editEvaluasi($id)
+    // EDIT ANALISIS
+    public function editAnalisis($id)
     {
         // RECALL CREATE FUNCTION BUT ALSO SET ID KRITERIA
-        $this->createEvaluasi($id);
+        $this->createAnalisis($id);
 
          // IS EDIT
-        $this->isEditEvaluasi = true;
+        $this->isEditAnalisis = true;
+
+        // IS SHOW ANALISIS
+        $this->isShowAnalisis = false;
 
         // FIND CONTROL RISK ID
         $controlRisk = ControlRisk::where('risk_id', $id)->first();
@@ -1449,11 +1547,168 @@ class IdentifikasiRisikoOw extends Component
         // PASSING ID KRITERIA
         $this->kemungkinan_id       = $controlRisk->kemungkinan_id;
         $this->dampak_id            = $controlRisk->dampak_id;
-        $this->deteksiKegagalan_id  = $controlRisk->dampak_id;
+        $this->deteksiKegagalan_id  = $controlRisk->deteksiKegagalan_id;
     }
 
-    // LOCK EVALUASI RISIKO
-    public function lockEvaluasiRisiko()
+    // VALIDATE INPUT EFEKTIFITAS KONTROL
+    protected function validatingInputsEfektifitas()
+    {
+        $rules = [];
+        $messages = [];
+
+        // Define validation rules and messages for each index in penilaianEfektifitas_skor
+        foreach ($this->penilaianEfektifitas as $index => $item) {
+            $rules["penilaianEfektifitas_skor.$index"] = ['required'];
+            $messages["penilaianEfektifitas_skor.$index.required"] = "Pilihan Jawaban untuk pertanyaan ke-" . ($index + 1) . " wajib diisi!";
+        }
+
+        // Common rules and messages
+        $rules['efektifitasKontrol_kontrolStatus'] = ['required'];
+        $rules['efektifitasKontrol_kontrolDesc'] = ['required'];
+
+        $messages['efektifitasKontrol_kontrolStatus.required'] = 'Pengendalian Efektifitas wajib diisi!';
+        $messages['efektifitasKontrol_kontrolDesc.required'] = 'Uraian Pengendalian wajib diisi!';
+
+        // Validate using the dynamically created rules and messages
+        $validated = $this->validate($rules, $messages);
+
+        return $validated;
+    }
+
+    // CALCULATING TOTAL NILAI EFEKTIFITAS CONTROL
+    public function updatedPenilaianEfektifitasSkor($value, $index)
+    {
+        $this->calculateTotalEfektifitas();
+    }
+
+    // EQUATION TO CALCULATE
+    public function calculateTotalEfektifitas()
+    {
+        // Ensure penilaianEfektifitas_skor is an array
+        if (!is_array($this->penilaianEfektifitas_skor)) {
+            $this->penilaianEfektifitas_skor = [];
+        }
+
+        // Filter out non-numeric values and sum up the numeric ones
+        $total = array_sum(array_filter($this->penilaianEfektifitas_skor, function($value) {
+            return is_numeric($value);
+        }));
+
+        // Update total efektivitas
+        $this->efektifitasKontrol_totalEfektifitas = $total;
+    }
+
+    // STORE EFEKTIFITAS KONTROL
+    public function storeEfektifitas()
+    {
+        // VALIDATE INPUT EFEKTIFITAS
+        $this->validatingInputsEfektifitas();
+
+        // FIND OR CREATE EFEKTIFITAS KONTROL
+        $efektifitasKontrol = EfektifitasKontrol::updateOrCreate(
+            ['risk_id' => $this->risk_id],
+            [
+                'efektifitasKontrol_kontrolStatus'    => $this->efektifitasKontrol_kontrolStatus,
+                'efektifitasKontrol_kontrolDesc'      => $this->efektifitasKontrol_kontrolDesc,
+                'efektifitasKontrol_totalEfektifitas' => $this->efektifitasKontrol_totalEfektifitas,
+                'created_by'                          => Auth::user()->user_id,
+                'updated_by'                          => Auth::user()->user_id,
+            ]
+        );
+
+        // UPDATE EFEKTIFITAS KONTROL ID
+        $this->efektifitasKontrol_id = $efektifitasKontrol->efektifitasKontrol_id;
+
+        // UPDATE OR CREATE DETAIL EFEKTIFITAS KONTROL
+        if (!empty($this->penilaianEfektifitas_id)) {
+            foreach ($this->penilaianEfektifitas_id as $index => $penilaianId) {
+                DetailEfektifitasKontrol::updateOrCreate(
+                    [
+                        'efektifitasKontrol_id' => $this->efektifitasKontrol_id,
+                        'penilaianEfektifitas_id' => $penilaianId,
+                    ],
+                    [
+                        'detailEfektifitasKontrol_skor' => $this->penilaianEfektifitas_skor[$index] ?? null,
+                        'created_by'                    => Auth::user()->user_id,
+                        'updated_by'                    => Auth::user()->user_id,
+                    ]
+                );
+            }
+        }
+
+        // CLOSE MODAL AND SEND SUCCESS NOTIFICATION
+        $this->closeModalAnalisis();
+
+        flash()
+            ->option('position', 'bottom-right')
+            ->option('timeout', 3000)
+            ->success('Data Anda telah disimpan!');
+    }
+
+    // EDIT EFEKTIFITAS
+    public function editEfektifitas($id)
+    {
+        // RECALL CREATE FUNCTION BUT ALSO SET ID KRITERIA
+        $this->createEfektifitas($id);
+
+        // IS EDIT
+        $this->isEditEfektifitas = true;
+
+        // IS SHOW ANALISIS
+        $this->isShowEfektifitas = false;
+
+        // FIND EFEKTIFITAS KONTROL ID
+        $efektifitasKontrol = EfektifitasKontrol::with(['detailEfektifitasKontrol'])->where('risk_id', $id)->first();
+
+        if ($efektifitasKontrol) {
+            // PASSING EFEKTIFITAS KONTROL ID
+            $this->efektifitasKontrol_id                = $efektifitasKontrol->efektifitasKontrol_id;
+            $this->efektifitasKontrol_kontrolStatus     = $efektifitasKontrol->efektifitasKontrol_kontrolStatus;
+            $this->efektifitasKontrol_kontrolDesc       = $efektifitasKontrol->efektifitasKontrol_kontrolDesc;
+            $this->efektifitasKontrol_totalEfektifitas  = $efektifitasKontrol->efektifitasKontrol_totalEfektifitas;
+
+            // PASSING DETAIL EFEKTIFITAS
+            $penilaianEfektifitas_id    = [];
+            $penilaianEfektifitas_skor  = [];
+            
+            foreach ($efektifitasKontrol->detailEfektifitasKontrol as $item) {
+                $penilaianEfektifitas_id[]      = $item->penilaianEfektifitas_id;
+                $penilaianEfektifitas_skor[]    = $item->detailEfektifitasKontrol_skor;
+            }
+
+            // PASSING PENILAIAN EFEKTIFITAS
+            $this->penilaianEfektifitas_id      = $penilaianEfektifitas_id;
+            $this->penilaianEfektifitas_skor    = $penilaianEfektifitas_skor;
+        }
+    }
+
+    // SHOW ANALISIS
+    public function showAnalisis($id)
+    {
+        // RECALL CREATE FUNCTION BUT ALSO SET ID KRITERIA
+        $this->createAnalisis($id);
+
+        // IS EDIT
+        $this->isEditAnalisis = false;
+
+        // IS SHOW ANALISIS
+        $this->isShowAnalisis = true;
+
+        // FIND CONTROL RISK ID
+        $controlRisk = ControlRisk::with(['kemungkinan', 'dampak', 'deteksiKegagalan'])->where('risk_id', $id)->first();
+
+        // PASSING LAST ANALISIS
+        $this->lastAnalisis        = $controlRisk;
+        // PASSING CONTROL RISK ID
+        $this->controlRisk_id       = $controlRisk->controlRisk_id;
+        // PASSING ID KRITERIA
+        $this->kemungkinan_id       = $controlRisk->kemungkinan_id;
+        $this->dampak_id            = $controlRisk->dampak_id;
+        $this->deteksiKegagalan_id  = $controlRisk->deteksiKegagalan_id;
+    }
+
+    // LOCK ANALISIS RISIKO
+    public function lockAnalisisRisiko()
     {
         // FIND CONTROL RISK ID
         $controlRisk = ControlRisk::where('risk_id', $this->risk_id)->first();
@@ -1461,8 +1716,14 @@ class IdentifikasiRisikoOw extends Component
         // UPDATE LOCK STATUS CONTROL RISK
         $controlRisk->update(['controlRisk_lockStatus'   => 1]);
 
+        // FIND EFEKtIFITAS CONTROL ID
+        $efekifitasKontrol = EfektifitasKontrol::where('risk_id', $this->risk_id)->first();
+
+        // UPDATE LOCK STATUS EFEKtIFITAS CONTROL
+        $efekifitasKontrol->update(['efektifitasKontrol_lockStatus'   => 1]);
+
         // close modal
-        $this->closeModalConfirmEvaluasi();
+        $this->closeModalConfirmAnalisis();
 
         // send notification success
         flash()
@@ -1471,110 +1732,116 @@ class IdentifikasiRisikoOw extends Component
             ->success('Data Anda telah disimpan!');
     }
 
-    // LIFE CYCLE HOOKS EVALUASI
+    // LIFE CYCLE HOOKS ANALISIS
     // OPEN MODAL LIVEWIRE 
-    public $isOpenEvaluasi              = 0;
-    public $isOpenConfirmEvaluasi       = 0;
-    public $isOpenConfirmDeleteEvaluasi = 0;
+    public $isOpenAnalisis              = 0;
+    public $isOpenConfirmAnalisis       = 0;
+    public $isOpenConfirmDeleteAnalisis = 0;
+
     public $dataKemungkinan, $dataDampak, $dataDeteksi;
 
-    public $isEditEvaluasi, $isShowEvaluasi;
+    // IS SHOW OR EDIT ANALISIS
+    public $isEditAnalisis, $isShowAnalisis;
 
-    // OPEN MODAL EVALUASI EVALUASI
-    public function openModalEvaluasi()
+    // IS KRITERIA OR EFEKTIFITAS
+    public $isEfektifitas               = 0;
+
+    // IS SHOW OR EDIT EFEKTIFITAS
+    public $isEditEfektifitas, $isShowEfektifitas;
+
+    // OPEN MODAL ANALISIS
+    public function openModalAnalisis()
     {
-        $this->isOpenEvaluasi = true;
+        $this->isOpenAnalisis = true;
     }
 
-
-    // CLOSE MODAL EVALUASI EVALUASI
-    public function closeModalEvaluasi()
+    // CLOSE MODAL ANALISIS
+    public function closeModalAnalisis()
     {
-        $this->isOpenEvaluasi = false;
+        $this->isOpenAnalisis = false;
 
         // IS SHOW
-        $this->isShowEvaluasi = false;
+        $this->isShowAnalisis = false;
 
         // IS EDIT
-        $this->isEditEvaluasi = false;
+        $this->isEditAnalisis = false;
 
         // Reset form fields and close the modal
-        $this->resetFormEvaluasi();
+        $this->resetFormAnalisis();
 
         // Reset form validation
         $this->resetValidation();
     } 
 
-
-    // CLOSE MODAL EVALUASI EVALUASI
-    public function closeXModalEvaluasi()
+    // CLOSE MODAL ANALISIS
+    public function closeXModalAnalisis()
     {
-        $this->isOpenEvaluasi = false;
+        $this->isOpenAnalisis = false;
 
         // IS SHOW
-        $this->isShowEvaluasi = false;
+        $this->isShowAnalisis = false;
 
         // IS EDIT
-        $this->isEditEvaluasi = false;
+        $this->isEditAnalisis = false;
 
         // Reset form fields and close the modal
-        $this->resetFormEvaluasi();
+        $this->resetFormAnalisis();
 
         // Reset form validation
         $this->resetValidation();
     } 
 
-    // OPEN MODAL CONFIRM EVALUASI EVALUASI
-    public function openModalConfirmEvaluasi($id)
+    // OPEN MODAL CONFIRM ANALISIS
+    public function openModalConfirmAnalisis($id)
     {
         // SET KPI
         $this->risk_id       = $id;
 
-        $this->isOpenConfirmEvaluasi    = true;
+        $this->isOpenConfirmAnalisis    = true;
     }
 
-    // CLOSE MODAL CONFIRM EVALUASI EVALUASI
-    public function closeModalConfirmEvaluasi()
+    // CLOSE MODAL CONFIRM ANALISIS
+    public function closeModalConfirmAnalisis()
     {
-        $this->isOpenConfirmEvaluasi = false;
+        $this->isOpenConfirmAnalisis = false;
     } 
   
-    // CLOSE MODAL CONFIRM EVALUASI EVALUASI
-    public function closeXModalConfirmEvaluasi()
+    // CLOSE MODAL CONFIRM ANALISIS
+    public function closeXModalConfirmAnalisis()
     {
-        $this->isOpenConfirmEvaluasi = false;
+        $this->isOpenConfirmAnalisis = false;
     } 
     
-    // OPEN MODAL CONFIRM DELETE EVALUASI EVALUASI
-    public function openModalConfirmDeleteEvaluasi($id)
+    // OPEN MODAL CONFIRM DELETE ANALISIS
+    public function openModalConfirmDeleteAnalisis($id)
     {
-        $this->closeModalEvaluasi();
+        $this->closeModalAnalisis();
 
         // SET KPI
         $this->risk_id = $id;
 
-        $this->isOpenConfirmDeleteEvaluasi = true;
+        $this->isOpenConfirmDeleteAnalisis = true;
     }
 
-    // CLOSE MODAL CONFIRM DELETE EVALUASI EVALUASI
-    public function closeModalConfirmDeleteEvaluasi()
+    // CLOSE MODAL CONFIRM DELETE ANALISIS
+    public function closeModalConfirmDeleteAnalisis()
     {
-        $this->isOpenConfirmDeleteEvaluasi = false;
+        $this->isOpenConfirmDeleteAnalisis = false;
     } 
 
-    // CLOSE MODAL CONFIRM DELETE EVALUASI EVALUASI
-    public function closeXModalConfirmDeleteEvaluasi()
+    // CLOSE MODAL CONFIRM DELETE ANALISIS
+    public function closeXModalConfirmDeleteAnalisis()
     {
-        $this->isOpenConfirmDeleteEvaluasi = false;
+        $this->isOpenConfirmDeleteAnalisis = false;
     } 
 
-    // RESET FORM EVALUASI EVALUASI
-    public function resetFormEvaluasi()
+    // RESET FORM ANALISIS
+    public function resetFormAnalisis()
     {
         $this->risk_id              = '';
         $this->controlRisk_id       = '';
-        $this->isEditEvaluasi       = false;
-        $this->isShowEvaluasi       = false;
+        $this->isEditAnalisis       = false;
+        $this->isShowAnalisis       = false;
 
         // CLEAR DATA KRITERIA
         $this->dataKemungkinan      = '';
@@ -1582,9 +1849,14 @@ class IdentifikasiRisikoOw extends Component
         $this->dataDampak           = '';
         $this->dampak_id            = '';
         $this->dataDeteksi          = '';
-        $this->deteksiKegagalan_id  = '';
+        $this->deteksiKegagalan_id  = ''; 
 
-        
+        // CLEAR DATA EFEKTIFITAS
+        $this->efektifitasKontrol_kontrolStatus     = '';
+        $this->efektifitasKontrol_kontrolDesc       = '';
+        $this->efektifitasKontrol_id                = '';
+        $this->penilaianEfektifitas_skor            = [];
+        $this->efektifitasKontrol_totalEfektifitas  = 0;
     }
 
 
@@ -1619,7 +1891,7 @@ class IdentifikasiRisikoOw extends Component
     }
 
     // VARIABLES RENCANA PERLAKUAN
-    public $rencanaPerlakuan_id, $perlakuanRisiko_id, $jenisPerlakuan_id, $jenisPerlakuans, $rencanaPerlakuan_desc;
+    public $rencanaPerlakuan_id, $rtm, $perlakuanRisiko_id, $jenisPerlakuan_id, $jenisPerlakuan_desc, $jenisPerlakuans, $rencanaPerlakuan_desc;
 
     // VALIDATE INPUT RENCANA PERLAKUAN RISIKO
     protected function validatingInputsRencanaPerlakuan()
@@ -1638,14 +1910,20 @@ class IdentifikasiRisikoOw extends Component
         $this->validatingInputsRencanaPerlakuan();
 
         // STORE PERLAKUAN RISIKO
-        $perlakuanRisiko = PerlakuanRisiko::updateOrCreate([
-            'perlakuanRisiko_id'    => $this->perlakuanRisiko_id,
-        ],[
-            'controlRisk_id'        => $this->controlRisk_id,
-            'jenisPerlakuan_id'     => $this->jenisPerlakuan_id,
-            'created_by'            => Auth::user()->user_id,
-            'updated_by'            => Auth::user()->user_id,
-        ]);
+        $perlakuanRisiko = PerlakuanRisiko::updateOrCreate(
+            [
+                'perlakuanRisiko_id' => $this->perlakuanRisiko_id,
+            ],
+            [
+                'controlRisk_id'     => $this->controlRisk_id,
+                'jenisPerlakuan_id'  => $this->jenisPerlakuan_id,
+                'created_by'         => Auth::user()->user_id,
+                'updated_by'         => Auth::user()->user_id,
+            ]
+        );
+
+        // Update perlakuanRisiko_id with the created/updated ID
+        $this->perlakuanRisiko_id = $perlakuanRisiko->perlakuanRisiko_id;
 
         // Find existing RencanaPerlakuan records for the given perlakuanRisiko_id
         $existingRencanaPerlakuan = RencanaPerlakuan::where('perlakuanRisiko_id', $this->perlakuanRisiko_id)->get();
@@ -1658,12 +1936,12 @@ class IdentifikasiRisikoOw extends Component
             $rencanaPerlakuan = RencanaPerlakuan::updateOrCreate(
                 [
                     'rencanaPerlakuan_id'   => $item['id'] ?? null,
-                    'perlakuanRisiko_id'    => $this->perlakuanRisiko_id ?? $perlakuanRisiko->perlakuanRisiko_id,
+                    'perlakuanRisiko_id'    => $this->perlakuanRisiko_id,
                 ],
                 [
                     'rencanaPerlakuan_desc' => $item['desc'],
-                    'created_by' => Auth::user()->user_id,
-                    'updated_by' => Auth::user()->user_id,
+                    'created_by'            => Auth::user()->user_id,
+                    'updated_by'            => Auth::user()->user_id,
                 ]
             );
 
@@ -1689,11 +1967,51 @@ class IdentifikasiRisikoOw extends Component
     // EDIT RENCANA PERLAKUAN
     public function editRencanaPerlakuan($id)
     {
-         // IS EDIT
+        // IS EDIT
         $this->isEditRencanaPerlakuan = true;
+
+        // IS SHOW
+        $this->isShowRencanaPerlakuan = true;
 
         // FIND CONTROL RISK ID
         $controlRisk = ControlRisk::with(['perlakuanRisiko.rencanaPerlakuan'])->where('risk_id', $id)->first();
+
+        // PASSING CONTROL RISK ID
+        $this->controlRisk_id = $controlRisk->controlRisk_id;
+
+        // PASSING PERLAKUAN ID
+        $this->perlakuanRisiko_id = $controlRisk->perlakuanRisiko->first()->perlakuanRisiko_id;
+
+        // PASSING PLANS
+        $this->plans = [];
+        foreach ($controlRisk->perlakuanRisiko as $perlakuan) {
+            foreach ($perlakuan->rencanaPerlakuan as $rencana) {
+                $this->plans[] = [
+                    'desc'  => $rencana->rencanaPerlakuan_desc,
+                    'id'    => $rencana->rencanaPerlakuan_id,
+                ];
+            }
+        }
+
+        // PASSING JENIS PERLAKUAN
+        $this->jenisPerlakuan_id = $controlRisk->perlakuanRisiko->first()->jenisPerlakuan_id;
+
+        // OPEN MODAL
+        $this->openModalRencanaPerlakuan();
+    }
+
+    // EDIT RENCANA PERLAKUAN
+    public function showRencanaPerlakuan($id)
+    {
+         // IS EDIT
+        $this->isEditRencanaPerlakuan = false;
+
+        // IS SHOW
+        $this->isShowRencanaPerlakuan = true;
+
+
+        // FIND CONTROL RISK ID
+        $controlRisk = ControlRisk::with(['perlakuanRisiko.rencanaPerlakuan', 'perlakuanRisiko.jenisPerlakuan'])->where('risk_id', $id)->first();
 
         // PASSING CONTROL RISK ID
         $this->controlRisk_id = $controlRisk->controlRisk_id;
@@ -1711,9 +2029,13 @@ class IdentifikasiRisikoOw extends Component
                 ];
             }
         }
+        
+        // PSSING RTM
+        $this->rtm                  = $controlRisk->controlRisk_RTM;
 
         // PASSING JENIS PERLAKUAN
-        $this->jenisPerlakuan_id = $controlRisk->perlakuanRisiko->first()->jenisPerlakuan_id;
+        $this->jenisPerlakuan_id    = $controlRisk->perlakuanRisiko->first()->jenisPerlakuan_id;
+        $this->jenisPerlakuan_desc  = $controlRisk->perlakuanRisiko->first()->jenisPerlakuan->jenisPerlakuan_desc;
 
         // OPEN MODAL
         $this->openModalRencanaPerlakuan();
@@ -1722,6 +2044,11 @@ class IdentifikasiRisikoOw extends Component
     // LOCK RENCANA PERLAKUAN RISIKO
     public function lockRencanaPerlakuan()
     {
+        // LOCK ALL PHASE RISK
+        // FIND RISK
+        $risk = Risk::find($this->risk_id);
+        $risk->update(['risk_allPhaseLockStatus' => 1]);
+
         // FIND CONTROL RISK ID
         $controlRisk = ControlRisk::with(['perlakuanRisiko.rencanaPerlakuan'])->where('risk_id', $this->risk_id)->first();
 
@@ -1755,12 +2082,12 @@ class IdentifikasiRisikoOw extends Component
     public function addPlan()
     {
         $validated = $this->validate([
-            'rencanaPerlakuan_desc'            => ['required'],
+            'rencanaPerlakuan_desc' => ['required'],
         ], [
-            'rencanaPerlakuan_desc.required'   => 'Rencana Perlakuan wajib diisi!',
+            'rencanaPerlakuan_desc.required' => 'Rencana Perlakuan wajib diisi!',
         ]);
-        
-        $this->plans[] = ['desc' => $this->rencanaPerlakuan_desc, 'id'  => null];
+
+        $this->plans[] = ['desc' => $this->rencanaPerlakuan_desc, 'id' => null];
         $this->rencanaPerlakuan_desc = '';
     }
 
@@ -1776,7 +2103,6 @@ class IdentifikasiRisikoOw extends Component
     {
         $this->isOpenRencanaPerlakuan = true;
     }
-
 
     // CLOSE MODAL RENCANA PERLAKUAN
     public function closeModalRencanaPerlakuan()
@@ -1795,7 +2121,6 @@ class IdentifikasiRisikoOw extends Component
         // Reset form validation
         $this->resetValidation();
     } 
-
 
     // CLOSE MODAL RENCANA PERLAKUAN
     public function closeXModalRencanaPerlakuan()
@@ -1868,9 +2193,9 @@ class IdentifikasiRisikoOw extends Component
         $this->isEditRencanaPerlakuan       = false;
         $this->isShowRencanaPerlakuan       = false;
 
-        // CLEAR DATA KRITERIA
+        // // CLEAR DATA KRITERIA
         $this->jenisPerlakuan_id            = '';
-        $this->rencanaPerlakuan_desc        = '';
+        // $this->rencanaPerlakuan_desc        = '';
         $this->plans                        = [];        
     }
 

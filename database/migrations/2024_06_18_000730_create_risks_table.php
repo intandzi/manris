@@ -21,6 +21,10 @@ return new class extends Migration
             $table->text('risk_penyebab')->nullable(false);
             $table->boolean('risk_lockStatus')->nullable(false)->default(false);
             $table->boolean('risk_kriteriaLockStatus')->nullable(false)->default(false);
+            $table->boolean('risk_allPhaseLockStatus')->nullable(false)->default(false);
+            $table->boolean('risk_isSendUMR')->nullable(false)->default(false);
+            $table->boolean('risk_validateRiskRegister')->nullable(false)->default(false);
+            $table->boolean('risk_validateRiskControl')->nullable(false)->default(false);
             $table->boolean('risk_activeStatus')->nullable(false)->default(true);
             $table->char('created_by', 1)->nullable();
             $table->char('updated_by', 1)->nullable();

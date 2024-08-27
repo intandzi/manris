@@ -1,20 +1,32 @@
 <div>
 
-    @include('livewire.pages.risk-owner.risk-register.konteks-risiko.konteks-risiko-modal')
+    @include('livewire.pages.risk-owner.risk-control.konteks-risiko-control.konteks-risiko-modal')
 
     <div class="container-fluid">
 
         <!-- breadcrumbs component -->
         <nav aria-label="breadcrumb" class="mb-2">
-            <ol class="breadcrumb mb-0 p-2">
-                <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
-                        App</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('riskRegisterOw.index', ['role' => $encryptedRole]) }}"
-                        wire:navigate>
-                        Risk Register</a></li>
-                <li class="breadcrumb-item active"><a href="#">Konteks Risiko</a>
-                </li>
-            </ol>
+            @if ($this->role === 'risk owner')
+                <ol class="breadcrumb mb-0 p-2">
+                    <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
+                            App</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('riskControlOw.index', ['role' => $encryptedRole]) }}"
+                            wire:navigate>
+                            Risk Control</a></li>
+                    <li class="breadcrumb-item active"><a href="#">Konteks Risiko</a>
+                    </li>
+                </ol>
+            @else
+                <ol class="breadcrumb mb-0 p-2">
+                    <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
+                            App</a></li>
+                    <li class="breadcrumb-item"><a
+                            href="{{ route('officerRiskControl.index', ['role' => $encryptedRole]) }}" wire:navigate>
+                            Risk Control</a></li>
+                    <li class="breadcrumb-item active"><a href="#">Konteks Risiko</a>
+                    </li>
+                </ol>
+            @endif
         </nav>
 
         <div class="row">
@@ -40,19 +52,6 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div class="section-description-actions">
-                            <button type="button" wire:click.prevent="openModal" class="btn btn-primary"
-                                wire:loading.attr="disabled" wire:target="openModal"><i class="ri-add-line"></i> Create
-                                Konteks Risiko
-                                <span wire:loading class="ms-2" wire:target="openModal">
-                                    <span class="spinner-border spinner-border-sm" role="status"
-                                        aria-hidden="true"></span>
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-
                     <div class="card-body">
                         <div class="row">
                             <div class="col-1 me-2">
@@ -114,7 +113,7 @@
                                                 <td>
                                                     {{ $item->konteks_kode }}
                                                 </td>
-                                                <td>
+                                                <td style="word-break: break-word;">
                                                     {{ Str::limit($item->konteks_desc, 100, '...') }}
                                                 </td>
                                                 <td>
@@ -141,19 +140,39 @@
                                                                 </span>
                                                             </button>
                                                             <button type="button"
-                                                                wire:click.prevent="openModalConfirm({{ $item->konteks_id }})"
+                                                                wire:click.prevent="showKonteks({{ $item->konteks_id }})"
                                                                 wire:loading.attr="disabled"
-                                                                wire:target="openModalConfirm({{ $item->konteks_id }})"
-                                                                class="btn btn-danger btn-sm d-flex text-center align-items-center">
-                                                                <i class="ri-lock-fill" wire:loading.remove
-                                                                    wire:target='openModalConfirm({{ $item->konteks_id }})'>
+                                                                wire:target="showKonteks({{ $item->konteks_id }})"
+                                                                class="btn btn-primary btn-sm d-flex text-center align-items-center">
+                                                                <i class="ri-eye-fill" wire:loading.remove
+                                                                    wire:target='showKonteks({{ $item->konteks_id }})'>
                                                                 </i>
                                                                 <span wire:loading
-                                                                    wire:target="openModalConfirm({{ $item->konteks_id }})">
+                                                                    wire:target="showKonteks({{ $item->konteks_id }})">
                                                                     <span class="spinner-border spinner-border-sm"
                                                                         role="status" aria-hidden="true"></span>
                                                                 </span>
                                                             </button>
+                                                            @if ($this->role === 'risk owner')
+                                                                <button type="button"
+                                                                    wire:click.prevent="openModalConfirm({{ $item->konteks_id }})"
+                                                                    wire:loading.attr="disabled"
+                                                                    wire:target="openModalConfirm({{ $item->konteks_id }})"
+                                                                    class="btn btn-danger btn-sm d-flex text-center align-items-center">
+                                                                    <i class="ri-lock-fill" wire:loading.remove
+                                                                        wire:target='openModalConfirm({{ $item->konteks_id }})'>
+                                                                    </i>
+                                                                    <span wire:loading
+                                                                        wire:target="openModalConfirm({{ $item->konteks_id }})">
+                                                                        <span class="spinner-border spinner-border-sm"
+                                                                            role="status" aria-hidden="true"></span>
+                                                                    </span>
+                                                                </button>
+                                                            @else
+                                                                <span
+                                                                    class="badge badge-outline-danger rounded-pill mt-2">Bukan
+                                                                    Hak Akses!</span>
+                                                            @endif
                                                         @endif
                                                     </div>
                                                 </td>
@@ -161,16 +180,16 @@
                                                     <div class="btn-group gap-2" role="group">
                                                         @if ($item->konteks_lockStatus)
                                                             <button type="button"
-                                                                wire:click.prevent="identifikasiRisiko({{ $item->konteks_id }})"
+                                                                wire:click.prevent="listRiskControl({{ $item->konteks_id }})"
                                                                 wire:loading.attr="disabled"
-                                                                wire:target="identifikasiRisiko({{ $item->konteks_id }})"
+                                                                wire:target="listRiskControl({{ $item->konteks_id }})"
                                                                 class="btn btn-primary btn-sm d-flex text-center align-items-center">
                                                                 <i class="ri-login-box-line me-1" wire:loading.remove
-                                                                    wire:target='identifikasiRisiko({{ $item->konteks_id }})'>
+                                                                    wire:target='listRiskControl({{ $item->konteks_id }})'>
                                                                 </i>
                                                                 Identifikasi
                                                                 <span class="ms-2" wire:loading
-                                                                    wire:target="identifikasiRisiko({{ $item->konteks_id }})">
+                                                                    wire:target="listRiskControl({{ $item->konteks_id }})">
                                                                     <span class="spinner-border spinner-border-sm"
                                                                         role="status" aria-hidden="true"></span>
                                                                 </span>
@@ -178,7 +197,7 @@
                                                         @else
                                                             <span
                                                                 class="badge badge-outline-danger rounded-pill mt-2">Selesaikan
-                                                                Risk!</span>
+                                                                Konteks!</span>
                                                         @endif
                                                     </div>
                                                 </td>

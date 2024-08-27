@@ -4,7 +4,6 @@ use App\Livewire\Actions\Logout;
 use Livewire\Volt\Component;
 
 new class extends Component {
-    
     // CONSTRUCTOR CLASS
     public function mount()
     {
@@ -70,9 +69,11 @@ new class extends Component {
 
             <li class="side-nav-title">Main</li>
 
-            <li class="side-nav-item {{ request()->routeIs('lembaga.dashboard', 'unit manajemen risiko.dashboard', 'risk owner.dashboard', 'risk officer.dashboard') ? 'menuitem-active' : '' }}">
+            <li
+                class="side-nav-item {{ request()->routeIs('lembaga.dashboard', 'unit manajemen risiko.dashboard', 'risk owner.dashboard', 'risk officer.dashboard') ? 'menuitem-active' : '' }}">
                 <a href="{{ route('lembaga.dashboard', ['role' => request()->query('role')]) }}"
-                    class="side-nav-link {{ request()->routeIs('lembaga.dashboard', 'unit manajemen risiko.dashboard', 'risk owner.dashboard', 'risk officer.dashboard') ? 'active' : '' }}" wire:navigate>
+                    class="side-nav-link {{ request()->routeIs('lembaga.dashboard', 'unit manajemen risiko.dashboard', 'risk owner.dashboard', 'risk officer.dashboard') ? 'active' : '' }}"
+                    wire:navigate>
                     <i class="ri-dashboard-2-line"></i>
                     <span> Dashboard </span>
                     <span class="badge bg-success float-end">9+</span>
@@ -135,7 +136,26 @@ new class extends Component {
                         <span> Manajemen Unit</span>
                     </a>
                 </li>
-                <li class="side-nav-item {{ request()->routeIs('manajemenKategoriStandar.index') ? 'menuitem-active' : '' }}">
+                <li
+                    class="side-nav-item {{ request()->routeIs('manajemenPenilaianEfektifitas.index') ? 'menuitem-active' : '' }}">
+                    <a href="{{ route('manajemenPenilaianEfektifitas.index', ['role' => request()->query('role')]) }}"
+                        class="side-nav-link {{ request()->routeIs('manajemenPenilaianEfektifitas.index') ? 'active' : '' }}"
+                        wire:navigate>
+                        <i class="ri-community-line"></i>
+                        <span> Kelola Efektifitas Kontrol</span>
+                    </a>
+                </li>
+                <li
+                    class="side-nav-item {{ request()->routeIs('manajemenSeleraRisiko.index') ? 'menuitem-active' : '' }}">
+                    <a href="{{ route('manajemenSeleraRisiko.index', ['role' => request()->query('role')]) }}"
+                        class="side-nav-link {{ request()->routeIs('manajemenSeleraRisiko.index') ? 'active' : '' }}"
+                        wire:navigate>
+                        <i class="ri-community-line"></i>
+                        <span> Kelola Selera Risiko</span>
+                    </a>
+                </li>
+                <li
+                    class="side-nav-item {{ request()->routeIs('manajemenKategoriStandar.index') ? 'menuitem-active' : '' }}">
                     <a href="{{ route('manajemenKategoriStandar.index', ['role' => request()->query('role')]) }}"
                         class="side-nav-link {{ request()->routeIs('manajemenKategoriStandar.index') ? 'active' : '' }}"
                         wire:navigate>
@@ -143,15 +163,90 @@ new class extends Component {
                         <span> Kelola Kategori Standar</span>
                     </a>
                 </li>
+                <li class="side-nav-item {{ request()->routeIs('kpiUnitUMR.index', 'listKPIUMR.index', 'logKonteksRisiko.index', 'logRiskRegister.index') ? 'menuitem-active' : '' }}">
+                    <a href="{{ route('kpiUnitUMR.index', ['role' => request()->query('role')]) }}"
+                        class="side-nav-link {{ request()->routeIs('kpiUnitUMR.index') ? 'active' : '' }}"
+                        wire:navigate>
+                        <i class="ri-stack-line"></i>
+                        <span> Validasi Risiko Unit</span>
+                    </a>
+                </li>
             @endif
 
             @if ($role === 'risk owner')
-                <li class="side-nav-item {{ request()->routeIs('riskRegisterOw.index', 'konteksRisikoOw.index', 'identifikasiRisiko.index') ? 'menuitem-active' : '' }}">
+                <li
+                    class="side-nav-item {{ request()->routeIs('riskRegisterOw.index', 'registerKonteksRisikoOw.index', 'riskRegisterStepOw.index') ? 'menuitem-active' : '' }}">
                     <a href="{{ route('riskRegisterOw.index', ['role' => request()->query('role')]) }}"
-                        class="side-nav-link {{ request()->routeIs('riskRegisterOw.index', 'konteksRisikoOw.index', 'identifikasiRisiko.index') ? 'active' : '' }}"
+                        class="side-nav-link {{ request()->routeIs('riskRegisterOw.index', 'registerKonteksRisikoOw.index', 'riskRegisterStepOw.index') ? 'active' : '' }}"
                         wire:navigate>
                         <i class="ri-stack-line"></i>
                         <span> Risk Register</span>
+                    </a>
+                </li>
+                <li
+                    class="side-nav-item {{ request()->routeIs('riskControlOw.index', 'controlKonteksRisikoOw.index', 'riskControlStep.index', 'listRiskOw.index') ? 'menuitem-active' : '' }}">
+                    <a href="{{ route('riskControlOw.index', ['role' => request()->query('role')]) }}"
+                        class="side-nav-link {{ request()->routeIs('riskControlOw.index', 'controlKonteksRisikoOw.index', 'riskControlStep.index', 'listRiskOw.index') ? 'active' : '' }}"
+                        wire:navigate>
+                        <i class="ri-draft-line"></i>
+                        <span> Risk Control</span>
+                    </a>
+                </li>
+                <li
+                    class="side-nav-item {{ request()->routeIs('liskKpiRaciOw.index', 'raciOw.index') ? 'menuitem-active' : '' }}">
+                    <a href="{{ route('liskKpiRaciOw.index', ['role' => request()->query('role')]) }}"
+                        class="side-nav-link {{ request()->routeIs('liskKpiRaciOw.index', 'raciOw.index') ? 'active' : '' }}"
+                        wire:navigate>
+                        <i class="ri-team-line"></i>
+                        <span> RACI</span>
+                    </a>
+                </li>
+                <li
+                    class="side-nav-item {{ request()->routeIs('laporanOw.index') ? 'menuitem-active' : '' }}">
+                    <a href="{{ route('laporanOw.index', ['role' => request()->query('role')]) }}"
+                        class="side-nav-link {{ request()->routeIs('laporanOw.index') ? 'active' : '' }}"
+                        wire:navigate>
+                        <i class="ri-book-open-line"></i>
+                        <span> Laporan Manajemen Risiko</span>
+                    </a>
+                </li>
+            @endif
+
+            @if ($role === 'risk officer')
+                <li
+                    class="side-nav-item {{ request()->routeIs('officerRiskRegisterOf.index', 'officerRegisterKonteksRisikoOf.index', 'officerRiskRegisterStep.index') ? 'menuitem-active' : '' }}">
+                    <a href="{{ route('officerRiskRegisterOf.index', ['role' => request()->query('role')]) }}"
+                        class="side-nav-link {{ request()->routeIs('officerRiskRegisterOf.index', 'officerRegisterKonteksRisikoOf.index', 'officerRiskRegisterStep.index') ? 'active' : '' }}"
+                        wire:navigate>
+                        <i class="ri-stack-line"></i>
+                        <span> Risk Register</span>
+                    </a>
+                </li>
+                <li
+                    class="side-nav-item {{ request()->routeIs('officerRiskControl.index', 'officerControlKonteksRisiko.index', 'officerRiskControlStep.index', 'officerListRisk.index') ? 'menuitem-active' : '' }}">
+                    <a href="{{ route('officerRiskControl.index', ['role' => request()->query('role')]) }}"
+                        class="side-nav-link {{ request()->routeIs('officerRiskControl.index', 'officerControlKonteksRisiko.index', 'officerRiskControlStep.index', 'officerListRisk.index') ? 'active' : '' }}"
+                        wire:navigate>
+                        <i class="ri-draft-line"></i>
+                        <span> Risk Control</span>
+                    </a>
+                </li>
+                <li
+                    class="side-nav-item {{ request()->routeIs('liskKpiRaciOf.index', 'raciOf.index') ? 'menuitem-active' : '' }}">
+                    <a href="{{ route('liskKpiRaciOf.index', ['role' => request()->query('role')]) }}"
+                        class="side-nav-link {{ request()->routeIs('liskKpiRaciOf.index', 'raciOf.index') ? 'active' : '' }}"
+                        wire:navigate>
+                        <i class="ri-team-line"></i>
+                        <span> RACI</span>
+                    </a>
+                </li>
+                <li
+                    class="side-nav-item {{ request()->routeIs('laporanOf.index') ? 'menuitem-active' : '' }}">
+                    <a href="{{ route('laporanOf.index', ['role' => request()->query('role')]) }}"
+                        class="side-nav-link {{ request()->routeIs('laporanOf.index') ? 'active' : '' }}"
+                        wire:navigate>
+                        <i class="ri-book-open-line"></i>
+                        <span> Laporan Manajemen Risiko</span>
                     </a>
                 </li>
             @endif

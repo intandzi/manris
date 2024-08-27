@@ -57,13 +57,13 @@
                                 $no = 1;
                             @endphp
                             @if ($rencanaPerlakuans && count($rencanaPerlakuans) > 0)
-                                @forelse ($rencanaPerlakuans as $index => $item)
+                                {{-- @forelse ($rencanaPerlakuans as $index => $item)
                                     <tr>
                                         <td>{{ $no++ }}</td>
                                         <td>
                                             {{ $item->risk_kode }}
                                         </td>
-                                        <td>
+                                        <td style="word-break: break-word;">
                                             {{ Str::limit($item->risk_riskDesc, 100, '...') }}
                                         </td>
                                         <td>
@@ -118,6 +118,20 @@
                                                             </span>
                                                         </button>
                                                         <button type="button"
+                                                            wire:click.prevent="showRencanaPerlakuan({{ $item->risk_id }})"
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="showRencanaPerlakuan({{ $item->risk_id }})"
+                                                            class="btn btn-primary btn-sm d-flex text-center align-items-center">
+                                                            <i class="ri-eye-fill" wire:loading.remove
+                                                                wire:target='showRencanaPerlakuan({{ $item->risk_id }})'>
+                                                            </i>
+                                                            <span wire:loading
+                                                                wire:target="showRencanaPerlakuan({{ $item->risk_id }})">
+                                                                <span class="spinner-border spinner-border-sm"
+                                                                    role="status" aria-hidden="true"></span>
+                                                            </span>
+                                                        </button>
+                                                        <button type="button"
                                                             wire:click.prevent="openModalConfirmRencanaPerlakuan({{ $item->risk_id }})"
                                                             wire:loading.attr="disabled"
                                                             wire:target="openModalConfirm({{ $item->risk_id }})"
@@ -151,6 +165,131 @@
                                             </div>
                                         </td>
 
+                                    </tr>
+                                @empty
+                                    <div class="alert alert-danger mt-2 mb-2">
+                                        No data available.
+                                    </div>
+                                @endforelse --}}
+                                @php
+                                    $groupedRencanaPerlakuans = $rencanaPerlakuans
+                                        ->groupBy('risk_id')
+                                        ->map(function ($group) {
+                                            return $group->first();
+                                        });
+                                @endphp
+
+                                @forelse ($groupedRencanaPerlakuans as $index => $item)
+                                    <tr>
+                                        <td>{{ $no++ }}</td>
+                                        <td>{{ $item->risk_kode }}</td>
+                                        <td style="word-break: break-word;">
+                                            {{ Str::limit($item->risk_riskDesc, 100, '...') }}
+                                        </td>
+                                        <td>
+                                            @if ($item->controlRisk->first()->perlakuanRisiko->isNotEmpty())
+                                                @if ($item->controlRisk->first()->perlakuanRisiko->first()->perlakuanRisiko_lockStatus)
+                                                    <span
+                                                        class="mt-2">{{ $item->controlRisk->first()->controlRisk_RTM }}</span>
+                                                @else
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="toggle_{{ $item->controlRisk->first()->controlRisk_id }}"
+                                                            wire:click="toggleActiveRTM({{ $item->controlRisk->first()->controlRisk_id }})"
+                                                            @if ($item->controlRisk->first()->controlRisk_RTM === 'RTM') checked @endif>
+                                                    </div>
+                                                @endif
+                                            @else
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="toggle_{{ $item->controlRisk->first()->controlRisk_id }}"
+                                                        wire:click="toggleActiveRTM({{ $item->controlRisk->first()->controlRisk_id }})"
+                                                        @if ($item->controlRisk->first()->controlRisk_RTM === 'RTM') checked @endif>
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if ($item->controlRisk->first()->perlakuanRisiko->isNotEmpty())
+                                                {{ ucwords($item->controlRisk->first()->perlakuanRisiko->first()->jenisPerlakuan->jenisPerlakuan_desc) }}
+                                            @else
+                                                <span class="badge badge-outline-danger rounded-pill mt-2">Belum
+                                                    diset!</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="btn-group gap-2" role="group">
+                                                @if ($item->controlRisk->first()->perlakuanRisiko->isNotEmpty())
+                                                    @if ($item->controlRisk->first()->perlakuanRisiko->first()->perlakuanRisiko_lockStatus)
+                                                        <span
+                                                            class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
+                                                    @else
+                                                        <button type="button"
+                                                            wire:click.prevent="editRencanaPerlakuan({{ $item->risk_id }})"
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="editRencanaPerlakuan({{ $item->risk_id }})"
+                                                            class="btn btn-warning btn-sm d-flex text-center align-items-center">
+                                                            <i class="ri-pencil-line" wire:loading.remove
+                                                                wire:target='editRencanaPerlakuan({{ $item->risk_id }})'>
+                                                            </i>
+                                                            <span wire:loading
+                                                                wire:target="editRencanaPerlakuan({{ $item->risk_id }})">
+                                                                <span class="spinner-border spinner-border-sm"
+                                                                    role="status" aria-hidden="true"></span>
+                                                            </span>
+                                                        </button>
+                                                        <button type="button"
+                                                            wire:click.prevent="showRencanaPerlakuan({{ $item->risk_id }})"
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="showRencanaPerlakuan({{ $item->risk_id }})"
+                                                            class="btn btn-primary btn-sm d-flex text-center align-items-center">
+                                                            <i class="ri-eye-fill" wire:loading.remove
+                                                                wire:target='showRencanaPerlakuan({{ $item->risk_id }})'>
+                                                            </i>
+                                                            <span wire:loading
+                                                                wire:target="showRencanaPerlakuan({{ $item->risk_id }})">
+                                                                <span class="spinner-border spinner-border-sm"
+                                                                    role="status" aria-hidden="true"></span>
+                                                            </span>
+                                                        </button>
+                                                        @if ($this->role === 'risk owner')
+                                                            <button type="button"
+                                                                wire:click.prevent="openModalConfirmRencanaPerlakuan({{ $item->risk_id }})"
+                                                                wire:loading.attr="disabled"
+                                                                wire:target="openModalConfirm({{ $item->risk_id }})"
+                                                                class="btn btn-danger btn-sm d-flex text-center align-items-center">
+                                                                <i class="ri-lock-fill" wire:loading.remove
+                                                                    wire:target='openModalConfirmRencanaPerlakuan({{ $item->risk_id }})'>
+                                                                </i>
+                                                                <span wire:loading
+                                                                    wire:target="openModalConfirmRencanaPerlakuan({{ $item->risk_id }})">
+                                                                    <span class="spinner-border spinner-border-sm"
+                                                                        role="status" aria-hidden="true"></span>
+                                                                </span>
+                                                            </button>
+                                                        @else
+                                                            <span
+                                                                class="badge badge-outline-danger rounded-pill mt-2">Bukan
+                                                                Hak Akses!</span>
+                                                        @endif
+                                                    @endif
+                                                @else
+                                                    <button type="button"
+                                                        wire:click.prevent="createRencanPerlakuan({{ $item->risk_id }})"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="createRencanPerlakuan({{ $item->risk_id }})"
+                                                        class="btn btn-primary btn-sm d-flex text-center align-items-center">
+                                                        <i class="ri-add-line" wire:loading.remove
+                                                            wire:target='createRencanPerlakuan({{ $item->risk_id }})'>
+                                                        </i>
+                                                        <span wire:loading
+                                                            wire:target="createRencanPerlakuan({{ $item->risk_id }})">
+                                                            <span class="spinner-border spinner-border-sm"
+                                                                role="status" aria-hidden="true"></span>
+                                                        </span>
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </td>
                                     </tr>
                                 @empty
                                     <div class="alert alert-danger mt-2 mb-2">

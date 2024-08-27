@@ -14,15 +14,15 @@ class KategoriStandarSeeder extends Seeder
     public function run(): void
     {
         KategoriStandar::create([
-            'kategoriStandar_desc'  => 'abc'
+            'kategoriStandar_desc'  => 'KTSP 2006'
         ]);
 
         KategoriStandar::create([
-            'kategoriStandar_desc'  => 'cde'
+            'kategoriStandar_desc'  => 'COBIT V5'
         ]);
 
         KategoriStandar::create([
-            'kategoriStandar_desc'  => 'fgh'
+            'kategoriStandar_desc'  => 'ISO 270001'
         ]);
     }
 }

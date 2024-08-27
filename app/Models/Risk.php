@@ -20,6 +20,10 @@ class Risk extends Model
         'risk_lockStatus',
         'risk_activeStatus',
         'risk_kriteriaLockStatus',
+        'risk_allPhaseLockStatus',
+        'risk_isSendUMR',
+        'risk_validateRiskRegister',
+        'risk_validateRiskControl',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -31,6 +35,12 @@ class Risk extends Model
         $query->where('risk_kode', 'like', "%{$value}%")
             ->orWhere('risk_riskDesc', 'like', "%{$value}%")
             ->orWhere('risk_penyebab', 'like', "%{$value}%");
+    }
+
+    // relationship one to many with konteks
+    public function konteks()
+    {
+        return $this->belongsTo(KonteksRisiko::class, 'konteks_id');
     }
 
     // relationship one to many with kriteria dampak
@@ -56,6 +66,40 @@ class Risk extends Model
     {
         return $this->hasMany(ControlRisk::class, 'risk_id');
     }
+
+    // custom order by
+    public function scopeOrderByControlRiskRPN($query, $direction = 'desc')
+    {
+        return $query->select('risks.*')
+                    ->join('control_risks', 'risks.risk_id', '=', 'control_risks.risk_id')
+                    ->orderBy('control_risks.controlRisk_RPN', $direction);
+    }
+
+    // relationship one to many with efektifitas kontrol
+    public function efektifitasKontrol()
+    {
+        return $this->hasMany(EfektifitasKontrol::class, 'risk_id');
+    }
+
+    
+    // Relation many to one with raci
+    public function raci()
+    {
+        return $this->hasMany(RaciModel::class, 'risk_id');
+    }
+
+    // Relation many to one with komunikasi
+    public function komunikasi()
+    {
+        return $this->hasMany(Komunikasi::class, 'risk_id');
+    }
+
+    // Relation many to one with konsultasi
+    public function konsultasi()
+    {
+        return $this->hasMany(Konsultasi::class, 'risk_id');
+    }
+
 
     /**
      * Generate a new Risk code based on the given prefix and KONTEKS ID.

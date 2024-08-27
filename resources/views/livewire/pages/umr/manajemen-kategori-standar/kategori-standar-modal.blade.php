@@ -8,35 +8,33 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
-                        <div class="mb-3">
-                            <label class="form-label" for="formrow-firstname-input">Kategori Standar Deskripsi <span
-                                    style="color: red">*</span></label>
-                            <input type="text" wire:model="kategoriStandar_desc"
-                                class="form-control @error('kategoriStandar_desc') is-invalid @enderror {{ $kategoriStandar_desc ? 'is-valid' : '' }}"
-                                id="formrow-firstkategoriStandar_desc-input" placeholder="ketik nama unit...">
-                            <span class="invalid-feedback">{{ $errors->first('kategoriStandar_desc') }}</span>
-                        </div>
-                        <div class="mt-3 border-top mb-3"></div>
-                        <div class="mt-4 text-end">
-                            <button type="button" class="btn btn-secondary" wire:click='closeModal' wire:loading.attr="disabled"
-                                wire:target="closeModal">
-                                Close
-                                <span wire:loading class="ms-2" wire:target="closeModal">
+                    <div class="mb-3">
+                        <label class="form-label" for="formrow-firstname-input">Kategori Standar Deskripsi <span
+                                style="color: red">*</span></label>
+                        <input type="text" wire:model="kategoriStandar_desc"
+                            class="form-control @error('kategoriStandar_desc') is-invalid @enderror {{ $kategoriStandar_desc ? 'is-valid' : '' }}"
+                            id="formrow-firstkategoriStandar_desc-input" placeholder="ketik nama unit...">
+                        <span class="invalid-feedback">{{ $errors->first('kategoriStandar_desc') }}</span>
+                    </div>
+                    <div class="mt-3 border-top mb-3"></div>
+                    <div class="mt-4 text-end">
+                        <button type="button" class="btn btn-secondary" wire:click='closeModal' wire:loading.attr="disabled"
+                            wire:target="closeModal">
+                            Close
+                            <span wire:loading class="ms-2" wire:target="closeModal">
+                                <span class="spinner-border spinner-border-sm" role="status"
+                                    aria-hidden="true"></span>
+                            </span>
+                        </button>
+                        <button type="button" wire:click.prevent='storeKategoriStandar' wire:loading.attr="disabled"
+                                wire:target="storeKategoriStandar"
+                                class="btn btn-primary w-md waves-effect waves-light">Submit
+                                <span wire:loading class="ms-2" wire:target="storeKategoriStandar">
                                     <span class="spinner-border spinner-border-sm" role="status"
                                         aria-hidden="true"></span>
                                 </span>
                             </button>
-                            <button type="button" wire:click.prevent='storeKategoriStandar' wire:loading.attr="disabled"
-                                    wire:target="storeKategoriStandar"
-                                    class="btn btn-primary w-md waves-effect waves-light">Submit
-                                    <span wire:loading class="ms-2" wire:target="storeKategoriStandar">
-                                        <span class="spinner-border spinner-border-sm" role="status"
-                                            aria-hidden="true"></span>
-                                    </span>
-                                </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

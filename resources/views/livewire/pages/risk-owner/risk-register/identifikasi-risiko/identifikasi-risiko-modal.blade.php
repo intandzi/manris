@@ -8,45 +8,45 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="table-responsive mb-2">
-                                    <table>
-                                        <tr>
-                                            <td style="width: 200px; vertical-align: top;">
-                                                <p class="card-text me-4" style="font-weight: bold">Unit Pemilik Risiko
-                                                </p>
-                                            </td>
-                                            <td style="vertical-align: top;">:</td>
-                                            <td style="width: calc(100% - 250px); vertical-align: bottom;">
-                                                <p class="card-text" style="word-wrap: break-word;">{{ $unit_nama }}
-                                                </p>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="width: 200px; vertical-align: top;">
-                                                <p class="card-text" style="font-weight: bold">Pemilik Risiko</p>
-                                            </td>
-                                            <td style="vertical-align: top;">:</td>
-                                            <td style="vertical-align: bottom;">
-                                                <p class="card-text">{{ ucwords($user_pemilik) }}</p>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="width: 200px; vertical-align: top;">
-                                                <p class="card-text" style="font-weight: bold">Deskripsi Konteks</p>
-                                            </td>
-                                            <td style="vertical-align: top;">:</td>
-                                            <td style="vertical-align: bottom;">
-                                                <p class="card-text" style="word-wrap: break-word;">{{ $konteks_desc }}
-                                                </p>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive mb-2">
+                                <table>
+                                    <tr>
+                                        <td style="width: 200px; vertical-align: top;">
+                                            <p class="card-text me-4" style="font-weight: bold">Unit Pemilik Risiko
+                                            </p>
+                                        </td>
+                                        <td style="vertical-align: top;">:</td>
+                                        <td style="width: calc(100% - 250px); vertical-align: bottom;">
+                                            <p class="card-text" style="word-wrap: break-word;">{{ $unit_nama }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 200px; vertical-align: top;">
+                                            <p class="card-text" style="font-weight: bold">Pemilik Risiko</p>
+                                        </td>
+                                        <td style="vertical-align: top;">:</td>
+                                        <td style="vertical-align: bottom;">
+                                            <p class="card-text">{{ ucwords($user_pemilik) }}</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 200px; vertical-align: top;">
+                                            <p class="card-text" style="font-weight: bold">Deskripsi Konteks</p>
+                                        </td>
+                                        <td style="vertical-align: top;">:</td>
+                                        <td style="vertical-align: bottom;">
+                                            <p class="card-text" style="word-wrap: break-word;">{{ $konteks_desc }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
+                    </div>
+                    @if ($isEditRisk || !$isShowRisk)
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="mb-3">
@@ -55,7 +55,8 @@
                                         <span style="color: red">*</span></label>
                                     <textarea id="snow-editor"
                                         class="form-control @error('risk_riskDesc') is-invalid @enderror {{ $risk_riskDesc ? 'is-valid' : '' }}"
-                                        wire:model='risk_riskDesc' aria-label="With textarea" cols="20" rows="10" {{ $isShowRisk ? 'disabled' : '' }}></textarea>
+                                        wire:model='risk_riskDesc' aria-label="With textarea" cols="20" rows="10"
+                                        {{ $isShowRisk ? 'disabled' : '' }}></textarea>
                                     <span class="invalid-feedback">{{ $errors->first('risk_riskDesc') }}</span>
                                 </div>
                             </div> <!-- end col -->
@@ -68,51 +69,80 @@
                                         <span style="color: red">*</span></label>
                                     <textarea id="snow-editor"
                                         class="form-control @error('risk_penyebab') is-invalid @enderror {{ $risk_penyebab ? 'is-valid' : '' }}"
-                                        wire:model='risk_penyebab' aria-label="With textarea" cols="20" rows="10" {{ $isShowRisk ? 'disabled' : '' }}></textarea>
+                                        wire:model='risk_penyebab' aria-label="With textarea" cols="20" rows="10"
+                                        {{ $isShowRisk ? 'disabled' : '' }}></textarea>
                                     <span class="invalid-feedback">{{ $errors->first('risk_penyebab') }}</span>
                                 </div>
                             </div> <!-- end col -->
                         </div> <!-- end row -->
+                    @else
+                        <div class="table-responsive mb-2">
+                            <table>
+                                <tr>
+                                    <td style="width: 200px; vertical-align: top;">
+                                        <p class="card-text me-4" style="font-weight: bold;">
+                                            Risiko
+                                        </p>
+                                    </td>
+                                    <td style="vertical-align: top;">:</td>
+                                    <td style="width: 500px; vertical-align: bottom; word-break: break-word;">
+                                        {{ $risk_riskDesc }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 200px; vertical-align: top;">
+                                        <p class="card-text me-4" style="font-weight: bold;">
+                                            Risiko Penyebab
+                                        </p>
+                                    </td>
+                                    <td style="vertical-align: top;">:</td>
+                                    <td
+                                        style="width: calc(100% - 500px); vertical-align: bottom; word-break: break-word;">
+                                        {{ $risk_penyebab }}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    @endif
 
-                        <div class="mt-1 border-top mb-3"></div>
-                        <div class="d-flex justify-content-between">
-                            <div class="">
-                                @if ($isEditRisk)
-                                    <button type="button" class="btn btn-danger"
-                                        wire:click='openModalConfirmDeleteRisk({{ $risk_id }})'
-                                        wire:loading.attr="disabled"
+                    <div class="mt-1 border-top mb-3"></div>
+                    <div class="d-flex justify-content-between">
+                        <div class="">
+                            @if ($isEditRisk)
+                                <button type="button" class="btn btn-danger"
+                                    wire:click='openModalConfirmDeleteRisk({{ $risk_id }})'
+                                    wire:loading.attr="disabled"
+                                    wire:target="openModalConfirmDeleteRisk({{ $risk_id }})">
+                                    Delete Konteks
+                                    <span wire:loading class="ms-2"
                                         wire:target="openModalConfirmDeleteRisk({{ $risk_id }})">
-                                        Delete Konteks
-                                        <span wire:loading class="ms-2"
-                                            wire:target="openModalConfirmDeleteRisk({{ $risk_id }})">
-                                            <span class="spinner-border spinner-border-sm" role="status"
-                                                aria-hidden="true"></span>
-                                        </span>
-                                    </button>
-                                @endif
-                            </div>
-                            <div class="">
-                                <button type="button" class="btn btn-secondary" wire:click='closeModalRisk'
-                                    wire:loading.attr="disabled" wire:target="closeModalRisk">
-                                    Close
-                                    <span wire:loading class="ms-2" wire:target="closeModalRisk">
                                         <span class="spinner-border spinner-border-sm" role="status"
                                             aria-hidden="true"></span>
                                     </span>
                                 </button>
-                                @if (!$isShowRisk)
-                                    <button type="button" wire:click.prevent='storeRisk' wire:loading.attr="disabled"
-                                        wire:target="storeRisk"
-                                        class="btn btn-primary w-md waves-effect waves-light">Submit
-                                        <span wire:loading class="ms-2" wire:target="storeRisk">
-                                            <span class="spinner-border spinner-border-sm" role="status"
-                                                aria-hidden="true"></span>
-                                        </span>
-                                    </button>
-                                @endif
-                            </div>
+                            @endif
                         </div>
-                    </form>
+                        <div class="">
+                            <button type="button" class="btn btn-secondary" wire:click='closeModalRisk'
+                                wire:loading.attr="disabled" wire:target="closeModalRisk">
+                                Close
+                                <span wire:loading class="ms-2" wire:target="closeModalRisk">
+                                    <span class="spinner-border spinner-border-sm" role="status"
+                                        aria-hidden="true"></span>
+                                </span>
+                            </button>
+                            @if (!$isShowRisk || $isEditRisk)
+                                <button type="button" wire:click.prevent='storeRisk' wire:loading.attr="disabled"
+                                    wire:target="storeRisk"
+                                    class="btn btn-primary w-md waves-effect waves-light">Submit
+                                    <span wire:loading class="ms-2" wire:target="storeRisk">
+                                        <span class="spinner-border spinner-border-sm" role="status"
+                                            aria-hidden="true"></span>
+                                    </span>
+                                </button>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

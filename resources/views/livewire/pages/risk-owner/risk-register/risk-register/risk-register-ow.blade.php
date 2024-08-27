@@ -6,19 +6,33 @@
 
         <!-- breadcrumbs component -->
         <nav aria-label="breadcrumb" class="mb-2">
-            <ol class="breadcrumb mb-0 p-2">
-                <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
-                        App</a></li>
-
-                <li class="breadcrumb-item"><a href="{{ route('riskRegisterOw.index', ['role' => $encryptedRole]) }}"
-                        wire:navigate>
-                        Risk Register</a></li>
-                <li class="breadcrumb-item active"><a
-                        href="{{ route('konteksRisikoOw.index', ['role' => $encryptedRole, 'kpi' => $encryptedKPI]) }}"
-                        wire:navigate>Konteks Risiko</a></li>
-                <li class="breadcrumb-item active"><a href="#">{{ $title2 }}</a></li>
-                <li class="breadcrumb-item active"><a href="#">Konteks Risiko {{ $konteks_kode }}</a></li>
-            </ol>
+            @if ($this->role === 'risk owner')
+                <ol class="breadcrumb mb-0 p-2">
+                    <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
+                            App</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('riskRegisterOw.index', ['role' => $encryptedRole]) }}"
+                            wire:navigate>
+                            Risk Register</a></li>
+                    <li class="breadcrumb-item active"><a
+                            href="{{ route('registerKonteksRisikoOw.index', ['role' => $encryptedRole, 'kpi' => $encryptedKPI]) }}"
+                            wire:navigate>Konteks Risiko</a></li>
+                    <li class="breadcrumb-item active"><a href="#">{{ $title2 }}</a></li>
+                    <li class="breadcrumb-item active"><a href="#">Konteks Risiko {{ $konteks_kode }}</a></li>
+                </ol>
+            @else
+                <ol class="breadcrumb mb-0 p-2">
+                    <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
+                            App</a></li>
+                    <li class="breadcrumb-item"><a
+                            href="{{ route('officerRiskRegisterOf.index', ['role' => $encryptedRole]) }}" wire:navigate>
+                            Risk Register</a></li>
+                    <li class="breadcrumb-item active"><a
+                            href="{{ route('officerRegisterKonteksRisikoOf.index', ['role' => $encryptedRole, 'kpi' => $encryptedKPI]) }}"
+                            wire:navigate>Konteks Risiko</a></li>
+                    <li class="breadcrumb-item active"><a href="#">{{ $title2 }}</a></li>
+                    <li class="breadcrumb-item active"><a href="#">Konteks Risiko {{ $konteks_kode }}</a></li>
+                </ol>
+            @endif
         </nav>
 
         <ul class="nav nav-pills bg-nav-pills nav-justified mb-3" id="myTab" role="tablist">
@@ -35,6 +49,13 @@
                     wire:click="toggleTab('kriteriaContent')" type="button" role="tab"
                     aria-controls="kriteriaContent"
                     aria-selected="{{ $tabActive === 'kriteriaContent' ? 'true' : 'false' }}">Kriteria Risiko</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button
+                    class="nav-link {{ $tabActive === 'analisisContent' ? 'active' : '' }} {{ $tabActive !== 'analisisContent' ? 'bg-white' : '' }}"
+                    wire:click="toggleTab('analisisContent')" type="button" role="tab"
+                    aria-controls="analisisContent"
+                    aria-selected="{{ $tabActive === 'analisisContent' ? 'true' : 'false' }}">Analisis Risiko</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button
@@ -89,7 +110,7 @@
                     <div class="card-footer bg-transparent border-success">
                         <p class="card-text d-inline"><i class="ri-information-line d-inline"></i></p>
                         <span>&nbsp;</span>
-                        <p class="card-text d-inline">{{ $titleDesc }}</p>
+                        <p class="card-text d-inline">{!! $titleDesc !!}</p>
                     </div>
                 </div> <!-- end card-->
             </div>
@@ -103,15 +124,22 @@
                     <!-- Identifikasi Risiko content goes here -->
                 @endif
             </div>
-            <div class="tab-pane fade {{ $tabActive === 'kriteriaContent' ? 'show active' : '' }}" id="kriteriaContent"
-                role="tabpanel" aria-labelledby="kriteria-tab">
+            <div class="tab-pane fade {{ $tabActive === 'kriteriaContent' ? 'show active' : '' }}"
+                id="kriteriaContent" role="tabpanel" aria-labelledby="kriteria-tab">
                 @if ($showKriteriaContent)
                     @include('livewire.pages.risk-owner.risk-register.kriteria-risiko.kriteria-content')
                     <!-- Kriteria Risiko content goes here -->
                 @endif
             </div>
-            <div class="tab-pane fade {{ $tabActive === 'evaluasiContent' ? 'show active' : '' }}" id="evaluasiContent"
-                role="tabpanel" aria-labelledby="evaluasi-tab">
+            <div class="tab-pane fade {{ $tabActive === 'analisisContent' ? 'show active' : '' }}"
+                id="analisisContent" role="tabpanel" aria-labelledby="analisis-tab">
+                @if ($showAnalisisContent)
+                    @include('livewire.pages.risk-owner.risk-register.analisis-risiko.analisis-content')
+                    <!-- Analisis Risiko content goes here -->
+                @endif
+            </div>
+            <div class="tab-pane fade {{ $tabActive === 'evaluasiContent' ? 'show active' : '' }}"
+                id="evaluasiContent" role="tabpanel" aria-labelledby="evaluasi-tab">
                 @if ($showEvaluasiContent)
                     @include('livewire.pages.risk-owner.risk-register.evaluasi-risiko.evaluasi-content')
                     <!-- Evaluasi Risiko content goes here -->

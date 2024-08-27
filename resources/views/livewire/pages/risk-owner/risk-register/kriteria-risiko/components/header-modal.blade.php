@@ -34,11 +34,14 @@
                 </tr>
                 <tr>
                     <td style="width: 200px; vertical-align: top;">
-                        <p class="card-text" style="font-weight: bold">Risiko</p>
+                        <p class="card-text me-4" style="font-weight: bold;">
+                            Risiko
+                        </p>
                     </td>
                     <td style="vertical-align: top;">:</td>
-                    <td style="vertical-align: bottom;">
-                        <p class="card-text" style="word-wrap: break-word;">{{ $risk_spesific }}
+                    <td style="width: 800px; vertical-align: bottom; word-break: break-word;">
+                        <p style="word-break: break-word;">
+                            {{ $risk_spesific }}
                         </p>
                     </td>
                 </tr>

@@ -175,6 +175,28 @@ class KonteksRisikoOw extends Component
         
     }
 
+    // SHOW KONTEKS
+    public function showKonteks($id)
+    {
+        // OPEN MODAL
+        $this->openModal();
+
+        // IS SHOW
+        $this->isShow = true;
+
+        // IS EDIT
+        $this->isEdit = false;
+
+        // FIND KONTEKS
+        $konteks = KonteksRisiko::find($id);
+        
+        // PASSING KPI
+        $this->konteks_id       = $konteks->konteks_id;
+        $this->konteks_desc     = $konteks->konteks_desc;
+        $this->konteks_kategori = $konteks->konteks_kategori;
+        
+    }
+
     // LOCK KONTEKS
     public function lockKonteks()
     {

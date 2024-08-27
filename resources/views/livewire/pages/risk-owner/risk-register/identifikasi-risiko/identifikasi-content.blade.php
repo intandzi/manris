@@ -46,14 +46,14 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>No</th>
-                                <th wire:click.live="doSortRisk('risk_kode')" style="cursor: pointer; width:120px;">
+                                <th wire:click.live="doSortRisk('risk_kode')" style="cursor: pointer; width:50px;">
                                     Kode Risiko
                                     <x-sorting-table :orderAsc="$orderAscRisk" :orderBy="$orderByRisk" :columnName="'risk_kode'" />
                                 </th>
                                 <th wire:click.live="doSort('risk_riskDesc')" style="cursor: pointer; width:500px;">
                                     Risiko
                                 </th>
-                                <th>
+                                <th style="cursor: pointer; width:50px;">
                                     Kode Penyebab
                                 </th>
                                 <th style="cursor: pointer; width:500px;">
@@ -76,13 +76,13 @@
                                         <td>
                                             {{ $item->risk_kode }}
                                         </td>
-                                        <td>
-                                            {{ Str::limit($item->risk_riskDesc, 100, '...') }}
+                                        <td style="word-break: break-word;">
+                                            {{ Str::limit($item->risk_riskDesc, 50, '...') }}
                                         </td>
                                         <td>
                                             {{ ucwords($item->risk_penyebabKode) }}
                                         </td>
-                                        <td>
+                                        <td style="word-break: break-word;">
                                             {{ Str::limit($item->risk_penyebab, 100, '...') }}
                                         </td>
                                         <td>
@@ -95,11 +95,25 @@
                                                         wire:click.prevent="editRisk({{ $item->risk_id }})"
                                                         wire:loading.attr="disabled"
                                                         wire:target="editRisk({{ $item->risk_id }})"
-                                                        class="btn btn-warning btn-sm d-flex text-center align-items-center">
+                                                        class="btn btn-warning btn-sm btn-icon">
                                                         <i class="ri-pencil-fill" wire:loading.remove
                                                             wire:target='editRisk({{ $item->risk_id }})'>
                                                         </i>
                                                         <span wire:loading wire:target="editRisk({{ $item->risk_id }})">
+                                                            <span class="spinner-border spinner-border-sm"
+                                                                role="status" aria-hidden="true"></span>
+                                                        </span>
+                                                    </button>
+                                                    <button type="button"
+                                                        wire:click.prevent="showRisk({{ $item->risk_id }})"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="showRisk({{ $item->risk_id }})"
+                                                        class="btn btn-primary btn-sm btn-icon">
+                                                        <i class="ri-eye-fill" wire:loading.remove
+                                                            wire:target='showRisk({{ $item->risk_id }})'>
+                                                        </i>
+                                                        <span wire:loading
+                                                            wire:target="showRisk({{ $item->risk_id }})">
                                                             <span class="spinner-border spinner-border-sm"
                                                                 role="status" aria-hidden="true"></span>
                                                         </span>
@@ -113,20 +127,25 @@
                                                     <span
                                                         class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
                                                 @else
-                                                    <button type="button"
-                                                        wire:click.prevent="openModalConfirmRisk({{ $item->risk_id }})"
-                                                        wire:loading.attr="disabled"
-                                                        wire:target="openModalConfirm({{ $item->risk_id }})"
-                                                        class="btn btn-danger btn-sm d-flex text-center align-items-center">
-                                                        <i class="ri-lock-fill" wire:loading.remove
-                                                            wire:target='openModalConfirmRisk({{ $item->risk_id }})'>
-                                                        </i>
-                                                        <span wire:loading
-                                                            wire:target="openModalConfirmRisk({{ $item->risk_id }})">
-                                                            <span class="spinner-border spinner-border-sm"
-                                                                role="status" aria-hidden="true"></span>
-                                                        </span>
-                                                    </button>
+                                                    @if ($this->role === 'risk owner')
+                                                        <button type="button"
+                                                            wire:click.prevent="openModalConfirmRisk({{ $item->risk_id }})"
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="openModalConfirm({{ $item->risk_id }})"
+                                                            class="btn btn-danger btn-sm btn-icon">
+                                                            <i class="ri-lock-fill" wire:loading.remove
+                                                                wire:target='openModalConfirmRisk({{ $item->risk_id }})'>
+                                                            </i>
+                                                            <span wire:loading
+                                                                wire:target="openModalConfirmRisk({{ $item->risk_id }})">
+                                                                <span class="spinner-border spinner-border-sm"
+                                                                    role="status" aria-hidden="true"></span>
+                                                            </span>
+                                                        </button>
+                                                    @else
+                                                        <span class="badge badge-outline-danger rounded-pill mt-2">Bukan
+                                                            Hak Akses!</span>
+                                                    @endif
                                                 @endif
                                             </div>
                                         </td>

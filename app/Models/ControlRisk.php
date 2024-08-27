@@ -16,6 +16,8 @@ class ControlRisk extends Model
         'dampak_id',
         'deteksiKegagalan_id',
         'risk_id',
+        'derajatRisiko_id',
+        'seleraRisiko_id',
         'controlRisk_RPN',
         'controlRisk_RTM',
         'controlRisk_efektivitas',
@@ -49,9 +51,33 @@ class ControlRisk extends Model
         return $this->belongsTo(Risk::class, 'risk_id');
     }
 
+    // relationship many to one with efektifitasControl
+    public function efektifitasControl()
+    {
+        return $this->hasOne(EfektifitasKontrol::class, 'controlRisk_id');
+    }
+
+    // relationship many to one with derajat risiko
+    public function derajatRisiko()
+    {
+        return $this->belongsTo(DerajatRisiko::class, 'derajatRisiko_id');
+    }
+
+    // relationship many to one with selera risiko
+    public function seleraRisiko()
+    {
+        return $this->belongsTo(SeleraRisiko::class, 'seleraRisiko_id');
+    }
+
     // relationship many to one with perlakuan risiko
     public function perlakuanRisiko()
     {
         return $this->hasMany(PerlakuanRisiko::class, 'controlRisk_id');
+    }
+
+    // relationship many to one with raci
+    public function raci()
+    {
+        return $this->hasMany(RaciModel::class, 'controlRisk_id');
     }
 }

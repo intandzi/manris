@@ -32,7 +32,8 @@ class ListKPIUnit extends Component
     public $unit_id, $unit, $kategoriStandar;
 
     // VARIABLES KPI MODEL
-    public $kpi_id, $kpi_kode, $kpi_nama, $kpi_tanggalMulai, $kpi_tanggalAkhir, $kpi_periode, $kategoriStandar_id, $kpi_kategoriKinerja, $kpi_indikatorKinerja, $kpi_dokumenPendukung, $dokumen, $dokumenPendukung;
+    public $kpi_id, $kpi_kode, $kpi_nama, $kpi_tanggalMulai, $kpi_tanggalAkhir, $kpi_periode, $kategoriStandar_id, $kpi_kategoriKinerja, $kpi_indikatorKinerja, $dokumen, $dokumenPendukung;
+    public $kpi_dokumenPendukung;
 
     public $isShow = false;
 
@@ -126,7 +127,7 @@ class ListKPIUnit extends Component
             'kpi_kategoriKinerja.required'      => 'Kategori Kinerja wajib diisi!',
             'kpi_indikatorKinerja.required'     => 'Indikator Kinerja wajib diisi!',
             'kategoriStandar_id.required'       => 'Kategori Standar wajib diisi!',
-            'dokumenPendukung.mimes'            => 'Dokumen pendukung harus dalam format PDF, DOCX, XLSX, JPG, JPEG, atau PNG!',
+            // 'dokumenPendukung.mimes'            => 'Dokumen pendukung harus dalam format PDF, DOCX, XLSX, JPG, JPEG, atau PNG!',
             // 'dokumenPendukung.max'              => 'Ukuran maksimal dokumen pendukung adalah 5048 KB!',
         ]);
     }
@@ -134,6 +135,7 @@ class ListKPIUnit extends Component
     // STORE NEW DATA KPI UNIT
     public function storeKPI()
     {    
+        // dd($this->kpi_dokumenPendukung);
         // SANITIZE INPUTS
         $this->sanitizeInputsStore();
 
@@ -148,22 +150,31 @@ class ListKPIUnit extends Component
             $kpi                = Kpi::find($this->kpi_id);
             $kpiKode            = $kpi->kpi_kode;
         }
-        
+
+        // if ($this->kpi_dokumenPendukung && $this->kpi_dokumenPendukung instanceof \Illuminate\Http\UploadedFile) {
         // Check if dokumen pendukung is present and is a valid uploaded file
-        if ($this->dokumenPendukung && $this->dokumenPendukung instanceof \Illuminate\Http\UploadedFile) {
-        // if ($this->dokumenPendukung && is_object($this->dokumenPendukung)) {
-            // Store the uploaded image
-            $name = $this->dokumenPendukung->getClientOriginalName();
-            $path = $this->dokumenPendukung->storeAs('kpi/dokumen', $name, 'public');
+        $path = '-'; // Default path
+
+        if ($this->kpi_dokumenPendukung && is_object($this->kpi_dokumenPendukung)) {
+            // Validate the uploaded file
+            $this->validate([
+                'kpi_dokumenPendukung' => 'file|max:10240', // Adjust max size as needed
+            ]);
+
+            // Store the uploaded file
+            $name = $this->kpi_dokumenPendukung->getClientOriginalName();
+            $path = $this->kpi_dokumenPendukung->storeAs('kpi/dokumen', $name, 'public');
+
+            if (!$path) {
+                throw new \Exception("Failed to store the file.");
+            }
         } else {
-            // If dokumen pendukung is not present or not an uploaded file
             if ($this->isEdit) {
-                // If in edit mode, get the path from the existing record
+                // Check if in edit mode and use existing path if no new file is uploaded
                 $kpi = Kpi::find($this->kpi_id);
-                $path = $kpi->kpi_dokumenPendukung;
-            } else {
-                // If not in edit mode, set path as '-'
-                $path = '-';
+                if ($kpi) {
+                    $path = $kpi->kpi_dokumenPendukung ?? '-';
+                }
             }
         }
         

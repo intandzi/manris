@@ -66,6 +66,11 @@ class KPI extends Model
         return "KP-{$year}-{$formattedNumber}";
     }
 
+    // relationship with koteks (one-to-many)
+    public function konteks()
+    {
+        return $this->hasMany(KonteksRisiko::class, 'kpi_id');
+    }
 
     // relationship with kategoriStandar (one-to-many)
     public function kategoriStandar()

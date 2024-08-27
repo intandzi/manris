@@ -3,6 +3,7 @@
 namespace App\Livewire\RiskOwner;
 
 use App\Models\KategoriStandar;
+use App\Models\KonteksRisiko;
 use App\Models\KPI;
 use App\Models\Unit;
 use Carbon\Carbon;
@@ -69,7 +70,7 @@ class ListKPIRiskOwner extends Component
     // COMPONENT RENDER
     public function render()
     {
-        $kpis = KPI::with(['unit', 'kategoriStandar'])->where('unit_id', $this->unit_id)
+        $kpis = KPI::with(['unit', 'kategoriStandar', 'konteks.risk'])->where('unit_id', $this->unit_id)
             ->where('kpi_lockStatus', true)    
             ->where('kpi_activeStatus', true)    
             ->search($this->search)
@@ -110,4 +111,209 @@ class ListKPIRiskOwner extends Component
             $this->orderAsc = true; // Default sorting order when changing the column
         }
     } 
+
+    // SEND TO UMR
+    public function sendToUMR()
+    {
+        // FIND KONTEKS BASED ON KPI
+        $konteks = KonteksRisiko::with(['risk'])->where('kpi_id', $this->kpi_id)->get();
+
+        // count konteks risiko
+        $countKonteks = $konteks->count();
+
+        // count konteks risiko with risk
+        $konteksWithRiskCount = 0;
+        foreach ($konteks as $konteksRisiko) {
+            if ($konteksRisiko->risk->isNotEmpty()) {
+                $konteksWithRiskCount++;
+            }
+        }
+
+        // Check konteks to risk
+        if ($countKonteks !== $konteksWithRiskCount) {
+            // send notification success
+            flash()
+                ->option('position', 'bottom-right')
+                ->option('timeout', 3000)
+                ->error('Silahkan selesaikan pengisian semua konteks risiko!');
+
+            // CLOSE MODAL
+            $this->closeModalConfirmSendUMR();
+            return;
+        }
+
+        foreach ($konteks as $konteksRisiko) {
+            if (!$this->checkKonteksLockStatus($konteksRisiko)) {
+                // send notification success
+                flash()
+                    ->option('position', 'bottom-right')
+                    ->option('timeout', 3000)
+                    ->error('Risk Register belum selesai, harap selesaikan terlebih dahulu!');
+
+                // CLOSE MODAL
+                $this->closeModalConfirmSendUMR();
+                return;
+            }
+        }
+        
+        // Proceed with sending to UMR
+        // Update sendUMRStatus as necessary
+        $kpi = KPI::find($this->kpi_id);
+        $kpi->update(['kpi_sendUMRStatus' => 1]);
+
+        // UPDATE SEND UMR IN RISK
+        // FIND RISK
+        if($konteks){
+            // UPDATE SEND UMR IN RISK
+            foreach ($konteks as $konteksRisiko) {
+                $konteksRisiko->update(['konteks_isSendUMR' => 1]);
+                foreach ($konteksRisiko->risk as $risk) {
+                    $risk->update(['risk_isSendUMR' => 1]);
+                }
+            }
+        }
+
+        // send notification success
+        flash()
+            ->option('position', 'bottom-right')
+            ->option('timeout', 3000)
+            ->success('Data Anda telah di kirim ke UMR!');
+        // CLOSE MODAL
+        $this->closeModalConfirmSendUMR();
+    }
+
+    // CHECK KONTEKS LOCK STATUS
+    private function checkKonteksLockStatus($konteksRisiko)
+    {
+        // check lock status konteks risiko
+        if (!$konteksRisiko->konteks_lockStatus) {
+            return false;
+        }
+
+        // check all lock status in risk
+        foreach ($konteksRisiko->risk as $risk) {
+            if (!$this->checkRiskLockStatus($risk)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // CHECK RISK LOCK STATUS
+    private function checkRiskLockStatus($risk)
+    {
+        // CHECK RISK LOCK STATUS
+        if (
+            !$risk->risk_lockStatus ||
+            !$risk->risk_kriteriaLockStatus ||
+            !$risk->risk_allPhaseLockStatus
+        ) {
+            return false;
+        }
+
+        // CHECK KRITERIA DAMPAK LOCK STATUS
+        foreach ($risk->dampak as $dampak) {
+            if (!$dampak->dampak_lockStatus) {
+                return false;
+            }
+        }
+
+        // CHECK KRITERIA KEMUNGKINAN LOCK STATUS
+        foreach ($risk->kemungkinan as $kemungkinan) {
+            if (!$kemungkinan->kemungkinan_lockStatus) {
+                return false;
+            }
+        }
+
+        // CHECK KRITERIA DETEKSI KEGAGALAN LOCK STATUS
+        foreach ($risk->deteksiKegagalan as $deteksiKegagalan) {
+            if (!$deteksiKegagalan->deteksiKegagalan_lockStatus) {
+                return false;
+            }
+        }
+
+        // CHECK CONTROL RISK LOCK STATUS
+        foreach ($risk->controlRisk as $controlRisk) {
+            if (!$this->checkControlRiskLockStatus($controlRisk)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // CHECK CONTROL RISK LOCK STATUS
+    private function checkControlRiskLockStatus($controlRisk)
+    {
+        // CONTROL RISK LOCK STATUS
+        if (!$controlRisk->controlRisk_lockStatus) {
+            return false;
+        }
+
+        // CHECK PERLAKUAN RISIKO LOCK STATUS
+        foreach ($controlRisk->perlakuanRisiko as $perlakuanRisiko) {
+            if (!$perlakuanRisiko->perlakuanRisiko_lockStatus) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    // LIFE CYCLE HOOKS IDENTIFIKASI RISIKO
+    // OPEN MODAL LIVEWIRE 
+    public $isSendUMR = 0;
+
+    // OPEN MODAL CONFIRM IDENTIFIKASI RISIKO
+    public function openModalConfirmSendUMR($id)
+    {
+        $this->isSendUMR    = true;
+
+        // PASSING KPI ID
+        $this->kpi_id = $id;
+    }
+
+    // CLOSE MODAL CONFIRM IDENTIFIKASI RISIKO
+    public function closeModalConfirmSendUMR()
+    {
+        $this->isSendUMR = false;
+    } 
+  
+    // CLOSE MODAL CONFIRM IDENTIFIKASI RISIKO
+    public function closeXModalConfirmSendUMR()
+    {
+        $this->isSendUMR = false;
+    } 
+
+    // HISTORY PENGEMBALIAN
+    public $isOpenHistoryPengembalian = 0;
+
+    public $historyPengembalian;
+
+    // OPEN HISTORY PENGEMBALIAN
+    public function openHistoryPengembalian($kpi_id)
+    {
+        $this->isOpenHistoryPengembalian = 1;
+
+        $kpi = KPI::with(['konteks.historyPengembalian'])
+            ->where('unit_id', $this->unit_id)
+            ->where('kpi_lockStatus', true)    
+            ->where('kpi_activeStatus', true)
+            ->find($kpi_id);
+
+        $this->historyPengembalian = $kpi;
+    }
+
+    // CLOSE HISTORY PENGEMBALIAN
+    public function closeHistoryPengembalian()
+    {
+        $this->isOpenHistoryPengembalian = 0;
+    }
+    // CLOSE HISTORY PENGEMBALIAN
+    public function closeXHistoryPengembalian()
+    {
+        $this->isOpenHistoryPengembalian = 0;
+    }
 }

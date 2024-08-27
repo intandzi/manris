@@ -67,7 +67,7 @@
                                         <td>
                                             {{ $item->risk_kode }}
                                         </td>
-                                        <td>
+                                        <td style="word-break: break-word;">
                                             {{ Str::limit($item->risk_riskDesc, 100, '...') }}
                                         </td>
                                         <td>
@@ -81,7 +81,7 @@
                                                             wire:click.prevent="editKemungkinan({{ $item->risk_id }})"
                                                             wire:loading.attr="disabled"
                                                             wire:target="editKemungkinan({{ $item->risk_id }})"
-                                                            class="btn btn-warning btn-sm d-flex text-center align-items-center">
+                                                            class="btn btn-warning btn-sm btn-icon">
                                                             <i class="ri-pencil-fill" wire:loading.remove
                                                                 wire:target='editKemungkinan({{ $item->risk_id }})'>
                                                             </i>
@@ -95,7 +95,7 @@
                                                             wire:click.prevent="showKemungkinan({{ $item->risk_id }})"
                                                             wire:loading.attr="disabled"
                                                             wire:target="showKemungkinan({{ $item->risk_id }})"
-                                                            class="btn btn-primary btn-sm d-flex text-center align-items-center ms-1">
+                                                            class="btn btn-primary btn-sm btn-icon ms-1">
                                                             <i class="ri-eye-fill" wire:loading.remove
                                                                 wire:target='showKemungkinan({{ $item->risk_id }})'>
                                                             </i>
@@ -112,7 +112,7 @@
                                                     wire:click.prevent="openModalKemungkinan({{ $item->risk_id }})"
                                                     wire:loading.attr="disabled"
                                                     wire:target="openModalKemungkinan({{ $item->risk_id }})"
-                                                    class="btn btn-success btn-sm d-flex text-center align-items-center">
+                                                    class="btn btn-success btn-sm btn-icon">
                                                     <i class="ri-add-line" wire:loading.remove
                                                         wire:target='openModalKemungkinan({{ $item->risk_id }})'>
                                                     </i>
@@ -136,7 +136,7 @@
                                                             wire:click.prevent="editDampak({{ $item->risk_id }})"
                                                             wire:loading.attr="disabled"
                                                             wire:target="editDampak({{ $item->risk_id }})"
-                                                            class="btn btn-warning btn-sm d-flex text-center align-items-center">
+                                                            class="btn btn-warning btn-sm btn-icon">
                                                             <i class="ri-pencil-fill" wire:loading.remove
                                                                 wire:target='editDampak({{ $item->risk_id }})'>
                                                             </i>
@@ -150,7 +150,7 @@
                                                             wire:click.prevent="showDampak({{ $item->risk_id }})"
                                                             wire:loading.attr="disabled"
                                                             wire:target="showDampak({{ $item->risk_id }})"
-                                                            class="btn btn-primary btn-sm d-flex text-center align-items-center ms-1">
+                                                            class="btn btn-primary btn-sm btn-icon ms-1">
                                                             <i class="ri-eye-fill" wire:loading.remove
                                                                 wire:target='showDampak({{ $item->risk_id }})'>
                                                             </i>
@@ -167,7 +167,7 @@
                                                     wire:click.prevent="openModalDampak({{ $item->risk_id }})"
                                                     wire:loading.attr="disabled"
                                                     wire:target="openModalDampak({{ $item->risk_id }})"
-                                                    class="btn btn-success btn-sm d-flex text-center align-items-center">
+                                                    class="btn btn-success btn-sm btn-icon">
                                                     <i class="ri-add-line me-1" wire:loading.remove
                                                         wire:target='openModalDampak({{ $item->risk_id }})'>
                                                     </i>
@@ -220,7 +220,7 @@
                                                     wire:click.prevent="openModalDeteksi({{ $item->risk_id }})"
                                                     wire:loading.attr="disabled"
                                                     wire:target="openModalDeteksi({{ $item->risk_id }})"
-                                                    class="btn btn-success btn-sm d-flex text-center align-items-center">
+                                                    class="btn btn-success btn-sm btn-icon">
                                                     <i class="ri-add-line me-1" wire:loading.remove
                                                         wire:target='openModalDeteksi({{ $item->risk_id }})'>
                                                     </i>
@@ -243,20 +243,26 @@
                                                         <span
                                                             class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
                                                     @else
-                                                        <button type="button"
-                                                            wire:click.prevent="openModalConfirmKriteria({{ $item->risk_id }})"
-                                                            wire:loading.attr="disabled"
-                                                            wire:target="openModalConfirm({{ $item->risk_id }})"
-                                                            class="btn btn-danger btn-sm d-flex text-center align-items-center">
-                                                            <i class="ri-lock-fill" wire:loading.remove
-                                                                wire:target='openModalConfirmKriteria({{ $item->risk_id }})'>
-                                                            </i>
-                                                            <span wire:loading
-                                                                wire:target="openModalConfirmKriteria({{ $item->risk_id }})">
-                                                                <span class="spinner-border spinner-border-sm"
-                                                                    role="status" aria-hidden="true"></span>
-                                                            </span>
-                                                        </button>
+                                                        @if ($this->role === 'risk owner')
+                                                            <button type="button"
+                                                                wire:click.prevent="openModalConfirmKriteria({{ $item->risk_id }})"
+                                                                wire:loading.attr="disabled"
+                                                                wire:target="openModalConfirm({{ $item->risk_id }})"
+                                                                class="btn btn-danger btn-sm btn-icon">
+                                                                <i class="ri-lock-fill" wire:loading.remove
+                                                                    wire:target='openModalConfirmKriteria({{ $item->risk_id }})'>
+                                                                </i>
+                                                                <span wire:loading
+                                                                    wire:target="openModalConfirmKriteria({{ $item->risk_id }})">
+                                                                    <span class="spinner-border spinner-border-sm"
+                                                                        role="status" aria-hidden="true"></span>
+                                                                </span>
+                                                            </button>
+                                                        @else
+                                                            <span
+                                                                class="badge badge-outline-danger rounded-pill mt-2">Bukan
+                                                                Hak Akses!</span>
+                                                        @endif
                                                     @endif
                                                 @else
                                                     <span class="badge badge-outline-danger rounded-pill mt-2">Lengkapi

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('konteks_desc')->nullable(false);
             $table->enum('konteks_kategori', ['internal', 'external'])->nullable(false);
             $table->boolean('konteks_lockStatus')->nullable(false)->default(false);
+            $table->boolean('konteks_isSendUMR')->nullable(false)->default(false);
             $table->boolean('konteks_activeStatus')->nullable(false)->default(true);
             $table->char('created_by', 1)->nullable();
             $table->char('updated_by', 1)->nullable();

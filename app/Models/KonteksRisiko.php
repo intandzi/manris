@@ -17,8 +17,27 @@ class KonteksRisiko extends Model
         'konteks_desc',
         'konteks_kategori',
         'konteks_lockStatus',
+        'konteks_isSendUMR',
         'konteks_activeStatus',
     ];
+
+    // relationship with kpi (one-to-many)
+    public function kpi()
+    {
+        return $this->belongsTo(KPI::class, 'kpi_id');
+    }
+
+    // relationship one to many with risk
+    public function risk()
+    {
+        return $this->hasMany(Risk::class, 'konteks_id');
+    }
+
+    // relationship with historyPengembalian (one-to-many)
+    public function historyPengembalian()
+    {
+        return $this->hasMany(HistoryPengembalian::class, 'konteks_id');
+    }
 
     // Search Model
     public function scopeSearch($query, $value){

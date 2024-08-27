@@ -44,4 +44,9 @@ class PerlakuanRisiko extends Model
     {
         return $this->hasMany(PemantauanKajian::class, 'perlakuanRisiko_id');
     }
+    // relationship one to many with pemantauan tinjauan
+    public function pemantauanTinjauan()
+    {
+        return $this->hasMany(PemantauanTinjauan::class, 'perlakuanRisiko_id');
+    }
 }

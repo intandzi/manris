@@ -26,6 +26,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             KategoriStandarSeeder::class,
             JenisPerlakuanSeeder::class,
+            DerajatRisikoSeeder::class,
+            SeleraRisikoSeeder::class,
+            StakeholdersSeeder::class,
         ]);
     }
 }
