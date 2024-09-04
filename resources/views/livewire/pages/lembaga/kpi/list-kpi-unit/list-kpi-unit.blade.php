@@ -2,13 +2,14 @@
     @include('livewire.pages.lembaga.kpi.list-kpi-unit.kpi-modal')
 
     <div class="container-fluid">
-        
+
         <!-- breadcrumbs component -->
         <nav aria-label="breadcrumb" class="mb-2">
             <ol class="breadcrumb mb-0 p-2">
                 <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
                         App</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('kpiUnit.index', ['role' => $encryptedRole]) }}" wire:navigate>
+                <li class="breadcrumb-item"><a href="{{ route('kpiUnit.index', ['role' => $encryptedRole]) }}"
+                        wire:navigate>
                         KPI</a></li>
                 <li class="breadcrumb-item active"><a href="#">KPI Unit
                         {{ $title }}</a>
@@ -181,19 +182,22 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group gap-2" role="group">
-                                                    <button type="button"
-                                                        wire:click.prevent="editKPI({{ $kpi->kpi_id }})"
-                                                        wire:loading.attr="disabled"
-                                                        wire:target="editKPI({{ $kpi->kpi_id }})"
-                                                        class="btn btn-warning btn-sm d-flex text-center align-items-center">
-                                                        <i class="ri-pencil-fill" wire:loading.remove
-                                                            wire:target='editKPI({{ $kpi->kpi_id }})'>
-                                                        </i>
-                                                        <span wire:loading wire:target="editKPI({{ $kpi->kpi_id }})">
-                                                            <span class="spinner-border spinner-border-sm"
-                                                                role="status" aria-hidden="true"></span>
-                                                        </span>
-                                                    </button>
+                                                    @if (!$kpi->kpi_lockStatus)
+                                                        <button type="button"
+                                                            wire:click.prevent="editKPI({{ $kpi->kpi_id }})"
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="editKPI({{ $kpi->kpi_id }})"
+                                                            class="btn btn-warning btn-sm d-flex text-center align-items-center">
+                                                            <i class="ri-pencil-fill" wire:loading.remove
+                                                                wire:target='editKPI({{ $kpi->kpi_id }})'>
+                                                            </i>
+                                                            <span wire:loading
+                                                                wire:target="editKPI({{ $kpi->kpi_id }})">
+                                                                <span class="spinner-border spinner-border-sm"
+                                                                    role="status" aria-hidden="true"></span>
+                                                            </span>
+                                                        </button>
+                                                    @endif
                                                     <button type="button"
                                                         wire:click.prevent="showKPI({{ $kpi->kpi_id }})"
                                                         wire:loading.attr="disabled"

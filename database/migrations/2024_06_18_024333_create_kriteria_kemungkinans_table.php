@@ -19,9 +19,9 @@ return new class extends Migration
             $table->text('kemungkinan_desc')->nullable(false);
             $table->boolean('kemungkinan_lockStatus')->nullable(false)->default(false);
             $table->boolean('kemungkinan_activeStatus')->nullable(false)->default(true);
-            $table->char('created_by', 1)->nullable();
-            $table->char('updated_by', 1)->nullable();
-            $table->char('deleted_by', 1)->nullable();
+            $table->char('created_by', 3)->nullable();
+            $table->char('updated_by', 3)->nullable();
+            $table->char('deleted_by', 3)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

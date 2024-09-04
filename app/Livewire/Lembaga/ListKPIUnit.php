@@ -32,7 +32,17 @@ class ListKPIUnit extends Component
     public $unit_id, $unit, $kategoriStandar;
 
     // VARIABLES KPI MODEL
-    public $kpi_id, $kpi_kode, $kpi_nama, $kpi_tanggalMulai, $kpi_tanggalAkhir, $kpi_periode, $kategoriStandar_id, $kpi_kategoriKinerja, $kpi_indikatorKinerja, $dokumen, $dokumenPendukung;
+    public $kpi_id, 
+           $kpi_kode, 
+           $kpi_nama, 
+           $kpi_tanggalMulai, 
+           $kpi_tanggalAkhir, 
+           $kpi_periode, 
+           $kategoriStandar_id, 
+           $kpi_kategoriKinerja, 
+           $kpi_indikatorKinerja, 
+           $dokumen, 
+           $dokumenPendukung;
     public $kpi_dokumenPendukung;
 
     public $isShow = false;
@@ -162,21 +172,25 @@ class ListKPIUnit extends Component
             ]);
 
             // Store the uploaded file
-            $name = $this->kpi_dokumenPendukung->getClientOriginalName();
-            $path = $this->kpi_dokumenPendukung->storeAs('kpi/dokumen', $name, 'public');
+            if ($this->kpi_dokumenPendukung instanceof \Illuminate\Http\UploadedFile) {
+                $storedPath = $this->kpi_dokumenPendukung->storeAs(
+                    'kpi/dokumenPendukung',
+                    $this->kpi_dokumenPendukung->getClientOriginalName(),
+                    'public'
+                );
 
-            if (!$path) {
-                throw new \Exception("Failed to store the file.");
-            }
-        } else {
-            if ($this->isEdit) {
-                // Check if in edit mode and use existing path if no new file is uploaded
-                $kpi = Kpi::find($this->kpi_id);
-                if ($kpi) {
-                    $path = $kpi->kpi_dokumenPendukung ?? '-';
+                if (!$storedPath) {
+                    throw new \Exception("Failed to store the file.");
                 }
+
+                // Encrypt the stored path
+                $path = Crypt::encrypt($storedPath);
+            } else {
+                // If no new file is uploaded, use the existing path
+                $path = $this->kpi_dokumenPendukung;
             }
         }
+
         
         // STORE OR UPDATE KPI DATA
         $kpi = KPI::updateOrCreate([
@@ -234,7 +248,7 @@ class ListKPIUnit extends Component
         $this->kpi_periode          = $kpi->kpi_periode;
         $this->kpi_kategoriKinerja  = $kpi->kpi_kategoriKinerja;
         $this->kpi_indikatorKinerja = $kpi->kpi_indikatorKinerja;
-        $this->dokumen              = $kpi->kpi_dokumenPendukung;
+        $this->dokumen              = $kpi->kpi_dokumenPendukung ?? null;
     }
 
     // SHOW KPI
@@ -259,7 +273,7 @@ class ListKPIUnit extends Component
         $this->kpi_periode          = $kpi->kpi_periode;
         $this->kpi_kategoriKinerja  = $kpi->kpi_kategoriKinerja;
         $this->kpi_indikatorKinerja = $kpi->kpi_indikatorKinerja;
-        $this->dokumen              = $kpi->kpi_dokumenPendukung;
+        $this->dokumen              = $kpi->kpi_dokumenPendukung ?? null;
     }
 
     // LOCK KPI

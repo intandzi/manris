@@ -168,10 +168,6 @@
                                                                             role="status" aria-hidden="true"></span>
                                                                     </span>
                                                                 </button>
-                                                            @else
-                                                                <span
-                                                                    class="badge badge-outline-danger rounded-pill mt-2">Bukan
-                                                                    Hak Akses!</span>
                                                             @endif
                                                         @endif
                                                     </div>

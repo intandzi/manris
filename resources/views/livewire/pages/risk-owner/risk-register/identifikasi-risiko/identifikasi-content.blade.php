@@ -62,7 +62,9 @@
                                 <th>
                                     Aksi
                                 </th>
-                                <th>Tindak Lanjut</th>
+                                @if ($this->role === 'risk owner')
+                                    <th>Tindak Lanjut</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -87,10 +89,20 @@
                                         </td>
                                         <td>
                                             <div class="btn-group gap-2" role="group">
-                                                @if ($item->risk_lockStatus)
-                                                    <span
-                                                        class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                @else
+                                                <button type="button"
+                                                    wire:click.prevent="showRisk({{ $item->risk_id }})"
+                                                    wire:loading.attr="disabled"
+                                                    wire:target="showRisk({{ $item->risk_id }})"
+                                                    class="btn btn-primary btn-sm btn-icon">
+                                                    <i class="ri-eye-fill" wire:loading.remove
+                                                        wire:target='showRisk({{ $item->risk_id }})'>
+                                                    </i>
+                                                    <span wire:loading wire:target="showRisk({{ $item->risk_id }})">
+                                                        <span class="spinner-border spinner-border-sm" role="status"
+                                                            aria-hidden="true"></span>
+                                                    </span>
+                                                </button>
+                                                @if (!$item->risk_lockStatus)
                                                     <button type="button"
                                                         wire:click.prevent="editRisk({{ $item->risk_id }})"
                                                         wire:loading.attr="disabled"
@@ -99,21 +111,8 @@
                                                         <i class="ri-pencil-fill" wire:loading.remove
                                                             wire:target='editRisk({{ $item->risk_id }})'>
                                                         </i>
-                                                        <span wire:loading wire:target="editRisk({{ $item->risk_id }})">
-                                                            <span class="spinner-border spinner-border-sm"
-                                                                role="status" aria-hidden="true"></span>
-                                                        </span>
-                                                    </button>
-                                                    <button type="button"
-                                                        wire:click.prevent="showRisk({{ $item->risk_id }})"
-                                                        wire:loading.attr="disabled"
-                                                        wire:target="showRisk({{ $item->risk_id }})"
-                                                        class="btn btn-primary btn-sm btn-icon">
-                                                        <i class="ri-eye-fill" wire:loading.remove
-                                                            wire:target='showRisk({{ $item->risk_id }})'>
-                                                        </i>
                                                         <span wire:loading
-                                                            wire:target="showRisk({{ $item->risk_id }})">
+                                                            wire:target="editRisk({{ $item->risk_id }})">
                                                             <span class="spinner-border spinner-border-sm"
                                                                 role="status" aria-hidden="true"></span>
                                                         </span>
@@ -121,13 +120,13 @@
                                                 @endif
                                             </div>
                                         </td>
-                                        <td>
-                                            <div class="btn-group gap-2" role="group">
-                                                @if ($item->risk_lockStatus)
-                                                    <span
-                                                        class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                @else
-                                                    @if ($this->role === 'risk owner')
+                                        @if ($this->role === 'risk owner')
+                                            <td>
+                                                <div class="btn-group gap-2" role="group">
+                                                    @if ($item->risk_lockStatus)
+                                                        <span
+                                                            class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
+                                                    @else
                                                         <button type="button"
                                                             wire:click.prevent="openModalConfirmRisk({{ $item->risk_id }})"
                                                             wire:loading.attr="disabled"
@@ -142,13 +141,10 @@
                                                                     role="status" aria-hidden="true"></span>
                                                             </span>
                                                         </button>
-                                                    @else
-                                                        <span class="badge badge-outline-danger rounded-pill mt-2">Bukan
-                                                            Hak Akses!</span>
                                                     @endif
-                                                @endif
-                                            </div>
-                                        </td>
+                                                </div>
+                                            </td>
+                                        @endif
 
                                     </tr>
                                 @empty

@@ -82,7 +82,7 @@
                                                                             value="{{ $item->kemungkinan_id }}">
                                                                         <label class="form-check-label"
                                                                             style="font-weight: 400"
-                                                                            for="kemungkinanRadio{{ $index }}">{{ $item->kemungkinan_desc }}</label>
+                                                                            for="kemungkinanRadio{{ $index }}">{{ $index+1 }}. {{ $item->kemungkinan_desc }}</label>
                                                                     </div>
                                                                 </div>
                                                             @endforeach
@@ -122,7 +122,7 @@
                                                                             value="{{ $item->dampak_id }}">
                                                                         <label class="form-check-label"
                                                                             style="font-weight: 400"
-                                                                            for="dampakRadio{{ $index }}">{{ $item->dampak_desc }}</label>
+                                                                            for="dampakRadio{{ $index }}">{{ $index+1 }}. {{ $item->dampak_desc }}</label>
                                                                     </div>
                                                                 </div>
                                                             @endforeach
@@ -164,7 +164,7 @@
                                                                             value="{{ $item->deteksiKegagalan_id }}">
                                                                         <label class="form-check-label"
                                                                             style="font-weight: 400"
-                                                                            for="deteksiRadio{{ $index }}">{{ $item->deteksiKegagalan_desc }}</label>
+                                                                            for="deteksiRadio{{ $index }}">{{ $index+1 }}. {{ $item->deteksiKegagalan_desc }}</label>
                                                                     </div>
                                                                 </div>
                                                             @endforeach
@@ -396,6 +396,7 @@
                                 @endforeach
                             </ul>
                         @endif
+                        <span class="invalid-feedback">{{ $errors->first('plans') }}</span>
                     @else
                         <div class="table-responsive mb-2">
                             <dt class="mb-2">Identifikasi Risiko</dt>
@@ -519,8 +520,8 @@
                                 </span>
                             </button>
                             @if (!$isShowControlRisk || $isEditControlRisk)
-                                <button type="button" wire:click.prevent='storeControlRisk' wire:loading.attr="disabled"
-                                    wire:target="storeControlRisk"
+                                <button type="button" wire:click.prevent='storeControlRisk'
+                                    wire:loading.attr="disabled" wire:target="storeControlRisk"
                                     class="btn btn-primary w-md waves-effect waves-light">Submit
                                     <span wire:loading class="ms-2" wire:target="storeControlRisk">
                                         <span class="spinner-border spinner-border-sm" role="status"

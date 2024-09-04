@@ -21,9 +21,9 @@ return new class extends Migration
             $table->text('efektifitasKontrol_kontrolDesc')->nullable(false);
             $table->integer('efektifitasKontrol_totalEfektifitas')->nullable(false);
             $table->boolean('efektifitasKontrol_lockStatus')->default(false)->nullable(false);
-            $table->char('created_by', 1)->nullable();
-            $table->char('updated_by', 1)->nullable();
-            $table->char('deleted_by', 1)->nullable();
+            $table->char('created_by', 3)->nullable();
+            $table->char('updated_by', 3)->nullable();
+            $table->char('deleted_by', 3)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

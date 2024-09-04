@@ -210,25 +210,44 @@
                     @if ($isEdit || $isShow)
 
                         {{-- IF DOKUMEN NOT EXIST JUST SHOW ALERT, ON THE OTHER HAND DISPLAY BUTTON --}}
-                        @if ($dokumen !== '-')
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label for="kpi_dokumenPendukung" class="form-label">Dokumen
-                                            Pendukung</label><br>
 
-                                        <a href="{{ asset('storage/' . $dokumen) }}" class="btn btn-primary"
-                                            target="_blank">
-                                            <i class="ri-file-line"></i> Show Dokumen
-                                        </a>
+                        @if ($dokumen && isset($dokumen))
+                            @php
+                                try {
+                                    // Attempt to decrypt the document path
+                                    $decryptedBuktiPemantauan = Crypt::decrypt($dokumen);
+                                } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+                                    // If decryption fails, set to null or handle accordingly
+                                    $decryptedBuktiPemantauan = null;
+                                }
+                            @endphp
+
+                            @if ($decryptedBuktiPemantauan)
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label for="kpi_dokumenPendukung" class="form-label">Dokumen
+                                                Pendukung</label><br>
+                                            <a href="{{ asset('storage/' . $decryptedBuktiPemantauan) }}"
+                                                target="_blank">
+                                                <button class="btn btn-primary">Lihat Bukti</button>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div><!-- end row -->
+                            @else
+                                {{-- If decryption failed, show an alert --}}
+                                <div class="alert alert-danger">
+                                    Dokumen tidak tersedia atau tidak valid.
+                                </div>
+                            @endif
                         @else
-                            <div class="alert alert-danger mt-2 mb-2">
-                                No supporting document data available.
+                            {{-- If no document is set, show an alert --}}
+                            <div class="alert alert-danger">
+                                Dokumen tidak tersedia.
                             </div>
                         @endif
+
                     @endif
                     <div class="mt-3 border-top mb-3"></div>
                     <div class="mt-4 text-end">

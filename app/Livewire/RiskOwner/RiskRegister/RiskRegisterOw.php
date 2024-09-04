@@ -636,6 +636,7 @@ class RiskRegisterOw extends Component
         // Define validation rules and messages for each index
         foreach ($data as $index) {
             $rules["kemungkinan.$index.kemungkinan_desc"] = 'required';
+            
             $messages["kemungkinan.$index.kemungkinan_desc.required"] = "Keterangan Kemungkinan skala ke-".($index + 1)." wajib diisi!";
         }
 
@@ -1621,7 +1622,10 @@ class RiskRegisterOw extends Component
 
         // FIND OR CREATE EFEKTIFITAS KONTROL
         $efektifitasKontrol = EfektifitasKontrol::updateOrCreate(
-            ['risk_id' => $this->risk_id],
+            [
+                'risk_id'               => $this->risk_id,
+                'efektifitasKontrol_id' => $this->efektifitasKontrol_id,
+            ],
             [
                 'controlRisk_id'                      => $controlRisk->controlRisk_id,
                 'efektifitasKontrol_kontrolStatus'    => $this->efektifitasKontrol_kontrolStatus,
@@ -1914,9 +1918,10 @@ class RiskRegisterOw extends Component
     {
         $validated = $this->validate([
             'jenisPerlakuan_id'                => ['required'],
-            'rencanaPerlakuan_desc'            => ['required'],
+            'plans'                            => ['required'],
         ], [
             'jenisPerlakuan_id.required'       => 'Jenis Perlakuan wajib diisi!',
+            'plans.required'                   => 'Rencana Perlakuan wajib diisi!',
         ]);
     }
 

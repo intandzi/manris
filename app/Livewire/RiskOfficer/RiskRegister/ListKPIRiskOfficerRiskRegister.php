@@ -27,7 +27,7 @@ class ListKPIRiskOfficerRiskRegister extends Component
     public $search      = '';
     public $searchPeriod = '';
 
-    public $years = [];
+    public $years = [], $periodYears = [];
 
     // VARIABLES LIST UNIT MODEL
     public $unit_id, $unit, $kategoriStandar;
@@ -64,6 +64,11 @@ class ListKPIRiskOfficerRiskRegister extends Component
         // Generate years for the select options
         for ($i = $currentYear - 4; $i <= $currentYear + 4; $i++) {
             $this->years[$i] = $i;
+        }
+
+        // Generate period years for the select options
+        for ($i = $currentYear - 20; $i <= $currentYear + 10; $i++) {
+            $this->periodYears[$i] = $i;
         }
     }
 

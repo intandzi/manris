@@ -76,21 +76,10 @@
                                 <div class="mb-3">
                                     <label class="form-label" for="formrow-firstname-input">Frekuensi pemantauan /tahun
                                         <span style="color: red">*</span></label>
-                                    <select wire:model='pemantauanTinjauan_freqPemantauan'
-                                        {{ $isShowPemantauanTinjauan ? 'disabled' : '' }}
-                                        class="form-control @error('pemantauanTinjauan_freqPemantauan') is-invalid @enderror {{ $pemantauanTinjauan_freqPemantauan ? 'is-valid' : '' }}">
-                                        <option value="">-- Pilih Frekuensi --</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                    </select>
+                                    <textarea id="snow-editor"
+                                        class="form-control @error('pemantauanTinjauan_freqPemantauan') is-invalid @enderror {{ $pemantauanTinjauan_freqPemantauan ? 'is-valid' : '' }}"
+                                        wire:model='pemantauanTinjauan_freqPemantauan' aria-label="With textarea" cols="20" rows="10"
+                                        {{ $isShowPemantauanTinjauan ? 'disabled' : '' }}></textarea>
                                     <span
                                         class="invalid-feedback">{{ $errors->first('pemantauanTinjauan_freqPemantauan') }}</span>
                                 </div>
@@ -167,21 +156,10 @@
                                 <div class="mb-3">
                                     <label class="form-label" for="formrow-firstname-input">Frekuensi laporan /tahun
                                         <span style="color: red">*</span></label>
-                                    <select wire:model='pemantauanTinjauan_freqPelaporan'
-                                        {{ $isShowPemantauanTinjauan ? 'disabled' : '' }}
-                                        class="form-control @error('pemantauanTinjauan_freqPelaporan') is-invalid @enderror {{ $pemantauanTinjauan_freqPelaporan ? 'is-valid' : '' }}">
-                                        <option value="">-- Pilih Frekuensi --</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                    </select>
+                                    <textarea id="snow-editor"
+                                        class="form-control @error('pemantauanTinjauan_freqPelaporan') is-invalid @enderror {{ $pemantauanTinjauan_freqPelaporan ? 'is-valid' : '' }}"
+                                        wire:model='pemantauanTinjauan_freqPelaporan' aria-label="With textarea" cols="20" rows="10"
+                                        {{ $isShowPemantauanTinjauan ? 'disabled' : '' }}></textarea>
                                     <span
                                         class="invalid-feedback">{{ $errors->first('pemantauanTinjauan_freqPemantauan') }}</span>
                                 </div>
@@ -384,12 +362,14 @@
                         wire:click="closeXModalConfirmDeletePemantauanTinjauan"></button>
                 </div>
                 <div class="modal-body">
-                    Data tidak bisa dikembalikan apabila Anda menghapus Pemantauan dan Tinjauan. Apakah Anda yakin ingin menghapus
+                    Data tidak bisa dikembalikan apabila Anda menghapus Pemantauan dan Tinjauan. Apakah Anda yakin ingin
+                    menghapus
                     Pemantauan dan Tinjauan ini?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" wire:click='closeModalConfirmDeletePemantauanTinjauan'
-                        wire:loading.attr="disabled" wire:target="closeModalConfirmDeletePemantauanTinjauan">
+                    <button type="button" class="btn btn-secondary"
+                        wire:click='closeModalConfirmDeletePemantauanTinjauan' wire:loading.attr="disabled"
+                        wire:target="closeModalConfirmDeletePemantauanTinjauan">
                         Tutup
                         <span wire:loading class="ms-2" wire:target="closeModalConfirmDeletePemantauanTinjauan">
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

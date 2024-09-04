@@ -20,6 +20,7 @@ class ControlRisk extends Model
         'seleraRisiko_id',
         'controlRisk_RPN',
         'controlRisk_RTM',
+        'controlRisk_isControl',
         'controlRisk_efektivitas',
         'controlRisk_lockStatus',
         'created_by',
@@ -51,10 +52,10 @@ class ControlRisk extends Model
         return $this->belongsTo(Risk::class, 'risk_id');
     }
 
-    // relationship many to one with efektifitasControl
+    // Relationship with EfektifitasKontrol
     public function efektifitasControl()
     {
-        return $this->hasOne(EfektifitasKontrol::class, 'controlRisk_id');
+        return $this->hasMany(EfektifitasKontrol::class, 'controlRisk_id', 'controlRisk_id');
     }
 
     // relationship many to one with derajat risiko

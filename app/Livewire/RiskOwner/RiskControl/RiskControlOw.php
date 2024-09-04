@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -171,7 +173,7 @@ class RiskControlOw extends Component
     // RENDER COMPONENT
     public function render()
     {
-        // RISK DATA
+        // CONTROL RISK DATA
         $controlRisks = Risk::with([
                 'dampak', 
                 'kemungkinan', 
@@ -210,6 +212,62 @@ class RiskControlOw extends Component
         ->paginate($this->perPage);
 
 
+        // PEMANTAUAN TINJAUAN DATA
+        $pemantauanTinjauans = Risk::whereHas('controlRisk', function ($query) {
+                $query->where('controlRisk_lockStatus', true);
+            })
+            ->with([
+                'dampak', 
+                'kemungkinan', 
+                'deteksiKegagalan', 
+                'controlRisk.dampak', 
+                'controlRisk.kemungkinan', 
+                'controlRisk.deteksiKegagalan', 
+                'controlRisk.perlakuanRisiko.jenisPerlakuan', 
+                'controlRisk.perlakuanRisiko.rencanaPerlakuan',
+                'controlRisk.perlakuanRisiko.pemantauanKajian',
+                'controlRisk.derajatRisiko.seleraRisiko',
+                'efektifitasKontrol',
+                'controlRisk.raci',
+                'raci',
+            ])
+            ->where('risk_id', $this->risk_id)
+            ->where('risk_validateRiskRegister', 1)
+            ->where('konteks_id', $this->konteks_id)->search($this->searchControlRisk)
+            ->orderBy($this->orderByControlRisk, $this->orderAscControlRisk ? 'asc' : 'desc')
+            ->paginate($this->perPage);
+
+        
+        // RACI DATA
+        $racis = Risk::whereHas('controlRisk', function ($query) {
+                $query->where('controlRisk_lockStatus', true)
+                    ->whereHas('perlakuanRisiko', function ($query) {
+                        $query->where('pemantauanKajian_lockStatus', true);
+                    });
+            })
+            ->with([
+                'dampak', 
+                'kemungkinan', 
+                'deteksiKegagalan', 
+                'controlRisk.dampak', 
+                'controlRisk.kemungkinan', 
+                'controlRisk.deteksiKegagalan', 
+                'controlRisk.perlakuanRisiko.jenisPerlakuan', 
+                'controlRisk.perlakuanRisiko.rencanaPerlakuan',
+                'controlRisk.perlakuanRisiko.pemantauanKajian',
+                'controlRisk.derajatRisiko.seleraRisiko',
+                'efektifitasKontrol',
+                'controlRisk.raci',
+                'raci',
+            ])
+            ->where('risk_id', $this->risk_id)
+            ->where('risk_validateRiskRegister', 1)
+            ->where('konteks_id', $this->konteks_id)->search($this->searchControlRisk)
+            ->orderBy($this->orderByControlRisk, $this->orderAscControlRisk ? 'asc' : 'desc')
+            ->paginate($this->perPage);
+
+
+
         // KOMUNIKASI DATA
         $komunikasis = Komunikasi::with([
             'komunikasiStakeholder.stakeholder',
@@ -234,6 +292,14 @@ class RiskControlOw extends Component
             'evaluasis'                 => $evaluasis,
             'paginationInfoEvaluasis'   => $evaluasis->total() > 0
             ? "Showing " . ($evaluasis->firstItem()) . " to " . ($evaluasis->lastItem()) . " of " . ($evaluasis->total()) . " entries"
+            : "No entries found",
+            'pemantauanTinjauans'                 => $pemantauanTinjauans,
+            'paginationInfoPemantauanTinjauans'   => $pemantauanTinjauans->total() > 0
+            ? "Showing " . ($pemantauanTinjauans->firstItem()) . " to " . ($pemantauanTinjauans->lastItem()) . " of " . ($pemantauanTinjauans->total()) . " entries"
+            : "No entries found",
+            'racis'                 => $racis,
+            'paginationInfoRacis'   => $racis->total() > 0
+            ? "Showing " . ($racis->firstItem()) . " to " . ($racis->lastItem()) . " of " . ($racis->total()) . " entries"
             : "No entries found",
             'komunikasis'                  => $komunikasis,
             'paginationInfoKomunikasis'    => $komunikasis->total() > 0
@@ -284,6 +350,7 @@ class RiskControlOw extends Component
 
             // Validation rules for risk treatment plan
             'jenisPerlakuan_id'              => ['required'],
+            'plans'                          => ['required'],
         ];
 
         $messages = [
@@ -298,6 +365,7 @@ class RiskControlOw extends Component
 
             // Messages for risk treatment plan
             'jenisPerlakuan_id.required'     => 'Jenis Perlakuan wajib diisi!',
+            'plans.required'                 => 'Rencana Perlakuan wajib diisi!',
         ];
 
         // Add dynamic validation for penilaianEfektifitas_skor if applicable
@@ -419,9 +487,11 @@ class RiskControlOw extends Component
 
         // FIND OR CREATE EFEKTIFITAS KONTROL
         $efektifitasKontrol = EfektifitasKontrol::updateOrCreate(
-            ['risk_id' => $this->risk_id],
             [
-                'controlRisk_id'                      => $controlRisk->controlRisk_id,
+                'risk_id'                             => $this->risk_id,
+                'controlRisk_id'                      => $controlRisk->controlRisk_id ?? $this->controlRisk_id,
+            ],
+            [
                 'efektifitasKontrol_kontrolStatus'    => $this->efektifitasKontrol_kontrolStatus,
                 'efektifitasKontrol_kontrolDesc'      => $this->efektifitasKontrol_kontrolDesc,
                 'efektifitasKontrol_totalEfektifitas' => $this->efektifitasKontrol_totalEfektifitas,
@@ -459,9 +529,9 @@ class RiskControlOw extends Component
         $perlakuanRisiko = PerlakuanRisiko::updateOrCreate(
             [
                 'perlakuanRisiko_id' => $this->perlakuanRisiko_id,
+                'controlRisk_id'     => $controlRisk->controlRisk_id ?? $this->controlRisk_id,
             ],
             [
-                'controlRisk_id'     => $controlRisk->controlRisk_id,
                 'jenisPerlakuan_id'  => $this->jenisPerlakuan_id,
                 'created_by'         => Auth::user()->user_id,
                 'updated_by'         => Auth::user()->user_id,
@@ -1211,6 +1281,8 @@ class RiskControlOw extends Component
         $this->closeModalConfirmPemantauanTinjauan();
     }
 
+
+
     // LIFE CYCLE HOOKS PEMANTAUAN TINJAUAN
     // OPEN MODAL LIVEWIRE 
     public $isOpenPemantauanTinjauan              = 0;
@@ -1304,6 +1376,109 @@ class RiskControlOw extends Component
     {
         $this->isOpenConfirmDeletePemantauanTinjauan = false;
     } 
+
+    // CETAK PEMANTAUAN TINJAUAN
+    public $isOpenCetakPemantauanTinjauan = 0;
+
+    // OPEN CETAK PEMANTAUAN TINJAUAN
+    public function openCetakPemantauanTinjauan($kpi_id)
+    {
+        $this->isOpenCetakPemantauanTinjauan = 1;
+
+        $this->kpi_id  = $kpi_id;
+    }
+
+    // CLOSE CETAK PEMANTAUAN TINJAUAN
+    public function closeCetakPemantauanTinjauan()
+    {
+        $this->isOpenCetakPemantauanTinjauan = 0;
+    }
+    // CLOSE CETAK PEMANTAUAN TINJAUAN
+    public function closeXCetakPemantauanTinjauan()
+    {
+        $this->isOpenCetakPemantauanTinjauan = 0;
+    }
+
+    // PRINT PEMANTAUAN TINJAUAN
+    public function printPemantauanTinjauan()
+    {
+        // KPIS FIND
+        $kpis = KPI::with([
+            'unit',
+            'konteks.risk.controlRisk.perlakuanRisiko.jenisPerlakuan',
+            'konteks.risk.controlRisk.derajatRisiko.seleraRisiko',
+            'konteks.risk.controlRisk.perlakuanRisiko.rencanaPerlakuan',
+            'konteks.risk.controlRisk.perlakuanRisiko.pemantauanTinjauan',
+            'konteks.risk.controlRisk.efektifitasControl.detailEfektifitasKontrol',
+        ])
+        ->where('kpi_lockStatus', true)
+        ->where('kpi_activeStatus', true)
+        ->whereHas('konteks.risk', function ($query) {
+            $query->where('risk_id', $this->risk_id);
+        })
+        ->find($this->kpi_id);
+        
+        // FIND UNIT
+        // SET UNIT KPI AND PEMILIK KPI
+        $this->unit_nama = $kpis->unit->unit_name;
+
+        // FIND RISK OWNER
+        $roleToFind         = "risk owner";
+        $usersWithRole      = $this->searchUsersWithRole($kpis->unit->user, $roleToFind);
+        $this->user_pemilik = ucwords($usersWithRole[0]->name);
+        
+        // Create Dompdf instance
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true); // Enable HTML5 parser
+        $options->set('isPhpEnabled', true); // Enable PHP
+
+        $formatPaper = 'landscape'; // Corrected spelling
+
+        // Set the page size and margins
+        $options->set('size', 'A4'); // Use standard A4 size
+        $options->set('margin-left', 0);
+        $options->set('margin-right', 0);
+        $options->set('margin-top', 0);
+        $options->set('margin-bottom', 0);
+
+        // Create a new Dompdf instance
+        $dompdf = new Dompdf($options);
+
+        // Load the HTML view with the data
+        $html = view('livewire.pages.risk-owner.risk-control.pemantauan-tinjauan.print-layout.pemantauan-tinjauan-layout', [
+            'kpis'          => $kpis,
+            'user_pemilik'  => $this->user_pemilik,
+            'unit_nama'     => $this->unit_nama,
+            'risk_id'       => $this->risk_id,
+        ])->render();
+
+        // Load the HTML into Dompdf
+        $dompdf->loadHtml($html);
+
+        // (Optional) Set paper size and orientation
+        $dompdf->setPaper('A4', $formatPaper);
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Get the PDF content as a string
+        $pdfContent = $dompdf->output();
+
+        // Return the PDF inline in the browser
+        // return response($pdfContent)
+        //     ->header('Content-Type', 'application/pdf')
+        //     ->header('Content-Disposition', 'inline; filename="raci-' . $kpis->kpi_kode . '.pdf"');
+
+        // CLOSE MODAL CETAK PEMANTAUAN TINJAUAN
+        $this->closeCetakPemantauanTinjauan();
+
+        // Option 1: Return the PDF as a download
+        // Return the PDF content with appropriate headers
+        return response()->streamDownload(function () use ($pdfContent) {
+            echo $pdfContent;
+        }, 'PEMANTAUAN-TINJAUAN-' . $kpis->kpi_kode . '.pdf');
+
+    }
 
     // RESET FORM PEMANTAUAN TINJAUAN
     public function resetFormPemantauanTinjauan()
@@ -2026,6 +2201,111 @@ class RiskControlOw extends Component
         $this->isOpenConfirmDeleteRACI = false;
     } 
 
+
+    // CETAK RACI
+    public $isOpenCetakRaci = 0;
+    
+    // OPEN CETAK RACI
+    public function openCetakRaci($kpi_id)
+    {
+        $this->isOpenCetakRaci = 1;
+
+        $this->kpi_id  = $kpi_id;
+    }
+
+    // CLOSE CETAK RACI
+    public function closeCetakRaci()
+    {
+        $this->isOpenCetakRaci = 0;
+    }
+    // CLOSE CETAK RACI
+    public function closeXCetakRaci()
+    {
+        $this->isOpenCetakRaci = 0;
+    }
+
+    // PRINT RACI
+    public function printRaci()
+    {
+        // KPIS FIND
+        $kpis = KPI::with([
+            'unit',
+            'konteks.risk.controlRisk.perlakuanRisiko.jenisPerlakuan',
+            'konteks.risk.controlRisk.derajatRisiko.seleraRisiko',
+            'konteks.risk.controlRisk.perlakuanRisiko.rencanaPerlakuan',
+            'konteks.risk.controlRisk.perlakuanRisiko.pemantauanTinjauan',
+            'konteks.risk.controlRisk.efektifitasControl.detailEfektifitasKontrol',
+            'konteks.risk.raci.stakeholder',
+        ])
+        ->where('kpi_lockStatus', true)
+        ->where('kpi_activeStatus', true)
+        ->whereHas('konteks.risk', function ($query) {
+            $query->where('risk_id', $this->risk_id);
+        })
+        ->find($this->kpi_id);
+        
+        // FIND UNIT
+        // SET UNIT KPI AND PEMILIK KPI
+        $this->unit_nama = $kpis->unit->unit_name;
+
+        // FIND RISK OWNER
+        $roleToFind         = "risk owner";
+        $usersWithRole      = $this->searchUsersWithRole($kpis->unit->user, $roleToFind);
+        $this->user_pemilik = ucwords($usersWithRole[0]->name);
+        
+        // Create Dompdf instance
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true); // Enable HTML5 parser
+        $options->set('isPhpEnabled', true); // Enable PHP
+
+        $formatPaper = 'landscape'; // Corrected spelling
+
+        // Set the page size and margins
+        $options->set('size', 'A4'); // Use standard A4 size
+        $options->set('margin-left', 0);
+        $options->set('margin-right', 0);
+        $options->set('margin-top', 0);
+        $options->set('margin-bottom', 0);
+
+        // Create a new Dompdf instance
+        $dompdf = new Dompdf($options);
+
+        // Load the HTML view with the data
+        $html = view('livewire.pages.risk-owner.risk-control.raci.print-layout.raci-layout', [
+            'kpis'          => $kpis,
+            'user_pemilik'  => $this->user_pemilik,
+            'unit_nama'     => $this->unit_nama,
+            'risk_id'       => $this->risk_id,
+        ])->render();
+
+        // Load the HTML into Dompdf
+        $dompdf->loadHtml($html);
+
+        // (Optional) Set paper size and orientation
+        $dompdf->setPaper('A4', $formatPaper);
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Get the PDF content as a string
+        $pdfContent = $dompdf->output();
+
+        // Return the PDF inline in the browser
+        // return response($pdfContent)
+        //     ->header('Content-Type', 'application/pdf')
+        //     ->header('Content-Disposition', 'inline; filename="raci-' . $kpis->kpi_kode . '.pdf"');
+
+        // CLOSE MODAL CETAK RACI
+        $this->closeCetakRaci();
+
+        // Option 1: Return the PDF as a download
+        // Return the PDF content with appropriate headers
+        return response()->streamDownload(function () use ($pdfContent) {
+            echo $pdfContent;
+        }, 'PENGELOLAAN-RACI-' . $kpis->kpi_kode . '.pdf');
+
+    }
+
     // RESET FORM RACI
     public function resetFormRACI()
     {
@@ -2706,7 +2986,107 @@ class RiskControlOw extends Component
     public function closeXModalConfirmDeleteKomunikasi()
     {
         $this->isOpenConfirmDeleteKomunikasi = false;
-    } 
+    }
+    
+    
+    // CETAK KOMUNIKASI
+    public $isOpenCetakKomunikasi = 0;
+    
+    // OPEN CETAK KOMUNIKASI
+    public function openCetakKomunikasi($kpi_id)
+    {
+        $this->isOpenCetakKomunikasi = 1;
+
+        $this->kpi_id  = $kpi_id;
+    }
+
+    // CLOSE CETAK KOMUNIKASI
+    public function closeCetakKomunikasi()
+    {
+        $this->isOpenCetakKomunikasi = 0;
+    }
+    // CLOSE CETAK KOMUNIKASI
+    public function closeXCetakKomunikasi()
+    {
+        $this->isOpenCetakKomunikasi = 0;
+    }
+
+    // PRINT KOMUNIKASI
+    public function printKomunikasi()
+    {
+        // KPIS FIND
+        $kpis = KPI::with([
+            'unit',
+            'konteks.risk.komunikasi.komunikasiStakeholder.stakeholder',
+        ])
+        ->where('kpi_lockStatus', true)
+        ->where('kpi_activeStatus', true)
+        ->whereHas('konteks.risk', function ($query) {
+            $query->where('risk_id', $this->risk_id);
+        })
+        ->find($this->kpi_id);
+        
+        // FIND UNIT
+        // SET UNIT KPI AND PEMILIK KPI
+        $this->unit_nama = $kpis->unit->unit_name;
+
+        // FIND RISK OWNER
+        $roleToFind         = "risk owner";
+        $usersWithRole      = $this->searchUsersWithRole($kpis->unit->user, $roleToFind);
+        $this->user_pemilik = ucwords($usersWithRole[0]->name);
+        
+        // Create Dompdf instance
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true); // Enable HTML5 parser
+        $options->set('isPhpEnabled', true); // Enable PHP
+
+        $formatPaper = 'landscape'; // Corrected spelling
+
+        // Set the page size and margins
+        $options->set('size', 'A4'); // Use standard A4 size
+        $options->set('margin-left', 0);
+        $options->set('margin-right', 0);
+        $options->set('margin-top', 0);
+        $options->set('margin-bottom', 0);
+
+        // Create a new Dompdf instance
+        $dompdf = new Dompdf($options);
+
+        // Load the HTML view with the data
+        $html = view('livewire.pages.risk-owner.risk-control.komunikasi-konsultasi.print-layout.komunikasi-layout', [
+            'kpis'          => $kpis,
+            'user_pemilik'  => $this->user_pemilik,
+            'unit_nama'     => $this->unit_nama,
+            'risk_id'       => $this->risk_id,
+        ])->render();
+
+        // Load the HTML into Dompdf
+        $dompdf->loadHtml($html);
+
+        // (Optional) Set paper size and orientation
+        $dompdf->setPaper('A4', $formatPaper);
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Get the PDF content as a string
+        $pdfContent = $dompdf->output();
+
+        // Return the PDF inline in the browser
+        // return response($pdfContent)
+        //     ->header('Content-Type', 'application/pdf')
+        //     ->header('Content-Disposition', 'inline; filename="raci-' . $kpis->kpi_kode . '.pdf"');
+
+        // CLOSE MODAL CETAK KOMUNIKASI
+        $this->closeCetakKomunikasi();
+
+        // Option 1: Return the PDF as a download
+        // Return the PDF content with appropriate headers
+        return response()->streamDownload(function () use ($pdfContent) {
+            echo $pdfContent;
+        }, 'KOMUNIKASI-' . $kpis->kpi_kode . '.pdf');
+
+    }
 
     // RESET FORM Komunikasi
     public function resetFormKomunikasi()
@@ -3303,6 +3683,106 @@ class RiskControlOw extends Component
     {
         $this->isOpenConfirmDeleteKonsultasi = false;
     } 
+
+    // CETAK KONSULTASI
+    public $isOpenCetakKonsultasi = 0;
+    
+    // OPEN CETAK KONSULTASI
+    public function openCetakKonsultasi($kpi_id)
+    {
+        $this->isOpenCetakKonsultasi = 1;
+
+        $this->kpi_id  = $kpi_id;
+    }
+
+    // CLOSE CETAK KONSULTASI
+    public function closeCetakKonsultasi()
+    {
+        $this->isOpenCetakKonsultasi = 0;
+    }
+    // CLOSE CETAK KONSULTASI
+    public function closeXCetakKonsultasi()
+    {
+        $this->isOpenCetakKonsultasi = 0;
+    }
+
+    // PRINT KONSULTASI
+    public function printKonsultasi()
+    {
+        // KPIS FIND
+        $kpis = KPI::with([
+            'unit',
+            'konteks.risk.konsultasi.konsultasiStakeholder.stakeholder',
+        ])
+        ->where('kpi_lockStatus', true)
+        ->where('kpi_activeStatus', true)
+        ->whereHas('konteks.risk', function ($query) {
+            $query->where('risk_id', $this->risk_id);
+        })
+        ->find($this->kpi_id);
+        
+        // FIND UNIT
+        // SET UNIT KPI AND PEMILIK KPI
+        $this->unit_nama = $kpis->unit->unit_name;
+
+        // FIND RISK OWNER
+        $roleToFind         = "risk owner";
+        $usersWithRole      = $this->searchUsersWithRole($kpis->unit->user, $roleToFind);
+        $this->user_pemilik = ucwords($usersWithRole[0]->name);
+        
+        // Create Dompdf instance
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true); // Enable HTML5 parser
+        $options->set('isPhpEnabled', true); // Enable PHP
+
+        $formatPaper = 'landscape'; // Corrected spelling
+
+        // Set the page size and margins
+        $options->set('size', 'A4'); // Use standard A4 size
+        $options->set('margin-left', 0);
+        $options->set('margin-right', 0);
+        $options->set('margin-top', 0);
+        $options->set('margin-bottom', 0);
+
+        // Create a new Dompdf instance
+        $dompdf = new Dompdf($options);
+
+        // Load the HTML view with the data
+        $html = view('livewire.pages.risk-owner.risk-control.komunikasi-konsultasi.print-layout.konsultasi-layout', [
+            'kpis'          => $kpis,
+            'user_pemilik'  => $this->user_pemilik,
+            'unit_nama'     => $this->unit_nama,
+            'risk_id'       => $this->risk_id,
+        ])->render();
+
+        // Load the HTML into Dompdf
+        $dompdf->loadHtml($html);
+
+        // (Optional) Set paper size and orientation
+        $dompdf->setPaper('A4', $formatPaper);
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Get the PDF content as a string
+        $pdfContent = $dompdf->output();
+
+        // Return the PDF inline in the browser
+        // return response($pdfContent)
+        //     ->header('Content-Type', 'application/pdf')
+        //     ->header('Content-Disposition', 'inline; filename="raci-' . $kpis->kpi_kode . '.pdf"');
+
+        // CLOSE MODAL CETAK KONSULTASI
+        $this->closeCetakKonsultasi();
+
+        // Option 1: Return the PDF as a download
+        // Return the PDF content with appropriate headers
+        return response()->streamDownload(function () use ($pdfContent) {
+            echo $pdfContent;
+        }, 'KONSULTASI-' . $kpis->kpi_kode . '.pdf');
+
+    }
+
 
     // RESET FORM Konsultasi
     public function resetFormKonsultasi()

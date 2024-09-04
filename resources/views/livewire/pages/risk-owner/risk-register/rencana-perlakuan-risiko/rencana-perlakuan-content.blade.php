@@ -219,10 +219,21 @@
                                         <td>
                                             <div class="btn-group gap-2" role="group">
                                                 @if ($item->controlRisk->first()->perlakuanRisiko->isNotEmpty())
-                                                    @if ($item->controlRisk->first()->perlakuanRisiko->first()->perlakuanRisiko_lockStatus)
-                                                        <span
-                                                            class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                    @else
+                                                    <button type="button"
+                                                        wire:click.prevent="showRencanaPerlakuan({{ $item->risk_id }})"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="showRencanaPerlakuan({{ $item->risk_id }})"
+                                                        class="btn btn-primary btn-sm d-flex text-center align-items-center">
+                                                        <i class="ri-eye-fill" wire:loading.remove
+                                                            wire:target='showRencanaPerlakuan({{ $item->risk_id }})'>
+                                                        </i>
+                                                        <span wire:loading
+                                                            wire:target="showRencanaPerlakuan({{ $item->risk_id }})">
+                                                            <span class="spinner-border spinner-border-sm"
+                                                                role="status" aria-hidden="true"></span>
+                                                        </span>
+                                                    </button>
+                                                    @if (!$item->controlRisk->first()->perlakuanRisiko->first()->perlakuanRisiko_lockStatus)
                                                         <button type="button"
                                                             wire:click.prevent="editRencanaPerlakuan({{ $item->risk_id }})"
                                                             wire:loading.attr="disabled"
@@ -237,20 +248,7 @@
                                                                     role="status" aria-hidden="true"></span>
                                                             </span>
                                                         </button>
-                                                        <button type="button"
-                                                            wire:click.prevent="showRencanaPerlakuan({{ $item->risk_id }})"
-                                                            wire:loading.attr="disabled"
-                                                            wire:target="showRencanaPerlakuan({{ $item->risk_id }})"
-                                                            class="btn btn-primary btn-sm d-flex text-center align-items-center">
-                                                            <i class="ri-eye-fill" wire:loading.remove
-                                                                wire:target='showRencanaPerlakuan({{ $item->risk_id }})'>
-                                                            </i>
-                                                            <span wire:loading
-                                                                wire:target="showRencanaPerlakuan({{ $item->risk_id }})">
-                                                                <span class="spinner-border spinner-border-sm"
-                                                                    role="status" aria-hidden="true"></span>
-                                                            </span>
-                                                        </button>
+
                                                         @if ($this->role === 'risk owner')
                                                             <button type="button"
                                                                 wire:click.prevent="openModalConfirmRencanaPerlakuan({{ $item->risk_id }})"

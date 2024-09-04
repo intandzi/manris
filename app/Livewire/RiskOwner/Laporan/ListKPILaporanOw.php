@@ -29,7 +29,7 @@ class ListKPILaporanOw extends Component
     public $search      = '';
     public $searchPeriod = '';
 
-    public $years = [];
+    public $years = [], $periodYears = [];
 
     // VARIABLES LIST KPI MODEL
     public $kpi_id, $kpi, $kpi_kode, $kpi_nama, $unit, $unit_id, $unit_nama, $user_pemilik;
@@ -63,6 +63,11 @@ class ListKPILaporanOw extends Component
         // Generate years for the select options
         for ($i = $currentYear - 4; $i <= $currentYear + 4; $i++) {
             $this->years[$i] = $i;
+        }
+
+        // Generate period years for the select options
+        for ($i = $currentYear - 20; $i <= $currentYear + 10; $i++) {
+            $this->periodYears[$i] = $i;
         }
     }
 
@@ -136,12 +141,17 @@ class ListKPILaporanOw extends Component
     public function printRiskRegister()
     {
         // FIND KPI
-        $kpis = KPI::with(['unit', 'kategoriStandar', 'konteks.risk.controlRisk'])
-            ->where('unit_id', $this->unit_id)
-            ->where('kpi_lockStatus', true)
-            ->where('kpi_activeStatus', true)
-            ->find($this->kpi_id);
-
+        $kpis = KPI::with([
+            'konteks.risk.controlRisk.perlakuanRisiko.jenisPerlakuan',
+            'konteks.risk.controlRisk.derajatRisiko.seleraRisiko',
+            'konteks.risk.controlRisk.perlakuanRisiko.rencanaPerlakuan',
+            'konteks.risk.controlRisk.efektifitasControl.detailEfektifitasKontrol',
+        ])
+        ->where('unit_id', $this->unit_id)
+        ->where('kpi_lockStatus', true)
+        ->where('kpi_activeStatus', true)
+        ->find($this->kpi_id);
+        
         // FIND UNIT
         // SET UNIT KPI AND PEMILIK KPI
         $this->unit_nama = $kpis->unit->unit_name;
@@ -169,7 +179,7 @@ class ListKPILaporanOw extends Component
         $dompdf = new Dompdf($options);
 
         // Load the HTML view with the data
-        $html = view('livewire.pages.risk-owner.raci.print-layout.raci-layout', [
+        $html = view('livewire.pages.risk-owner.laporan-manrisk.print-layout.risk-register-layout', [
             'kpis'          => $kpis,
             'user_pemilik'  => $this->user_pemilik,
             'unit_nama'     => $this->unit_nama,
@@ -232,19 +242,15 @@ class ListKPILaporanOw extends Component
     {
         // FIND KPI
         $kpis = KPI::with([
-            'konteks.risk.controlRisk' => function($query) {
-                $query->where('controlRisk_isControl', true);
-            },
             'konteks.risk.controlRisk.perlakuanRisiko.jenisPerlakuan',
+            'konteks.risk.controlRisk.derajatRisiko.seleraRisiko',
             'konteks.risk.controlRisk.perlakuanRisiko.rencanaPerlakuan',
-            'konteks.risk.controlRisk.efektifitasControl.detailEfektifitasKontrol',
+            'konteks.risk.controlRisk.efektifitasControl.detailEfektifitasKontrol', // Ensure detailEfektifitasKontrol exists
         ])
         ->where('unit_id', $this->unit_id)
         ->where('kpi_lockStatus', true)
         ->where('kpi_activeStatus', true)
         ->find($this->kpi_id);
-
-        dd($kpis);
 
         // FIND UNIT
         // SET UNIT KPI AND PEMILIK KPI

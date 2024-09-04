@@ -24,7 +24,7 @@ class LaporanManajemenRisiko extends Component
     public $unit_id, $unit_name, $visimisi_id, $visimisi_visi, $visimisi_misi, $created_at;
     public $isShow = false;
 
-    public $role;
+    public $role, $decryptedRole;
 
     // CONSTRUCTOR COMPONENT
     public function mount()
@@ -32,6 +32,8 @@ class LaporanManajemenRisiko extends Component
         // RETRIVE ROLE USER
         $role = Crypt::decryptString(request()->query('role'));
         $this->role = Crypt::encryptString($role);
+
+        $this->decryptedRole = $role;
     }
 
     public function render()

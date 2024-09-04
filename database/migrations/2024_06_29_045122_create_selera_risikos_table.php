@@ -18,9 +18,9 @@ return new class extends Migration
             $table->text('seleraRisiko_desc')->nullable(true);
             $table->text('seleraRisiko_tindakLanjut')->nullable(true);
             $table->boolean('seleraRisiko_activeStatus')->default(true)->nullable(true);
-            $table->char('created_by', 1)->nullable();
-            $table->char('updated_by', 1)->nullable();
-            $table->char('deleted_by', 1)->nullable();
+            $table->char('created_by', 3)->nullable();
+            $table->char('updated_by', 3)->nullable();
+            $table->char('deleted_by', 3)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

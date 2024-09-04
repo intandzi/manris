@@ -22,9 +22,9 @@ return new class extends Migration
             // $table->unique(['risk_id', 'controlRisk_id', 'stakeholder_id']);
             $table->char('raci_desc')->nullable(false);
             $table->boolean('raci_lockStatus')->default(false)->nullable(false);
-            $table->char('created_by', 1)->nullable();
-            $table->char('updated_by', 1)->nullable();
-            $table->char('deleted_by', 1)->nullable();
+            $table->char('created_by', 3)->nullable();
+            $table->char('updated_by', 3)->nullable();
+            $table->char('deleted_by', 3)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

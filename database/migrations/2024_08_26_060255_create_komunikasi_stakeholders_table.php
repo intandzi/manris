@@ -18,9 +18,9 @@ return new class extends Migration
             $table->bigInteger('stakeholder_id')->unsigned()->nullable();
             $table->foreign('stakeholder_id')->references('stakeholder_id')->on('stakeholders')->onDelete('cascade');
             $table->string('komunikasiStakeholder_ket')->nullable(false);
-            $table->char('created_by', 1)->nullable();
-            $table->char('updated_by', 1)->nullable();
-            $table->char('deleted_by', 1)->nullable();
+            $table->char('created_by', 3)->nullable();
+            $table->char('updated_by', 3)->nullable();
+            $table->char('deleted_by', 3)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

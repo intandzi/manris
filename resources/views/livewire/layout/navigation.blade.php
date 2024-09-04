@@ -171,6 +171,14 @@ new class extends Component {
                         <span> Validasi Risiko Unit</span>
                     </a>
                 </li>
+                <li class="side-nav-item {{ request()->routeIs('laporan-mrisk-umr.index', 'listKPILaporan-umr.index') ? 'menuitem-active' : '' }}">
+                    <a href="{{ route('laporan-mrisk-umr.index', ['role' => request()->query('role')]) }}"
+                        class="side-nav-link {{ request()->routeIs('laporan-mrisk-umr.index') ? 'active' : '' }}"
+                        wire:navigate>
+                        <i class="ri-stack-line"></i>
+                        <span> Laporan Manajemen Risiko</span>
+                    </a>
+                </li>
             @endif
 
             @if ($role === 'risk owner')

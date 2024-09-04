@@ -59,7 +59,9 @@
                                     RPN
                                 </th>
                                 <th style="width:100px;">Aksi</th>
-                                <th>Tindak Lanjut</th>
+                                @if ($this->role === 'risk owner')
+                                    <th>Tindak Lanjut</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -217,10 +219,21 @@
                                         <td>
                                             <div class="btn-group gap-2" role="group">
                                                 @if ($item->controlRisk->isNotEmpty())
-                                                    @if ($item->controlRisk->first()->controlRisk_lockStatus)
-                                                        <span
-                                                            class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                    @else
+                                                    <button type="button"
+                                                        wire:click.prevent="showAnalisis({{ $item->risk_id }})"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="showAnalisis({{ $item->risk_id }})"
+                                                        class="btn btn-primary btn-sm d-flex text-center align-items-center">
+                                                        <i class="ri-eye-fill" wire:loading.remove
+                                                            wire:target='showAnalisis({{ $item->risk_id }})'>
+                                                        </i>
+                                                        <span wire:loading
+                                                            wire:target="showAnalisis({{ $item->risk_id }})">
+                                                            <span class="spinner-border spinner-border-sm"
+                                                                role="status" aria-hidden="true"></span>
+                                                        </span>
+                                                    </button>
+                                                    @if (!$item->controlRisk->first()->controlRisk_lockStatus)
                                                         <button type="button"
                                                             wire:click.prevent="editAnalisis({{ $item->risk_id }})"
                                                             wire:loading.attr="disabled"
@@ -231,20 +244,6 @@
                                                             </i>
                                                             <span wire:loading
                                                                 wire:target="editAnalisis({{ $item->risk_id }})">
-                                                                <span class="spinner-border spinner-border-sm"
-                                                                    role="status" aria-hidden="true"></span>
-                                                            </span>
-                                                        </button>
-                                                        <button type="button"
-                                                            wire:click.prevent="showAnalisis({{ $item->risk_id }})"
-                                                            wire:loading.attr="disabled"
-                                                            wire:target="showAnalisis({{ $item->risk_id }})"
-                                                            class="btn btn-primary btn-sm d-flex text-center align-items-center">
-                                                            <i class="ri-eye-fill" wire:loading.remove
-                                                                wire:target='showAnalisis({{ $item->risk_id }})'>
-                                                            </i>
-                                                            <span wire:loading
-                                                                wire:target="showAnalisis({{ $item->risk_id }})">
                                                                 <span class="spinner-border spinner-border-sm"
                                                                     role="status" aria-hidden="true"></span>
                                                             </span>
@@ -268,16 +267,16 @@
                                                 @endif
                                             </div>
                                         </td>
-                                        <td>
-                                            <div class="btn-group gap-2" role="group">
-                                                @if ($item->controlRisk->isNotEmpty() && $item->efektifitasKontrol->isNotEmpty())
-                                                    @if (
-                                                        $item->controlRisk->first()->controlRisk_lockStatus &&
-                                                            $item->efektifitasKontrol->first()->efektifitasKontrol_lockStatus)
-                                                        <span
-                                                            class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                    @else
-                                                        @if ($this->role === 'risk owner')
+                                        @if ($this->role === 'risk owner')
+                                            <td>
+                                                <div class="btn-group gap-2" role="group">
+                                                    @if ($item->controlRisk->isNotEmpty() && $item->efektifitasKontrol->isNotEmpty())
+                                                        @if (
+                                                            $item->controlRisk->first()->controlRisk_lockStatus &&
+                                                                $item->efektifitasKontrol->first()->efektifitasKontrol_lockStatus)
+                                                            <span
+                                                                class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
+                                                        @else
                                                             <button type="button"
                                                                 wire:click.prevent="openModalConfirmAnalisis({{ $item->risk_id }})"
                                                                 wire:loading.attr="disabled"
@@ -292,19 +291,15 @@
                                                                         role="status" aria-hidden="true"></span>
                                                                 </span>
                                                             </button>
-                                                        @else
-                                                            <span
-                                                                class="badge badge-outline-danger rounded-pill mt-2">Bukan
-                                                                Hak Akses!</span>
                                                         @endif
+                                                    @else
+                                                        <span
+                                                            class="badge badge-outline-danger rounded-pill mt-2">Selesaikan
+                                                            <br> Analisis!</span>
                                                     @endif
-                                                @else
-                                                    <span
-                                                        class="badge badge-outline-danger rounded-pill mt-2">Selesaikan
-                                                        <br> Analisis!</span>
-                                                @endif
-                                            </div>
-                                        </td>
+                                                </div>
+                                            </td>
+                                        @endif
 
                                     </tr>
                                 @empty

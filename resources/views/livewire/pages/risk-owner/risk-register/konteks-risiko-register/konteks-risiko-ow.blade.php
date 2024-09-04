@@ -134,10 +134,21 @@
                                                 </td>
                                                 <td>
                                                     <div class="btn-group gap-2" role="group">
-                                                        @if ($item->konteks_lockStatus)
-                                                            <span
-                                                                class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                        @else
+                                                        <button type="button"
+                                                            wire:click.prevent="showKonteks({{ $item->konteks_id }})"
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="showKonteks({{ $item->konteks_id }})"
+                                                            class="btn btn-primary btn-sm d-flex text-center align-items-center">
+                                                            <i class="ri-eye-fill" wire:loading.remove
+                                                                wire:target='showKonteks({{ $item->konteks_id }})'>
+                                                            </i>
+                                                            <span wire:loading
+                                                                wire:target="showKonteks({{ $item->konteks_id }})">
+                                                                <span class="spinner-border spinner-border-sm"
+                                                                    role="status" aria-hidden="true"></span>
+                                                            </span>
+                                                        </button>
+                                                        @if (!$item->konteks_lockStatus)
                                                             <button type="button"
                                                                 wire:click.prevent="editKonteks({{ $item->konteks_id }})"
                                                                 wire:loading.attr="disabled"
@@ -152,20 +163,7 @@
                                                                         role="status" aria-hidden="true"></span>
                                                                 </span>
                                                             </button>
-                                                            <button type="button"
-                                                                wire:click.prevent="showKonteks({{ $item->konteks_id }})"
-                                                                wire:loading.attr="disabled"
-                                                                wire:target="showKonteks({{ $item->konteks_id }})"
-                                                                class="btn btn-primary btn-sm d-flex text-center align-items-center">
-                                                                <i class="ri-eye-fill" wire:loading.remove
-                                                                    wire:target='showKonteks({{ $item->konteks_id }})'>
-                                                                </i>
-                                                                <span wire:loading
-                                                                    wire:target="showKonteks({{ $item->konteks_id }})">
-                                                                    <span class="spinner-border spinner-border-sm"
-                                                                        role="status" aria-hidden="true"></span>
-                                                                </span>
-                                                            </button>
+
                                                             @if ($this->role === 'risk owner')
                                                                 <button type="button"
                                                                     wire:click.prevent="openModalConfirm({{ $item->konteks_id }})"
@@ -181,10 +179,6 @@
                                                                             role="status" aria-hidden="true"></span>
                                                                     </span>
                                                                 </button>
-                                                            @else
-                                                                <span
-                                                                    class="badge badge-outline-danger rounded-pill mt-2">Bukan
-                                                                    Hak Akses!</span>
                                                             @endif
                                                         @endif
                                                     </div>

@@ -28,6 +28,8 @@ use App\Livewire\RiskOwner\RiskControl\RiskControlOw;
 use App\Livewire\RiskOwner\RiskRegister\KonteksRisikoOwRiskRegister;
 use App\Livewire\RiskOwner\RiskRegister\ListKPIRiskOwnerRiskRegister;
 use App\Livewire\RiskOwner\RiskRegister\RiskRegisterOw;
+use App\Livewire\UMR\Laporan\LaporanManajemenRisikoUMR;
+use App\Livewire\UMR\Laporan\ListKPILaporanUMR;
 use App\Livewire\UMR\ListKPIUMR;
 use App\Livewire\UMR\ListUnitUMR;
 use App\Livewire\UMR\LogKonteksRisiko;
@@ -108,6 +110,12 @@ Route::group(['middleware' => ['auth', 'role:lembaga|unit manajemen risiko|risk 
 
     // RISK REGISTER
     Route::get('/unit-manajemen-risiko/risk-register', LogRiskRegister::class)->name('logRiskRegister.index');
+
+    // LAPORAN MANAJEMEN RISIKO
+    Route::get('/unit-manajemen-risiko/laporan-manajemen-risiko', LaporanManajemenRisikoUMR::class)->name('laporan-mrisk-umr.index');
+
+    // LIST LAPORAN KPI
+    Route::get('/unit-manajemen-risiko/laporan-daftar-kpi', ListKPILaporanUMR::class)->name('listKPILaporan-umr.index');
 
 
     // ROUTE UNIT MANAJEMEN RISIKO END ############################################################################

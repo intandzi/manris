@@ -1,15 +1,27 @@
 <div>
     <div class="container-fluid">
-        
+
         <!-- breadcrumbs component -->
         <nav aria-label="breadcrumb" class="mb-2">
-            <ol class="breadcrumb mb-0 p-2">
-                <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
-                        App</a></li>
-                <li class="breadcrumb-item active"><a href="{{ route('laporan-mrisk.index', ['role' => request()->query('role')]) }}"
-                        wire:navigate>{{ $title }}</a>
-                </li>
-            </ol>
+            @if ($decryptedRole === 'lembaga')
+                <ol class="breadcrumb mb-0 p-2">
+                    <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
+                            App</a></li>
+                    <li class="breadcrumb-item active"><a
+                            href="{{ route('laporan-mrisk.index', ['role' => request()->query('role')]) }}"
+                            wire:navigate>{{ $title }}</a>
+                    </li>
+                </ol>
+            @else
+                <ol class="breadcrumb mb-0 p-2">
+                    <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
+                            App</a></li>
+                    <li class="breadcrumb-item active"><a
+                            href="{{ route('laporan-mrisk-umr.index', ['role' => request()->query('role')]) }}"
+                            wire:navigate>{{ $title }}</a>
+                    </li>
+                </ol>
+            @endif
         </nav>
 
         <div class="row">

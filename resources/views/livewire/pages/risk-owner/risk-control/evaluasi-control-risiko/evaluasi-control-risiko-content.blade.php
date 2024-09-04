@@ -84,27 +84,29 @@
                                                     ? implode(', ', $tindakLanjut)
                                                     : 'No Active Tindak Lanjut';
 
-                                                $data[] = [
-                                                    'controlRisk_id' => $control->controlRisk_id,
-                                                    'controlRisk_lockStatus' => $control->controlRisk_lockStatus,
-                                                    'tglControl' => $control->created_at, // Assuming created_at is the Tanggal Control
-                                                    'efektifitasKontrol' => $risk->efektifitasKontrol
-                                                        ->pluck('efektifitasKontrol_totalEfektifitas')
-                                                        ->toArray(),
-                                                    'rpn' => $control->controlRisk_RPN,
-                                                    'perlakuanRisiko' =>
-                                                        optional(
+                                                if($control->controlRisk_lockStatus){ // only control is lock
+                                                    $data[] = [
+                                                        'controlRisk_id' => $control->controlRisk_id,
+                                                        'controlRisk_lockStatus' => $control->controlRisk_lockStatus,
+                                                        'tglControl' => $control->created_at, // Assuming created_at is the Tanggal Control
+                                                        'efektifitasKontrol' => $risk->efektifitasKontrol
+                                                            ->pluck('efektifitasKontrol_totalEfektifitas')
+                                                            ->toArray(),
+                                                        'rpn' => $control->controlRisk_RPN,
+                                                        'perlakuanRisiko' =>
+                                                            optional(
+                                                                optional($control->perlakuanRisiko->first())
+                                                                    ->jenisPerlakuan,
+                                                            )->jenisPerlakuan_desc ?? 'No Perlakuan Risiko',
+                                                        'rencanaPerlakuan' =>
                                                             optional($control->perlakuanRisiko->first())
-                                                                ->jenisPerlakuan,
-                                                        )->jenisPerlakuan_desc ?? 'No Perlakuan Risiko',
-                                                    'rencanaPerlakuan' =>
-                                                        optional($control->perlakuanRisiko->first())
-                                                            ->rencanaPerlakuan ?? 'No Rencana Perlakuan Risiko',
-                                                    'derajatRisiko' =>
-                                                        optional($control->derajatRisiko)->derajatRisiko_desc ??
-                                                        'No Derajat Risiko',
-                                                    'tindakLanjut' => $activeTindakLanjut,
-                                                ];
+                                                                ->rencanaPerlakuan ?? 'No Rencana Perlakuan Risiko',
+                                                        'derajatRisiko' =>
+                                                            optional($control->derajatRisiko)->derajatRisiko_desc ??
+                                                            'No Derajat Risiko',
+                                                        'tindakLanjut' => $activeTindakLanjut,
+                                                    ];
+                                                }
                                             }
                                         }
 

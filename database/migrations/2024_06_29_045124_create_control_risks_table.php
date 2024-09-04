@@ -30,9 +30,9 @@ return new class extends Migration
             $table->enum('controlRisk_efektivitas',  ['efektif', 'tidak efektif'])->nullable(true);
             $table->boolean('controlRisk_isControl')->default(false)->nullable(false);
             $table->boolean('controlRisk_lockStatus')->default(false)->nullable(false);
-            $table->char('created_by', 1)->nullable();
-            $table->char('updated_by', 1)->nullable();
-            $table->char('deleted_by', 1)->nullable();
+            $table->char('created_by', 3)->nullable();
+            $table->char('updated_by', 3)->nullable();
+            $table->char('deleted_by', 3)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

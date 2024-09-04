@@ -72,11 +72,22 @@
                                         </td>
                                         <td>
                                             @if ($item->kemungkinan->isNotEmpty())
-                                                @if ($item->kemungkinan->first()->kemungkinan_lockStatus)
-                                                    <span
-                                                        class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                @else
-                                                    <div class="d-inline d-flex">
+                                                <div class="d-inline d-flex">
+                                                    <button type="button"
+                                                        wire:click.prevent="showKemungkinan({{ $item->risk_id }})"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="showKemungkinan({{ $item->risk_id }})"
+                                                        class="btn btn-primary btn-sm btn-icon ms-1">
+                                                        <i class="ri-eye-fill" wire:loading.remove
+                                                            wire:target='showKemungkinan({{ $item->risk_id }})'>
+                                                        </i>
+                                                        <span wire:loading
+                                                            wire:target="showKemungkinan({{ $item->risk_id }})">
+                                                            <span class="spinner-border spinner-border-sm"
+                                                                role="status" aria-hidden="true"></span>
+                                                        </span>
+                                                    </button>
+                                                    @if (!$item->kemungkinan->first()->kemungkinan_lockStatus)
                                                         <button type="button"
                                                             wire:click.prevent="editKemungkinan({{ $item->risk_id }})"
                                                             wire:loading.attr="disabled"
@@ -91,22 +102,8 @@
                                                                     role="status" aria-hidden="true"></span>
                                                             </span>
                                                         </button>
-                                                        <button type="button"
-                                                            wire:click.prevent="showKemungkinan({{ $item->risk_id }})"
-                                                            wire:loading.attr="disabled"
-                                                            wire:target="showKemungkinan({{ $item->risk_id }})"
-                                                            class="btn btn-primary btn-sm btn-icon ms-1">
-                                                            <i class="ri-eye-fill" wire:loading.remove
-                                                                wire:target='showKemungkinan({{ $item->risk_id }})'>
-                                                            </i>
-                                                            <span wire:loading
-                                                                wire:target="showKemungkinan({{ $item->risk_id }})">
-                                                                <span class="spinner-border spinner-border-sm"
-                                                                    role="status" aria-hidden="true"></span>
-                                                            </span>
-                                                        </button>
-                                                    </div>
-                                                @endif
+                                                    @endif
+                                                </div>
                                             @else
                                                 <button type="button"
                                                     wire:click.prevent="openModalKemungkinan({{ $item->risk_id }})"
@@ -127,11 +124,22 @@
                                         </td>
                                         <td>
                                             @if ($item->dampak->isNotEmpty())
-                                                @if ($item->dampak->first()->dampak_lockStatus)
-                                                    <span
-                                                        class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                @else
-                                                    <div class="d-inline d-flex">
+                                                <div class="d-inline d-flex">
+                                                    <button type="button"
+                                                        wire:click.prevent="showDampak({{ $item->risk_id }})"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="showDampak({{ $item->risk_id }})"
+                                                        class="btn btn-primary btn-sm btn-icon ms-1">
+                                                        <i class="ri-eye-fill" wire:loading.remove
+                                                            wire:target='showDampak({{ $item->risk_id }})'>
+                                                        </i>
+                                                        <span wire:loading
+                                                            wire:target="showDampak({{ $item->risk_id }})">
+                                                            <span class="spinner-border spinner-border-sm"
+                                                                role="status" aria-hidden="true"></span>
+                                                        </span>
+                                                    </button>
+                                                    @if (!$item->dampak->first()->dampak_lockStatus)
                                                         <button type="button"
                                                             wire:click.prevent="editDampak({{ $item->risk_id }})"
                                                             wire:loading.attr="disabled"
@@ -146,22 +154,8 @@
                                                                     role="status" aria-hidden="true"></span>
                                                             </span>
                                                         </button>
-                                                        <button type="button"
-                                                            wire:click.prevent="showDampak({{ $item->risk_id }})"
-                                                            wire:loading.attr="disabled"
-                                                            wire:target="showDampak({{ $item->risk_id }})"
-                                                            class="btn btn-primary btn-sm btn-icon ms-1">
-                                                            <i class="ri-eye-fill" wire:loading.remove
-                                                                wire:target='showDampak({{ $item->risk_id }})'>
-                                                            </i>
-                                                            <span wire:loading
-                                                                wire:target="showDampak({{ $item->risk_id }})">
-                                                                <span class="spinner-border spinner-border-sm"
-                                                                    role="status" aria-hidden="true"></span>
-                                                            </span>
-                                                        </button>
-                                                    </div>
-                                                @endif
+                                                    @endif
+                                                </div>
                                             @else
                                                 <button type="button"
                                                     wire:click.prevent="openModalDampak({{ $item->risk_id }})"
@@ -182,11 +176,21 @@
                                         </td>
                                         <td>
                                             @if ($item->deteksiKegagalan->isNotEmpty())
-                                                @if ($item->deteksiKegagalan->first()->deteksiKegagalan_lockStatus)
-                                                    <span
-                                                        class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                @else
-                                                    <div class="d-inline d-flex">
+                                                <div class="d-inline d-flex">
+                                                    <button type="button"
+                                                        wire:click.prevent="showDeteksi({{ $item->risk_id }})"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="showDeteksi({{ $item->risk_id }})"
+                                                        class="btn btn-primary btn-sm text-center align-items-center ms-1">
+                                                        <i class="ri-eye-fill" wire:loading.remove
+                                                            wire:target='showDeteksi({{ $item->risk_id }})'></i>
+                                                        <span wire:loading
+                                                            wire:target="showDeteksi({{ $item->risk_id }})">
+                                                            <span class="spinner-border spinner-border-sm"
+                                                                role="status" aria-hidden="true"></span>
+                                                        </span>
+                                                    </button>
+                                                    @if (!$item->deteksiKegagalan->first()->deteksiKegagalan_lockStatus)
                                                         <button type="button"
                                                             wire:click.prevent="editDeteksi({{ $item->risk_id }})"
                                                             wire:loading.attr="disabled"
@@ -200,21 +204,8 @@
                                                                     role="status" aria-hidden="true"></span>
                                                             </span>
                                                         </button>
-                                                        <button type="button"
-                                                            wire:click.prevent="showDeteksi({{ $item->risk_id }})"
-                                                            wire:loading.attr="disabled"
-                                                            wire:target="showDeteksi({{ $item->risk_id }})"
-                                                            class="btn btn-primary btn-sm text-center align-items-center ms-1">
-                                                            <i class="ri-eye-fill" wire:loading.remove
-                                                                wire:target='showDeteksi({{ $item->risk_id }})'></i>
-                                                            <span wire:loading
-                                                                wire:target="showDeteksi({{ $item->risk_id }})">
-                                                                <span class="spinner-border spinner-border-sm"
-                                                                    role="status" aria-hidden="true"></span>
-                                                            </span>
-                                                        </button>
-                                                    </div>
-                                                @endif
+                                                    @endif
+                                                </div>
                                             @else
                                                 <button type="button"
                                                     wire:click.prevent="openModalDeteksi({{ $item->risk_id }})"

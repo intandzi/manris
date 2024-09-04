@@ -29,7 +29,8 @@
                                                         class="form-check-input @error('kemungkinan_id') is-invalid @enderror {{ $kemungkinan_id ? 'is-valid' : '' }}"
                                                         value="{{ $item->kemungkinan_id }}">
                                                     <label class="form-check-label" style="font-weight: 400"
-                                                        for="kemungkinanRadio{{ $index }}">{{ $item->kemungkinan_desc }}</label>
+                                                        for="kemungkinanRadio{{ $index }}">{{ $index + 1 }}.
+                                                        {{ $item->kemungkinan_desc }}</label>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -66,7 +67,8 @@
                                                         class="form-check-input @error('dampak_id') is-invalid @enderror {{ $dampak_id ? 'is-valid' : '' }}"
                                                         value="{{ $item->dampak_id }}">
                                                     <label class="form-check-label" style="font-weight: 400"
-                                                        for="dampakRadio{{ $index }}">{{ $item->dampak_desc }}</label>
+                                                        for="dampakRadio{{ $index }}">{{ $index + 1 }}.
+                                                        {{ $item->dampak_desc }}</label>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -104,7 +106,8 @@
                                                         class="form-check-input @error('deteksiKegagalan_id') is-invalid @enderror {{ $deteksiKegagalan_id ? 'is-valid' : '' }}"
                                                         value="{{ $item->deteksiKegagalan_id }}">
                                                     <label class="form-check-label" style="font-weight: 400"
-                                                        for="deteksiRadio{{ $index }}">{{ $item->deteksiKegagalan_desc }}</label>
+                                                        for="deteksiRadio{{ $index }}">{{ $index + 1 }}.
+                                                        {{ $item->deteksiKegagalan_desc }}</label>
                                                 </div>
                                             </div>
                                         @endforeach

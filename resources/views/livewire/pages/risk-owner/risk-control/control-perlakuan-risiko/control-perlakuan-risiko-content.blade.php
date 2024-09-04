@@ -71,9 +71,9 @@
                                 <th>
                                     Aksi
                                 </th>
-                                <th>
-                                    Tindak Lanjut
-                                </th>
+                                @if ($this->role === 'risk owner')
+                                    <th>Tindak Lanjut</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -177,10 +177,7 @@
                                                                 role="status" aria-hidden="true"></span>
                                                         </span>
                                                     </button>
-                                                    @if ($item['controlRisk_lockStatus'])
-                                                        <span
-                                                            class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                    @else
+                                                    @if (!$item['controlRisk_lockStatus'])
                                                         <button type="button"
                                                             wire:click.prevent="editControlRisk({{ $risk->risk_id }}, {{ $item['controlRisk_id'] }})"
                                                             wire:loading.attr="disabled"
@@ -197,14 +194,14 @@
                                                     @endif
                                                 </div>
                                             </td>
-                                            <td>
-                                                <!-- Your action buttons -->
-                                                <div class="btn-group gap-2" role="group">
-                                                    @if ($item['controlRisk_lockStatus'])
-                                                        <span
-                                                            class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                    @else
-                                                        @if ($this->role === 'risk owner')
+                                            @if ($this->role === 'risk owner')
+                                                <td>
+                                                    <!-- Your action buttons -->
+                                                    <div class="btn-group gap-2" role="group">
+                                                        @if ($item['controlRisk_lockStatus'])
+                                                            <span
+                                                                class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
+                                                        @else
                                                             <button type="button"
                                                                 wire:click.prevent="openModalConfirmControlRisk({{ $risk->risk_id }}, {{ $item['controlRisk_id'] }})"
                                                                 wire:loading.attr="disabled"
@@ -219,14 +216,10 @@
                                                                         role="status" aria-hidden="true"></span>
                                                                 </span>
                                                             </button>
-                                                        @else
-                                                            <span
-                                                                class="badge badge-outline-danger rounded-pill mt-2">Bukan
-                                                                Hak Akses!</span>
                                                         @endif
-                                                    @endif
-                                                </div>
-                                            </td>
+                                                    </div>
+                                                </td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 @endforeach

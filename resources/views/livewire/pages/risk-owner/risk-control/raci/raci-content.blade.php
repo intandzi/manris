@@ -9,10 +9,10 @@
                     <p>Pemilihan Stakeholder untuk konteks RACI.</p>
                 </div>
                 <div>
-                    <button type="button" wire:click.prevent="createKomunikasi" class="btn btn-dark"
-                        wire:loading.attr="disabled" wire:target="createKomunikasi">
+                    <button type="button" wire:click.prevent="openCetakRaci({{ $kpi_id }})" class="btn btn-dark"
+                        wire:loading.attr="disabled" wire:target="openCetakRaci({{ $kpi_id }})">
                         <i class="ri-printer-line"></i> Cetak RACI
-                        <span wire:loading class="ms-2" wire:target="createKomunikasi">
+                        <span wire:loading class="ms-2" wire:target="openCetakRaci({{ $kpi_id }})">
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         </span>
                     </button>
@@ -66,21 +66,21 @@
                                 <th>
                                     Aksi
                                 </th>
-                                <th>
-                                    Tindak Lanjut
-                                </th>
+                                @if ($this->role === 'risk owner')
+                                    <th>Tindak Lanjut</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
                             @php
                                 $no = 1;
                             @endphp
-                            @if ($controlRisks && count($controlRisks) > 0)
-                                @foreach ($controlRisks as $index => $risk)
+                            @if ($racis && count($racis) > 0)
+                                @foreach ($racis as $index => $risk)
                                     @php
                                         $data = [];
 
-                                        foreach ($controlRisks as $risk) {
+                                        foreach ($racis as $risk) {
                                             foreach ($risk->controlRisk as $control) {
                                                 // CHECK APAKAH CONTROL PEMANTAUAN KAJIAN SUDAH TERKUNCI
                                                 if ($control->perlakuanRisiko->first()->pemantauanKajian_lockStatus) {
@@ -178,10 +178,7 @@
                                                                     role="status" aria-hidden="true"></span>
                                                             </span>
                                                         </button>
-                                                        @if ($item['raci_lockStatus'])
-                                                            <span
-                                                                class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                        @else
+                                                        @if (!$item['raci_lockStatus'])
                                                             <button type="button"
                                                                 wire:click.prevent="editRACI({{ $item['controlRisk_id'] }})"
                                                                 wire:loading.attr="disabled"
@@ -212,15 +209,15 @@
                                                     @endif
                                                 </div>
                                             </td>
-                                            <td>
-                                                <!-- Your action buttons -->
-                                                <div class="btn-group gap-2" role="group">
-                                                    @if ($item['controlRisk_raci'])
-                                                        @if ($item['raci_lockStatus'])
-                                                            <span
-                                                                class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                        @else
-                                                            @if ($this->role === 'risk owner')
+                                            @if ($this->role === 'risk owner')
+                                                <td>
+                                                    <!-- Your action buttons -->
+                                                    <div class="btn-group gap-2" role="group">
+                                                        @if ($item['controlRisk_raci'])
+                                                            @if ($item['raci_lockStatus'])
+                                                                <span
+                                                                    class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
+                                                            @else
                                                                 <button type="button"
                                                                     wire:click.prevent="openModalConfirmRACI({{ $item['controlRisk_id'] }})"
                                                                     wire:loading.attr="disabled"
@@ -235,18 +232,14 @@
                                                                             role="status" aria-hidden="true"></span>
                                                                     </span>
                                                                 </button>
-                                                            @else
-                                                                <span
-                                                                    class="badge badge-outline-danger rounded-pill mt-2">Bukan
-                                                                    Hak Akses!</span>
                                                             @endif
+                                                        @else
+                                                            <span
+                                                                class="badge badge-outline-danger rounded-pill mt-2">Selesaikan!</span>
                                                         @endif
-                                                    @else
-                                                        <span
-                                                            class="badge badge-outline-danger rounded-pill mt-2">Selesaikan!</span>
-                                                    @endif
-                                                </div>
-                                            </td>
+                                                    </div>
+                                                </td>
+                                            @endif
                                         </tr>
                                     @empty
                                         <div class="alert alert-danger mt-2 mb-2">
@@ -264,7 +257,7 @@
                 </div> <!-- end table-responsive-->
                 <div class="row mt-2">
                     <div class="col-md-12 text-end">
-                        {!! $evaluasis->links() !!}
+                        {!! $racis->links() !!}
                     </div>
                 </div>
 
@@ -332,6 +325,42 @@
                         wire:loading.attr="disabled" wire:target="lockRACI">
                         Kunci RACI
                         <span wire:loading class="ms-2" wire:target="lockRACI">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <div class="modal-backdrop fade show"></div>
+@endif
+
+
+{{-- CETAK RACI --}}
+@if ($isOpenCetakRaci)
+    <div class="modal" tabindex="-1" role="dialog" style="display: block;" aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Menunggu Konfirmasi</h5>
+                    <button type="button" class="btn-close" aria-label="Close"
+                        wire:click="closeXCetakRaci"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin mencetak RACI? (Hanya data yang sudah terkunci akan dicetak.)
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" wire:click='closeCetakRaci'
+                        wire:loading.attr="disabled" wire:target="closeCetakRaci">
+                        Tutup
+                        <span wire:loading class="ms-2" wire:target="closeCetakRaci">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        </span>
+                    </button>
+                    <button type="button" class="btn btn-primary" wire:click="printRaci"
+                        wire:loading.attr="disabled" wire:target="printRaci">
+                        Cetak RACI
+                        <span wire:loading class="ms-2" wire:target="printRaci">
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         </span>
                     </button>

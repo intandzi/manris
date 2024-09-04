@@ -9,10 +9,10 @@
                     <p>Pemantauan dan Tinjauan untuk kontrol risiko.</p>
                 </div>
                 <div>
-                    <button type="button" wire:click.prevent="createKomunikasi" class="btn btn-dark"
-                        wire:loading.attr="disabled" wire:target="createKomunikasi">
+                    <button type="button" wire:click.prevent="openCetakPemantauanTinjauan({{ $kpi_id }})" class="btn btn-dark"
+                        wire:loading.attr="disabled" wire:target="openCetakPemantauanTinjauan({{ $kpi_id }})">
                         <i class="ri-printer-line"></i> Cetak Pemantauan dan Tinjauan
-                        <span wire:loading class="ms-2" wire:target="createKomunikasi">
+                        <span wire:loading class="ms-2" wire:target="openCetakPemantauanTinjauan({{ $kpi_id }})">
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         </span>
                     </button>
@@ -66,50 +66,54 @@
                                 <th>
                                     Aksi
                                 </th>
-                                <th>
-                                    Tindak Lanjut
-                                </th>
+                                @if ($this->role === 'risk owner')
+                                    <th>Tindak Lanjut</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
                             @php
                                 $no = 1;
                             @endphp
-                            @if ($controlRisks && count($controlRisks) > 0)
-                                @foreach ($controlRisks as $index => $risk)
+                            @if ($pemantauanTinjauans && count($pemantauanTinjauans) > 0)
+                                @foreach ($pemantauanTinjauans as $index => $risk)
                                     @php
                                         $data = [];
 
-                                        foreach ($controlRisks as $risk) {
+                                        foreach ($pemantauanTinjauans as $risk) {
                                             foreach ($risk->controlRisk as $control) {
-                                                $data[] = [
-                                                    'controlRisk_id' => $control->controlRisk_id,
-                                                    'controlRisk_lockStatus' => $control->controlRisk_lockStatus,
-                                                    'tglControl' => $control->created_at, // Assuming created_at is the Tanggal Control
-                                                    'efektifitasKontrol' => $risk->efektifitasKontrol
-                                                        ->pluck('efektifitasKontrol_totalEfektifitas')
-                                                        ->toArray(),
-                                                    'dampak' => $control->dampak->dampak_scale ?? 'No Dampak',
-                                                    'kemungkinan' =>
-                                                        $control->kemungkinan->kemungkinan_scale ?? 'No Kemungkinan',
-                                                    'deteksi' =>
-                                                        $control->deteksiKegagalan->deteksiKegagalan_scale ??
-                                                        'No Deteksi',
-                                                    'rpn' => $control->controlRisk_RPN,
-                                                    'perlakuanRisiko' =>
-                                                        $control->perlakuanRisiko->first()->jenisPerlakuan
-                                                            ->jenisPerlakuan_desc ?? 'No Perlakuan Risiko',
-                                                    'rencanaPerlakuan' =>
-                                                        $control->perlakuanRisiko->first()->rencanaPerlakuan ??
-                                                        'No Rencana Perlakuan Risiko',
-                                                    'pemantauanKajian' => $control->perlakuanRisiko
-                                                        ->first()
-                                                        ->pemantauanTinjauan->isNotEmpty()
-                                                        ? true
-                                                        : false,
-                                                    'pemantauanKajian_lockStatus' => $control->perlakuanRisiko->first()
-                                                        ->pemantauanKajian_lockStatus,
-                                                ];
+                                                if ($control->controlRisk_lockStatus) {
+                                                    // only control is lock
+                                                    $data[] = [
+                                                        'controlRisk_id' => $control->controlRisk_id,
+                                                        'controlRisk_lockStatus' => $control->controlRisk_lockStatus,
+                                                        'tglControl' => $control->created_at, // Assuming created_at is the Tanggal Control
+                                                        'efektifitasKontrol' => $risk->efektifitasKontrol
+                                                            ->pluck('efektifitasKontrol_totalEfektifitas')
+                                                            ->toArray(),
+                                                        'dampak' => $control->dampak->dampak_scale ?? 'No Dampak',
+                                                        'kemungkinan' =>
+                                                            $control->kemungkinan->kemungkinan_scale ??
+                                                            'No Kemungkinan',
+                                                        'deteksi' =>
+                                                            $control->deteksiKegagalan->deteksiKegagalan_scale ??
+                                                            'No Deteksi',
+                                                        'rpn' => $control->controlRisk_RPN,
+                                                        'perlakuanRisiko' =>
+                                                            $control->perlakuanRisiko->first()->jenisPerlakuan
+                                                                ->jenisPerlakuan_desc ?? 'No Perlakuan Risiko',
+                                                        'rencanaPerlakuan' =>
+                                                            $control->perlakuanRisiko->first()->rencanaPerlakuan ??
+                                                            'No Rencana Perlakuan Risiko',
+                                                        'pemantauanKajian' => $control->perlakuanRisiko
+                                                            ->first()
+                                                            ->pemantauanTinjauan->isNotEmpty()
+                                                            ? true
+                                                            : false,
+                                                        'pemantauanKajian_lockStatus' => $control->perlakuanRisiko->first()
+                                                            ->pemantauanKajian_lockStatus,
+                                                    ];
+                                                }
                                             }
                                         }
 
@@ -171,10 +175,7 @@
                                                                     role="status" aria-hidden="true"></span>
                                                             </span>
                                                         </button>
-                                                        @if ($item['pemantauanKajian_lockStatus'])
-                                                            <span
-                                                                class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                        @else
+                                                        @if (!$item['pemantauanKajian_lockStatus'])
                                                             <button type="button"
                                                                 wire:click.prevent="editPemantauanTinjauan({{ $item['controlRisk_id'] }})"
                                                                 wire:loading.attr="disabled"
@@ -205,15 +206,15 @@
                                                     @endif
                                                 </div>
                                             </td>
-                                            <td>
-                                                <!-- Your action buttons -->
-                                                <div class="btn-group gap-2" role="group">
-                                                    @if ($item['pemantauanKajian'])
-                                                        @if ($item['pemantauanKajian_lockStatus'])
-                                                            <span
-                                                                class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                        @else
-                                                            @if ($this->role === 'risk owner')
+                                            @if ($this->role === 'risk owner')
+                                                <td>
+                                                    <!-- Your action buttons -->
+                                                    <div class="btn-group gap-2" role="group">
+                                                        @if ($item['pemantauanKajian'])
+                                                            @if ($item['pemantauanKajian_lockStatus'])
+                                                                <span
+                                                                    class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
+                                                            @else
                                                                 <button type="button"
                                                                     wire:click.prevent="openModalConfirmPemantauanTinjauan({{ $item['controlRisk_id'] }})"
                                                                     wire:loading.attr="disabled"
@@ -228,18 +229,14 @@
                                                                             role="status" aria-hidden="true"></span>
                                                                     </span>
                                                                 </button>
-                                                            @else
-                                                                <span
-                                                                    class="badge badge-outline-danger rounded-pill mt-2">Bukan
-                                                                    Hak Akses!</span>
                                                             @endif
+                                                        @else
+                                                            <span
+                                                                class="badge badge-outline-danger rounded-pill mt-2">Selesaikan!</span>
                                                         @endif
-                                                    @else
-                                                        <span
-                                                            class="badge badge-outline-danger rounded-pill mt-2">Selesaikan!</span>
-                                                    @endif
-                                                </div>
-                                            </td>
+                                                    </div>
+                                                </td>
+                                            @endif
                                         </tr>
                                     @empty
                                         <div class="alert alert-danger mt-2 mb-2">
@@ -257,7 +254,7 @@
                 </div> <!-- end table-responsive-->
                 <div class="row mt-2">
                     <div class="col-md-12 text-end">
-                        {!! $evaluasis->links() !!}
+                        {!! $pemantauanTinjauans->links() !!}
                     </div>
                 </div>
 
@@ -299,6 +296,7 @@
 </div><!-- end row -->
 
 
+{{-- CONFIRM PEMANTAUAN TINJAUAN --}}
 @if ($isOpenConfirmPemantauanTinjauan)
     <div class="modal" tabindex="-1" role="dialog" style="display: block;" aria-modal="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -325,6 +323,41 @@
                         wire:loading.attr="disabled" wire:target="lockPemantauanTinjauan">
                         Kunci Pemantauan dan Tinjauan
                         <span wire:loading class="ms-2" wire:target="lockPemantauanTinjauan">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <div class="modal-backdrop fade show"></div>
+@endif
+
+{{-- CETAK PEMANTAUAN TINJAUAN --}}
+@if ($isOpenCetakPemantauanTinjauan)
+    <div class="modal" tabindex="-1" role="dialog" style="display: block;" aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Menunggu Konfirmasi</h5>
+                    <button type="button" class="btn-close" aria-label="Close"
+                        wire:click="closeXCetakPemantauanTinjauan"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin mencetak Pemantauan dan Tinjauan? (Hanya data yang sudah terkunci akan dicetak.)
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" wire:click='closeCetakPemantauanTinjauan'
+                        wire:loading.attr="disabled" wire:target="closeCetakPemantauanTinjauan">
+                        Tutup
+                        <span wire:loading class="ms-2" wire:target="closeCetakPemantauanTinjauan">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        </span>
+                    </button>
+                    <button type="button" class="btn btn-primary" wire:click="printPemantauanTinjauan"
+                        wire:loading.attr="disabled" wire:target="printPemantauanTinjauan">
+                        Cetak Pemantauan dan Tinjauan
+                        <span wire:loading class="ms-2" wire:target="printPemantauanTinjauan">
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         </span>
                     </button>

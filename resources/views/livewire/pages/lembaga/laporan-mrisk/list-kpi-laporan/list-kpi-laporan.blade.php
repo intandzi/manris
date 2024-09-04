@@ -4,61 +4,31 @@
 
         <!-- breadcrumbs component -->
         <nav aria-label="breadcrumb" class="mb-2">
-            <ol class="breadcrumb mb-0 p-2">
-                <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
-                        App</a></li>
-                <li class="breadcrumb-item"><a
-                        href="{{ route('laporan-mrisk.index', ['role' => $encryptedRole]) }}" wire:navigate>
-                        Laporan Manajemen Risiko</a></li>
-                <li class="breadcrumb-item active"><a href="#">KPI Unit
-                        {{ $title }}</a>
-                </li>
-            </ol>
+            @if ($this->role === 'lembaga')
+                <ol class="breadcrumb mb-0 p-2">
+                    <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
+                            App</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('laporan-mrisk.index', ['role' => $encryptedRole]) }}"
+                            wire:navigate>
+                            Laporan Manajemen Risiko</a></li>
+                    <li class="breadcrumb-item active"><a href="#">KPI Unit
+                            {{ $title }}</a>
+                    </li>
+                </ol>
+            @else
+                <ol class="breadcrumb mb-0 p-2">
+                    <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-apps"></i>
+                            App</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('laporan-mrisk-umr.index', ['role' => $encryptedRole]) }}"
+                            wire:navigate>
+                            Laporan Manajemen Risiko</a></li>
+                    <li class="breadcrumb-item active"><a href="#">KPI Unit
+                            {{ $title }}</a>
+                    </li>
+                </ol>
+            @endif
         </nav>
-        {{-- <div class="row">
-            <div class="col-md-12 mb-3">
-                <div class="accordion" id="accordionExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                <strong>Visi Misi {{ $title }}</strong>
-                            </button>
-                        </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <div class="col-md-12 mb-3">
-                                    <h4>Visi</h4>
-                                    @if ($unit->visimisi && $unit->visimisi->isEmpty())
-                                        <div class="alert alert-danger mt-2 mb-2">
-                                            No data available.
-                                        </div>
-                                    @else
-                                        @if ($unit->visimisi)
-                                            <p>
-                                                {!! $unit->visimisi->last()->visimisi_visi !!}
-                                            </p>
-                                        @endif
-                                    @endif
-                                </div>
-                                <div class="col-md-12">
-                                    <h4>Misi</h4>
-                                    @if ($unit->visimisi && $unit->visimisi->isEmpty())
-                                        <div class="alert alert-danger mt-2 mb-2">
-                                            No data available.
-                                        </div>
-                                    @else
-                                        <p>
-                                            {!! $unit->visimisi->last()->visimisi_misi !!}
-                                        </p>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -124,21 +94,12 @@
                             <div class="col-1 ms-auto">
                                 <label for="" class="form-label">Periode</label>
                                 <div class="input-group">
-                                    <select class="form-control" wire:model.live.debounce.100ms="search">
-                                        <option value="">2022</option>
-                                        <option value="">2023</option>
-                                        <option value="">2024</option>
-                                        <option value="">2025</option>
-                                        <option value="">2026</option>
+                                    <select class="form-control" wire:model.live.debounce.100ms="searchPeriod">
+                                        <option selected value="">--</option>
+                                        @foreach ($periodYears as $year)
+                                            <option value="{{ $year }}">{{ $year }}</option>
+                                        @endforeach
                                     </select>
-                                    @if ($search)
-                                        <button type="button" wire:click.prevent="clearSearch"
-                                            class="btn btn-primary d-flex align-items-center btn-sm"
-                                            title="Cancel Edit">
-                                            <i class="ri-close-line">
-                                            </i>
-                                        </button>
-                                    @endif
                                 </div>
                             </div>
                             <div class="col-3">
@@ -165,20 +126,22 @@
                                         <th wire:click.live="doSort('unit_name')" style="cursor: pointer;">
                                             Kode
                                         </th>
-                                        <th wire:click.live="doSort('unit_activeStatus')" style="cursor: pointer;">
+                                        <th wire:click.live="doSort('unit_activeStatus')"
+                                            style="cursor: pointer; width:300px;">
                                             Nama KPI
                                             <x-sorting-table :orderAsc="$orderAsc" :orderBy="$orderBy" :columnName="'status'" />
                                         </th>
                                         <th>
-                                            Kategori Standar
+                                            Tanggal Mulai
                                         </th>
                                         <th wire:click.live="doSort('unit_activeStatus')" style="cursor: pointer;">
-                                            Tanggal Mulai
+                                            Tanggal Akhir
                                         </th>
                                         <th wire:click.live="doSort('unit_activeStatus')" style="cursor: pointer;">
                                             Periode
                                         </th>
-                                        <th>Aksi</th>
+                                        <th>Profil Risiko</th>
+                                        <th>Kontrol Risiko</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -191,36 +154,62 @@
                                             <td>
                                                 {{ $kpi->kpi_kode }}
                                             </td>
-                                            <td>
+                                            <td style="word-break: break-word;">
                                                 {{ ucwords($kpi->kpi_nama) }}
-                                            </td>
-                                            <td>
-                                                {{ ucwords($kpi->kategoriStandar->kategoriStandar_desc) }}
                                             </td>
                                             <td>
                                                 {{ $kpi->kpi_tanggalMulai }}
                                             </td>
                                             <td>
-                                                {{ date('Y', strtotime($kpi->kpi_tanggalMulai)) }}
+                                                {{ $kpi->kpi_tanggalAkhir }}
                                             </td>
                                             <td>
-                                                <div class="btn-group gap-2" role="group">
-                                                    <button type="button"
-                                                        wire:click.prevent="showKPI({{ $kpi->kpi_id }})"
-                                                        wire:loading.attr="disabled"
-                                                        wire:target="showKPI({{ $kpi->kpi_id }})"
-                                                        class="btn btn-primary btn-sm d-flex text-center align-items-center"
-                                                        disabled>
-                                                        Laporan
-                                                        <span class="ms-2" wire:loading
-                                                            wire:target="showKPI({{ $kpi->kpi_id }})">
-                                                            <span class="spinner-border spinner-border-sm"
-                                                                role="status" aria-hidden="true"></span>
-                                                        </span>
-                                                    </button>
+                                                {{ $kpi->kpi_periode }}
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="d-flex justify-content-center align-items-center gap-2 flex-column">
+                                                    <div class="btn-group gap-2 d-flex flex-column" role="group">
+                                                        <button type="button"
+                                                            wire:click.prevent="openCetakRiskRegister({{ $kpi->kpi_id }})"
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="openCetakRiskRegister({{ $kpi->kpi_id }})"
+                                                            class="btn btn-dark btn-sm">
+                                                            <i class="ri-printer-line me-1" wire:loading.remove
+                                                                wire:target='openCetakRiskRegister({{ $kpi->kpi_id }})'>
+                                                            </i>
+                                                            Cetak
+                                                            <span class="ms-2" wire:loading
+                                                                wire:target="openCetakRiskRegister({{ $kpi->kpi_id }})">
+                                                                <span class="spinner-border spinner-border-sm"
+                                                                    role="status" aria-hidden="true"></span>
+                                                            </span>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </td>
-
+                                            <td>
+                                                <div
+                                                    class="d-flex justify-content-center align-items-center gap-2 flex-column">
+                                                    <div class="btn-group gap-2 d-flex flex-column" role="group">
+                                                        <button type="button"
+                                                            wire:click.prevent="openCetakRiskControl({{ $kpi->kpi_id }})"
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="openCetakRiskControl({{ $kpi->kpi_id }})"
+                                                            class="btn btn-dark btn-sm">
+                                                            <i class="ri-printer-line me-1" wire:loading.remove
+                                                                wire:target='openCetakRiskControl({{ $kpi->kpi_id }})'>
+                                                            </i>
+                                                            Cetak
+                                                            <span class="ms-2" wire:loading
+                                                                wire:target="openCetakRiskControl({{ $kpi->kpi_id }})">
+                                                                <span class="spinner-border spinner-border-sm"
+                                                                    role="status" aria-hidden="true"></span>
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
                                         </tr>
                                     @empty
                                         <div class="alert alert-danger mt-2 mb-2">
@@ -242,4 +231,85 @@
         </div><!-- end row -->
 
     </div> <!-- container -->
+
+
+    {{-- CETAK RISK REGISTER --}}
+    @if ($isOpenCetakRiskRegister)
+        <div class="modal" tabindex="-1" role="dialog" style="display: block;" aria-modal="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Menunggu Konfirmasi</h5>
+                        <button type="button" class="btn-close" aria-label="Close"
+                            wire:click="closeXCetakRiskRegister"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin
+                        mencetak Risk Register
+                        ini?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" wire:click='closeCetakRiskRegister'
+                            wire:loading.attr="disabled" wire:target="closeCetakRiskRegister">
+                            Tutup
+                            <span wire:loading class="ms-2" wire:target="closeCetakRiskRegister">
+                                <span class="spinner-border spinner-border-sm" role="status"
+                                    aria-hidden="true"></span>
+                            </span>
+                        </button>
+                        <button type="button" class="btn btn-primary" wire:click="printRiskRegister"
+                            wire:loading.attr="disabled" wire:target="printRiskRegister">
+                            Cetak Profil Risiko
+                            <span wire:loading class="ms-2" wire:target="printRiskRegister">
+                                <span class="spinner-border spinner-border-sm" role="status"
+                                    aria-hidden="true"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <div class="modal-backdrop fade show"></div>
+    @endif
+
+
+    {{-- CETAK RISK CONTROL --}}
+    @if ($isOpenCetakRiskControl)
+        <div class="modal" tabindex="-1" role="dialog" style="display: block;" aria-modal="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Menunggu Konfirmasi</h5>
+                        <button type="button" class="btn-close" aria-label="Close"
+                            wire:click="closeXCetakRiskControl"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin
+                        mencetak Kontrol Risiko
+                        ini?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" wire:click='closeCetakRiskControl'
+                            wire:loading.attr="disabled" wire:target="closeCetakRiskControl">
+                            Tutup
+                            <span wire:loading class="ms-2" wire:target="closeCetakRiskControl">
+                                <span class="spinner-border spinner-border-sm" role="status"
+                                    aria-hidden="true"></span>
+                            </span>
+                        </button>
+                        <button type="button" class="btn btn-primary" wire:click="printRiskControl"
+                            wire:loading.attr="disabled" wire:target="printRiskControl">
+                            Cetak Kontrol Risiko
+                            <span wire:loading class="ms-2" wire:target="printRiskControl">
+                                <span class="spinner-border spinner-border-sm" role="status"
+                                    aria-hidden="true"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <div class="modal-backdrop fade show"></div>
+    @endif
+
 </div>

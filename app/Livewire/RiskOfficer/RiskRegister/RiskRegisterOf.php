@@ -1621,7 +1621,10 @@ class RiskRegisterOf extends Component
 
         // FIND OR CREATE EFEKTIFITAS KONTROL
         $efektifitasKontrol = EfektifitasKontrol::updateOrCreate(
-            ['risk_id' => $this->risk_id],
+            [
+                'risk_id' => $this->risk_id,
+                'efektifitasKontrol_id' => $this->efektifitasKontrol_id,
+            ],
             [
                 'controlRisk_id'                      => $controlRisk->controlRisk_id,
                 'efektifitasKontrol_kontrolStatus'    => $this->efektifitasKontrol_kontrolStatus,
@@ -1914,9 +1917,10 @@ class RiskRegisterOf extends Component
     {
         $validated = $this->validate([
             'jenisPerlakuan_id'                => ['required'],
-            // 'rencanaPerlakuan_desc'            => ['required'],
+            'plans'                            => ['required'],
         ], [
             'jenisPerlakuan_id.required'       => 'Jenis Perlakuan wajib diisi!',
+            'plans.required'                   => 'Rencana Perlakuan wajib diisi!',
         ]);
     }
 

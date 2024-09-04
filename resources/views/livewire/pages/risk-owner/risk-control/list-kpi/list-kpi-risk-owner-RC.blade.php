@@ -61,7 +61,7 @@
                                 <div class="input-group">
                                     <select class="form-control" wire:model.live.debounce.100ms="searchPeriod">
                                         <option selected value="">--</option>
-                                        @foreach ($years as $year)
+                                        @foreach ($periodYears as $year)
                                             <option value="{{ $year }}">{{ $year }}</option>
                                         @endforeach
                                     </select>
@@ -164,27 +164,23 @@
                                                             @if ($kpi->konteks->isNotEmpty() && $kpi->konteks->first()->risk->isNotEmpty())
                                                                 @if ($this->role === 'risk owner')
                                                                     <button type="button"
-                                                                        wire:click.prevent="openModalConfirmSendUMR({{ $kpi->kpi_id }})"
+                                                                        wire:click.prevent="#"
                                                                         wire:loading.attr="disabled"
-                                                                        wire:target="openModalConfirmSendUMR({{ $kpi->kpi_id }})"
+                                                                        wire:target="#"
                                                                         class="btn btn-success btn-sm btn-icon">
                                                                         <i class="ri-send-plane-line me-1"
                                                                             wire:loading.remove
-                                                                            wire:target='openModalConfirmSendUMR({{ $kpi->kpi_id }})'>
+                                                                            wire:target='#'>
                                                                         </i>
                                                                         UMR
                                                                         <span wire:loading class="ms-2"
-                                                                            wire:target="openModalConfirmSendUMR({{ $kpi->kpi_id }})">
+                                                                            wire:target="#">
                                                                             <span
                                                                                 class="spinner-border spinner-border-sm"
                                                                                 role="status"
                                                                                 aria-hidden="true"></span>
                                                                         </span>
                                                                     </button>
-                                                                @else
-                                                                    <span
-                                                                        class="badge badge-outline-danger rounded-pill mt-2">Bukan
-                                                                        Hak Akses!</span>
                                                                 @endif
                                                             @else
                                                                 <span

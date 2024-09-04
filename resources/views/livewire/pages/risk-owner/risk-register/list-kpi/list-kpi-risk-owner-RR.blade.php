@@ -97,7 +97,7 @@
                                 <div class="input-group">
                                     <select class="form-control" wire:model.live.debounce.100ms="searchPeriod">
                                         <option selected value="">--</option>
-                                        @foreach ($years as $year)
+                                        @foreach ($periodYears as $year)
                                             <option value="{{ $year }}">{{ $year }}</option>
                                         @endforeach
                                     </select>
@@ -217,10 +217,6 @@
                                                                                 aria-hidden="true"></span>
                                                                         </span>
                                                                     </button>
-                                                                @else
-                                                                    <span
-                                                                        class="badge badge-outline-danger rounded-pill mt-2">Bukan
-                                                                        Hak Akses!</span>
                                                                 @endif
                                                             @else
                                                                 <span
