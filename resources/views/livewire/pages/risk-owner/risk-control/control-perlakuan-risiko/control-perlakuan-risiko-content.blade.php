@@ -116,7 +116,7 @@
                                             <td>
                                                 <button type="button"
                                                     class="btn btn-sm d-flex text-center align-items-center">
-                                                    @if (implode(', ', $item['efektifitasKontrol']) == 3)
+                                                    @if (implode(', ', $item['efektifitasKontrol']) == 3 || $item['efektifitasKontrol'] <= 3)
                                                         <!-- Display Efektif -->
                                                         Efektif
                                                     @elseif (implode(', ', $item['efektifitasKontrol']) >= 4 && implode(', ', $item['efektifitasKontrol']) <= 7)

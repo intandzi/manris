@@ -132,10 +132,7 @@
                                                             aria-hidden="true"></span>
                                                     </span>
                                                 </button>
-                                                @if ($item->komunikasi_lockStatus)
-                                                    <span
-                                                        class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                @else
+                                                @if (!$item->komunikasi_lockStatus)
                                                     <button type="button"
                                                         wire:click.prevent="editKomunikasi({{ $item->komunikasi_id }})"
                                                         wire:loading.attr="disabled"
@@ -328,10 +325,7 @@
                                                             aria-hidden="true"></span>
                                                     </span>
                                                 </button>
-                                                @if ($item->konsultasi_lockStatus)
-                                                    <span
-                                                        class="badge badge-outline-danger rounded-pill mt-2">Locked!</span>
-                                                @else
+                                                @if (!$item->konsultasi_lockStatus)
                                                     <button type="button"
                                                         wire:click.prevent="editKonsultasi({{ $item->konsultasi_id }})"
                                                         wire:loading.attr="disabled"

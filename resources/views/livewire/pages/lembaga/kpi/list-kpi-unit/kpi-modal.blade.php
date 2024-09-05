@@ -261,7 +261,7 @@
                         </button>
                         @if (!$isShow)
                             <button type="button" wire:click.prevent='storeKPI' wire:loading.attr="disabled"
-                                wire:target="storeKPI" class="btn btn-primary w-md waves-effect waves-light">Submit
+                                wire:target="kpi_dokumenPendukung,storeKPI" class="btn btn-primary w-md waves-effect waves-light">Submit
                                 <span wire:loading class="ms-2" wire:target="storeKPI">
                                     <span class="spinner-border spinner-border-sm" role="status"
                                         aria-hidden="true"></span>

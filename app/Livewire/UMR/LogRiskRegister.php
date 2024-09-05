@@ -175,12 +175,14 @@ class LogRiskRegister extends Component
         // RISK DATA
         $risks = Risk::with(['dampak', 'kemungkinan', 'deteksiKegagalan'])
             ->where('risk_validateRiskRegister', 0)
+            ->where('risk_lockStatus', true)
             ->where('konteks_id', $this->konteks_id)->search($this->searchRisk)
             ->orderBy($this->orderByRisk, $this->orderAscRisk ? 'asc' : 'desc')
             ->paginate($this->perPage);
 
         // KRITERIA RISIKO DATA
         $kriterias = Risk::with(['dampak', 'kemungkinan', 'deteksiKegagalan'])->where('konteks_id', $this->konteks_id)
+            ->where('risk_validateRiskRegister', 0)
             ->where('risk_lockStatus', true)
             ->search($this->searchRisk)
             ->orderBy($this->orderByRisk, $this->orderAscRisk ? 'asc' : 'desc')
@@ -189,6 +191,7 @@ class LogRiskRegister extends Component
         // ANALISIS RISIKO DATA    
         $dataAnalisis = Risk::with(['controlRisk.dampak', 'controlRisk.kemungkinan', 'controlRisk.deteksiKegagalan', 'efektifitasKontrol'])
         ->where('konteks_id', $this->konteks_id)
+        ->where('risk_validateRiskRegister', 0)
         ->where('risk_lockStatus', true)
         ->where('risk_kriteriaLockStatus', true)
         ->search($this->searchRisk)
@@ -203,6 +206,7 @@ class LogRiskRegister extends Component
             'controlRisk.derajatRisiko.seleraRisiko'
         ])
         ->where('konteks_id', $this->konteks_id)
+        ->where('risk_validateRiskRegister', 0)
         ->where('risk_lockStatus', true)
         ->where('risk_kriteriaLockStatus', true)
         ->search($this->searchRisk)
@@ -222,6 +226,7 @@ class LogRiskRegister extends Component
             'controlRisk.perlakuanRisiko.jenisPerlakuan',
         ])
         ->where('konteks_id', $this->konteks_id)
+        ->where('risk_validateRiskRegister', 0)
         ->where('risk_lockStatus', true)
         ->where('risk_kriteriaLockStatus', true)
         ->search($this->searchRisk)

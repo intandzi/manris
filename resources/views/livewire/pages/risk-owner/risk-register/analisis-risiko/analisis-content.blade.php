@@ -82,7 +82,7 @@
                                             @if ($item->controlRisk->isNotEmpty())
                                                 @if ($item->efektifitasKontrol->isNotEmpty())
                                                     @if ($item->efektifitasKontrol->first()->efektifitasKontrol_lockStatus)
-                                                        @if ($item->efektifitasKontrol->first()->efektifitasKontrol_totalEfektifitas == 3)
+                                                        @if ($item->efektifitasKontrol->first()->efektifitasKontrol_totalEfektifitas == 3 || $item->efektifitasKontrol->first()->efektifitasKontrol_totalEfektifitas <= 3)
                                                             <!-- Display Efektif -->
                                                             Efektif
                                                         @elseif (
@@ -108,7 +108,7 @@
                                                             wire:loading.attr="disabled"
                                                             wire:target="editEfektifitas({{ $item->risk_id }})"
                                                             class="btn btn-warning btn-sm d-flex text-center align-items-center">
-                                                            @if ($item->efektifitasKontrol->first()->efektifitasKontrol_totalEfektifitas == 3)
+                                                            @if ($item->efektifitasKontrol->first()->efektifitasKontrol_totalEfektifitas == 3 || $item->efektifitasKontrol->first()->efektifitasKontrol_totalEfektifitas <= 3)
                                                                 <!-- Display Efektif -->
                                                                 Efektif
                                                             @elseif (

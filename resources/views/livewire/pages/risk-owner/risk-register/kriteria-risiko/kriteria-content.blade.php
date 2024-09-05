@@ -77,7 +77,7 @@
                                                         wire:click.prevent="showKemungkinan({{ $item->risk_id }})"
                                                         wire:loading.attr="disabled"
                                                         wire:target="showKemungkinan({{ $item->risk_id }})"
-                                                        class="btn btn-primary btn-sm btn-icon ms-1">
+                                                        class="btn btn-primary btn-sm btn-icon me-2">
                                                         <i class="ri-eye-fill" wire:loading.remove
                                                             wire:target='showKemungkinan({{ $item->risk_id }})'>
                                                         </i>
@@ -129,7 +129,7 @@
                                                         wire:click.prevent="showDampak({{ $item->risk_id }})"
                                                         wire:loading.attr="disabled"
                                                         wire:target="showDampak({{ $item->risk_id }})"
-                                                        class="btn btn-primary btn-sm btn-icon ms-1">
+                                                        class="btn btn-primary btn-sm btn-icon me-2">
                                                         <i class="ri-eye-fill" wire:loading.remove
                                                             wire:target='showDampak({{ $item->risk_id }})'>
                                                         </i>
@@ -176,12 +176,12 @@
                                         </td>
                                         <td>
                                             @if ($item->deteksiKegagalan->isNotEmpty())
-                                                <div class="d-inline d-flex">
+                                                <div class="d-inline d-flex g-2">
                                                     <button type="button"
                                                         wire:click.prevent="showDeteksi({{ $item->risk_id }})"
                                                         wire:loading.attr="disabled"
                                                         wire:target="showDeteksi({{ $item->risk_id }})"
-                                                        class="btn btn-primary btn-sm text-center align-items-center ms-1">
+                                                        class="btn btn-primary btn-sm text-center align-items-center me-2">
                                                         <i class="ri-eye-fill" wire:loading.remove
                                                             wire:target='showDeteksi({{ $item->risk_id }})'></i>
                                                         <span wire:loading

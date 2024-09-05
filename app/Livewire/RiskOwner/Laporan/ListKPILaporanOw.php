@@ -144,6 +144,7 @@ class ListKPILaporanOw extends Component
         $kpis = KPI::with([
             'konteks.risk.controlRisk.perlakuanRisiko.jenisPerlakuan',
             'konteks.risk.controlRisk.derajatRisiko.seleraRisiko',
+            'konteks.risk.controlRisk.seleraRisiko',
             'konteks.risk.controlRisk.perlakuanRisiko.rencanaPerlakuan',
             'konteks.risk.controlRisk.efektifitasControl.detailEfektifitasKontrol',
         ])
@@ -244,6 +245,7 @@ class ListKPILaporanOw extends Component
         $kpis = KPI::with([
             'konteks.risk.controlRisk.perlakuanRisiko.jenisPerlakuan',
             'konteks.risk.controlRisk.derajatRisiko.seleraRisiko',
+            'konteks.risk.controlRisk.seleraRisiko',
             'konteks.risk.controlRisk.perlakuanRisiko.rencanaPerlakuan',
             'konteks.risk.controlRisk.efektifitasControl.detailEfektifitasKontrol', // Ensure detailEfektifitasKontrol exists
         ])

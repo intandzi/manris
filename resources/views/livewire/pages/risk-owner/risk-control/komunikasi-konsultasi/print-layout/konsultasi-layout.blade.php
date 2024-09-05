@@ -120,24 +120,22 @@
 
         @if ($kpis && $kpis->konteks->isNotEmpty())
             @php
-                $hasControlRisk = false;
+                $hasKonsultasi = false;
                 $index = 1;
             @endphp
 
             @foreach ($kpis->konteks as $konteks)
                 @foreach ($konteks->risk as $risk)
-                    @foreach ($risk->controlRisk as $controlRisk)
-                        @if ($controlRisk->controlRisk_lockStatus == 1)
-                            @php
-                                $hasControlRisk = true;
-                                // break 3; // Exit all loops once a controlRisk with controlRisk_isControl == 1 is found
-                            @endphp
-                        @endif
-                    @endforeach
+                    @if ($risk->konsultasi->isNotEmpty() && $risk->konsultasi->first()->konsultasi_lockStatus)
+                        @php
+                            $hasKonsultasi = true;
+                            // break 3; // Exit all loops once a controlRisk with controlRisk_isControl == 1 is found
+                        @endphp
+                    @endif
                 @endforeach
             @endforeach
 
-            @if ($hasControlRisk)
+            @if ($hasKonsultasi)
                 <table>
                     <thead>
                         <tr>

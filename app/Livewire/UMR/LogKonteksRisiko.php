@@ -196,7 +196,8 @@ class LogKonteksRisiko extends Component
 
         foreach ($konteksRisiko->risk as $risk) {
             // Check if risk_validateRiskRegister is false
-            if (!$risk->risk_validateRiskRegister || !$risk->risk_validateRiskControl) {
+            // if (!$risk->risk_validateRiskRegister || !$risk->risk_validateRiskControl) {
+            if (!$risk->risk_validateRiskRegister) {
                 // Update Risk lock statuses
                 $risk->update([
                     'risk_lockStatus'         => false,

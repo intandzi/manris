@@ -173,7 +173,7 @@
                                         <td class="rpn {{ $rpnClass }}">{{ $rpn }}</td>
                                         <td class="center">
                                             @if ($controlRisk->efektifitasControl->isNotEmpty())
-                                                @if ($controlRisk->efektifitasControl->first()->efektifitasKontrol_totalEfektifitas == 3)
+                                                @if ($controlRisk->efektifitasControl->first()->efektifitasKontrol_totalEfektifitas == 3 || $controlRisk->efektifitasControl->first()->efektifitasKontrol_totalEfektifitas <= 3)
                                                     <!-- Display Efektif -->
                                                     Efektif
                                                 @elseif (

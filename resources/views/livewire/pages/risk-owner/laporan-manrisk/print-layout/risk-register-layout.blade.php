@@ -151,7 +151,6 @@
                         @foreach ($kpis->konteks as $konteks)
                             @foreach ($konteks->risk as $risk)
                                 @foreach ($risk->controlRisk as $control)
-                                    
                                     @php
                                         $rpn = $control->controlRisk_RPN ?? 0;
                                         $rpnClass = '';

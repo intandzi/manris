@@ -42,6 +42,8 @@ class Dashboard extends Component
     // VARIABLE KEY
     public $role, $encryptedRole, $encryptedKPI;
 
+    public $totalKPI       = 0, $totalRisk      = 0, $totalControl   = 0;
+
     // Function to search for users with a specific role
     protected function searchUsersWithRole($users, $roleToFind) {
         $result = [];
@@ -78,6 +80,40 @@ class Dashboard extends Component
         for ($i = $currentYear - 20; $i <= $currentYear + 10; $i++) {
             $this->periodYears[$i] = $i;
         }
+
+        // Determine the query base
+        $query = KPI::with([
+            'unit',
+            'konteks.risk.controlRisk.perlakuanRisiko.jenisPerlakuan',
+            'konteks.risk.controlRisk.derajatRisiko.seleraRisiko',
+            'konteks.risk.controlRisk.perlakuanRisiko.rencanaPerlakuan',
+            'konteks.risk.controlRisk.efektifitasControl.detailEfektifitasKontrol', // Ensure detailEfektifitasKontrol exists
+        ])
+        ->where('kpi_lockStatus', true)
+        ->where('kpi_activeStatus', true);
+
+        // If the role matches 'risk owner' or 'risk officer', filter by unit_id
+        if (in_array($this->role, ['risk owner', 'risk officer'])) {
+            $unit_id = Auth::user()->unit_id;
+            $query->where('unit_id', $unit_id); // search by unit
+        }
+
+        // Paginate the results
+        $kpis = $query->get();
+
+        // Calculate the counts
+        foreach ($kpis as $kpi) {
+            $this->totalKPI++; // Count each KPI
+            foreach ($kpi->konteks as $konteks) {
+                $this->totalRisk += $konteks->risk->count(); // Count risks
+                foreach ($konteks->risk as $risk) {
+                    $this->totalControl += $risk->controlRisk->count(); // Count controls
+                }
+            }
+        }
+        
+        // Unit
+        $unit = Unit::find(Auth::user()->unit_id);
 
         // FIND USER PEMILIK
         // $roleToFind         = "risk owner";
@@ -126,32 +162,13 @@ class Dashboard extends Component
 
         // Paginate the results
         $kpis = $query->paginate($this->perPage);
-
-        // Initialize counters
-        $totalKPI       = 0;
-        $totalRisk      = 0;
-        $totalControl   = 0;
-
-        // Calculate the counts
-        foreach ($kpis as $kpi) {
-            $totalKPI++; // Count each KPI
-            foreach ($kpi->konteks as $konteks) {
-                $totalRisk += $konteks->risk->count(); // Count risks
-                foreach ($konteks->risk as $risk) {
-                    $totalControl += $risk->controlRisk->count(); // Count controls
-                }
-            }
-        }
-
+    
         // Unit
         $unit = Unit::find(Auth::user()->unit_id);
 
         return view('livewire.pages.dashboard.dashboard', [
             'kpis'              => $kpis,
-            'totalKPI'          => $totalKPI,
-            'totalRisk'         => $totalRisk,
             'unit'              => $unit,
-            'totalControl'      => $totalControl,
             'paginationInfo'    => $kpis->total() > 0
                 ? "Showing " . ($kpis->firstItem()) . " to " . ($kpis->lastItem()) . " of " . ($kpis->total()) . " entries"
                 : "No entries found",

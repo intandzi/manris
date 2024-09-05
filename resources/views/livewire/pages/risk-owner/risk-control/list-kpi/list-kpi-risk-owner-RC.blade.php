@@ -157,7 +157,7 @@
                                                                     role="status" aria-hidden="true"></span>
                                                             </span>
                                                         </button>
-                                                        @if ($kpi->kpi_sendUMRStatus)
+                                                        {{-- @if ($kpi->kpi_sendUMRStatus)
                                                             <span
                                                                 class="badge badge-outline-danger rounded-pill mt-2">Terkirim!</span>
                                                         @else
@@ -186,7 +186,7 @@
                                                                 <span
                                                                     class="badge badge-outline-danger rounded-pill mt-2">Selesaikan!</span>
                                                             @endif
-                                                        @endif
+                                                        @endif --}}
                                                         <button type="button"
                                                             wire:click.prevent="openHistoryPengembalian({{ $kpi->kpi_id }})"
                                                             wire:loading.attr="disabled"

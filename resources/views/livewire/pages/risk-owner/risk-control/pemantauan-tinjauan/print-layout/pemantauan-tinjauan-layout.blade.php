@@ -120,24 +120,26 @@
 
         @if ($kpis && $kpis->konteks->isNotEmpty())
             @php
-                $hasControlRisk = false;
+                $hasPemantauanTinjauan = false;
                 $index = 1;
             @endphp
 
             @foreach ($kpis->konteks as $konteks)
                 @foreach ($konteks->risk as $risk)
                     @foreach ($risk->controlRisk as $controlRisk)
-                        @if ($controlRisk->controlRisk_lockStatus == 1)
-                            @php
-                                $hasControlRisk = true;
-                                // break 3; // Exit all loops once a controlRisk with controlRisk_isControl == 1 is found
-                            @endphp
-                        @endif
+                        @foreach ($controlRisk->perlakuanRisiko as $perlakuanRisiko)
+                            @if ($perlakuanRisiko->pemantauanTinjauan->isNotempty() && $perlakuanRisiko->pemantauanKajian_lockStatus)
+                                @php
+                                    $hasPemantauanTinjauan = true;
+                                    // break 3; // Exit all loops once a controlRisk with controlRisk_isControl == 1 is found
+                                @endphp
+                            @endif
+                        @endforeach
                     @endforeach
                 @endforeach
             @endforeach
 
-            @if ($hasControlRisk)
+            @if ($hasPemantauanTinjauan)
                 <table>
                     <thead>
                         <tr>
@@ -173,24 +175,29 @@
                                             $perlakuanRisiko = $controlRisk->perlakuanRisiko->first();
 
                                             // Check if pemantauanKajian_lockStatus is true (1)
-                                            $pemantauanKajianLockStatus = $perlakuanRisiko ? $perlakuanRisiko->pemantauanKajian_lockStatus : null;
+                                            $pemantauanKajianLockStatus = $perlakuanRisiko
+                                                ? $perlakuanRisiko->pemantauanKajian_lockStatus
+                                                : null;
 
                                             // Initialize variables to store Pemantauan Tinjauan data
                                             $pemantauanDesc = '(Data tidak tersedia)';
                                             $pemantauanFreq = '(Data tidak tersedia)';
-                                            $tinjauanDesc   = '(Data tidak tersedia)';
-                                            $tinjauanFreq   = '(Data tidak tersedia)';
+                                            $tinjauanDesc = '(Data tidak tersedia)';
+                                            $tinjauanFreq = '(Data tidak tersedia)';
 
                                             // Retrieve the Pemantauan Tinjauan data if pemantauanKajianLockStatus is true
                                             if ($pemantauanKajianLockStatus) {
                                                 $pemantauanTinjauan = $perlakuanRisiko->pemantauanTinjauan->first();
 
                                                 if ($pemantauanTinjauan) {
-                                                    $pemantauanDesc = $pemantauanTinjauan->pemantauanTinjauan_pemantauanDesc;
-                                                    $pemantauanFreq = $pemantauanTinjauan->pemantauanTinjauan_freqPemantauan;
-                                                    $tinjauanDesc   = $pemantauanTinjauan->pemantauanTinjauan_tinjauanDesc;
-                                                    $tinjauanFreq   = $pemantauanTinjauan->pemantauanTinjauan_freqPelaporan;
-
+                                                    $pemantauanDesc =
+                                                        $pemantauanTinjauan->pemantauanTinjauan_pemantauanDesc;
+                                                    $pemantauanFreq =
+                                                        $pemantauanTinjauan->pemantauanTinjauan_freqPemantauan;
+                                                    $tinjauanDesc =
+                                                        $pemantauanTinjauan->pemantauanTinjauan_tinjauanDesc;
+                                                    $tinjauanFreq =
+                                                        $pemantauanTinjauan->pemantauanTinjauan_freqPelaporan;
                                                 }
                                             }
 
@@ -238,7 +245,6 @@
                 (Data tidak tersedia)
             </div>
         @endif
-        
     </div>
 </body>
 

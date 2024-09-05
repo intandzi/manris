@@ -120,24 +120,22 @@
 
         @if ($kpis && $kpis->konteks->isNotEmpty())
             @php
-                $hasControlRisk = false;
+                $hasRaci = false;
                 $index = 1;
             @endphp
 
             @foreach ($kpis->konteks as $konteks)
                 @foreach ($konteks->risk as $risk)
-                    @foreach ($risk->controlRisk as $controlRisk)
-                        @if ($controlRisk->controlRisk_lockStatus == 1)
-                            @php
-                                $hasControlRisk = true;
-                                // break 3; // Exit all loops once a controlRisk with controlRisk_isControl == 1 is found
-                            @endphp
-                        @endif
-                    @endforeach
+                    @if ($risk->raci->isNotEmpty() && $risk->raci->first()->raci_lockStatus)
+                        @php
+                            $hasRaci = true;
+                            // break 3; // Exit all loops once a controlRisk with controlRisk_isControl == 1 is found
+                        @endphp
+                    @endif
                 @endforeach
             @endforeach
 
-            @if ($hasControlRisk)
+            @if ($hasRaci)
                 <table>
                     <thead>
                         <tr>
@@ -237,6 +235,7 @@
             </div>
         @endif
     </div>
+    
 </body>
 
 </html>

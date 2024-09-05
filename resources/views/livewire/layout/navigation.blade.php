@@ -175,7 +175,7 @@ new class extends Component {
                     <a href="{{ route('laporan-mrisk-umr.index', ['role' => request()->query('role')]) }}"
                         class="side-nav-link {{ request()->routeIs('laporan-mrisk-umr.index') ? 'active' : '' }}"
                         wire:navigate>
-                        <i class="ri-stack-line"></i>
+                        <i class="ri-book-line"></i>
                         <span> Laporan Manajemen Risiko</span>
                     </a>
                 </li>

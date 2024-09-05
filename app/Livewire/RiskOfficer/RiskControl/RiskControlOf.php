@@ -1133,8 +1133,6 @@ class RiskControlOf extends Component
 
         $pemantauanTinjauan = $controlRisk->perlakuanRisiko->first()->pemantauanTinjauan->first();
 
-        // dd($pemantauanTinjauan);
-
         $this->pemantauanTinjauan_id                = $pemantauanTinjauan->pemantauanTinjauan_id;
         $this->pemantauanTinjauan_pemantauanDesc    = $pemantauanTinjauan->pemantauanTinjauan_pemantauanDesc;
         $this->pemantauanTinjauan_tinjauanDesc      = $pemantauanTinjauan->pemantauanTinjauan_tinjauanDesc;

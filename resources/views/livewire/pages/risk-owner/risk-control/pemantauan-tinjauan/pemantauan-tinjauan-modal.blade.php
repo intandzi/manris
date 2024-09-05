@@ -100,7 +100,7 @@
                                 @if ($isEditPemantauanTinjauan)
                                     <div class="row">
                                         <!-- Bukti Tinjauan Input -->
-                                        <div class="col-md-8">
+                                        <div class="col-md-12">
                                             <div class="mb-3">
                                                 <label class="form-label"
                                                     for="formrow-password_confirmation-input">Bukti
@@ -114,7 +114,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- Lihat Bukti Button -->
+                                        {{-- <!-- Lihat Bukti Button -->
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label class="form-label" for="lihat-bukti">
@@ -137,7 +137,7 @@
                                                     <p class="text-muted">No document uploaded</p>
                                                 @endif
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 @else
                                     <div class="mb-3">
@@ -180,7 +180,7 @@
                                 @if ($isEditPemantauanTinjauan)
                                     <div class="row">
                                         <!-- Bukti Tinjauan Input -->
-                                        <div class="col-md-8">
+                                        <div class="col-md-12">
                                             <div class="mb-3">
                                                 <label class="form-label" for="pemantauanTinjauan_buktiTinjauan">
                                                     Bukti Tinjauan <span style="color: red">*</span>
@@ -193,7 +193,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- Lihat Bukti Button -->
+                                        {{-- <!-- Lihat Bukti Button -->
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label class="form-label" for="lihat-bukti">
@@ -217,7 +217,7 @@
                                                     <p class="text-muted">No document uploaded</p>
                                                 @endif
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 @else
                                     <div class="mb-3">
@@ -333,7 +333,7 @@
                             </button>
                             @if (!$isShowPemantauanTinjauan || $isEditPemantauanTinjauan)
                                 <button type="button" wire:click.prevent='storePemantauanTinjauan'
-                                    wire:loading.attr="disabled" wire:target="storePemantauanTinjauan"
+                                    wire:loading.attr="disabled" wire:target="storePemantauanTinjauan, pemantauanTinjauan_buktiTinjauan, pemantauanTinjauan_buktiPemantauan"
                                     class="btn btn-primary w-md waves-effect waves-light">Submit
                                     <span wire:loading class="ms-2" wire:target="storePemantauanTinjauan">
                                         <span class="spinner-border spinner-border-sm" role="status"
