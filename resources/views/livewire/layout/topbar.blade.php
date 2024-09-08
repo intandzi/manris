@@ -40,7 +40,7 @@ new #[Layout('layouts.guest')] class extends Component {
                 <!-- Logo light -->
                 <a href="index.html" class="logo-light">
                     <span class="logo-lg">
-                        <img src="{{ asset('assets/images/logo.png') }}" alt="logo">
+                        <img src="{{ asset('assets/images/logo2.png') }}" alt="logo">
                     </span>
                     <span class="logo-sm">
                         <img src="{{ asset('assets/images/logo-sm.png') }}" alt="small logo">
@@ -50,7 +50,7 @@ new #[Layout('layouts.guest')] class extends Component {
                 <!-- Logo Dark -->
                 <a href="index.html" class="logo-dark">
                     <span class="logo-lg">
-                        <img src="{{ asset('assets/images/logo-dark.png') }}" alt="dark logo">
+                        <img src="{{ asset('assets/images/logo-dark2.png') }}" alt="dark logo">
                     </span>
                     <span class="logo-sm">
                         <img src="{{ asset('assets/images/logo-sm.png') }}" alt="small logo">
@@ -73,7 +73,7 @@ new #[Layout('layouts.guest')] class extends Component {
 
         <ul class="topbar-menu d-flex align-items-center gap-3">
 
-            <li class="dropdown notification-list">
+            {{-- <li class="dropdown notification-list">
                 <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button"
                     aria-haspopup="false" aria-expanded="false">
                     <i class="ri-notification-3-line fs-22"></i>
@@ -161,13 +161,13 @@ new #[Layout('layouts.guest')] class extends Component {
                     </a>
 
                 </div>
-            </li>
+            </li> --}}
 
-            <li class="d-none d-sm-inline-block">
+            {{-- <li class="d-none d-sm-inline-block">
                 <a class="nav-link" data-bs-toggle="offcanvas" href="#theme-settings-offcanvas">
                     <span class="ri-settings-3-line fs-22"></span>
                 </a>
-            </li>
+            </li> --}}
 
             <li class="d-none d-sm-inline-block">
                 <div class="nav-link" id="light-dark-mode">
@@ -175,20 +175,20 @@ new #[Layout('layouts.guest')] class extends Component {
                 </div>
             </li>
 
-            <li class="dropdown">
+            {{-- <li class="dropdown">
                 <a class="nav-link dropdown-toggle arrow-none nav-user" data-bs-toggle="dropdown" href="#"
                     role="button" aria-haspopup="false" aria-expanded="false">
                     <span class="account-user-avatar">
                         <img src="{{ asset('assets/images/users/avatar-1.jpg') }}" alt="user-image" width="32"
                             class="rounded-circle">
                     </span>
-                    {{-- <span class="d-lg-block d-none">
+                    <span class="d-lg-block d-none">
                         <h5 class="my-0 fw-normal">Adams
                             <i class="ri-arrow-down-s-line fs-22 d-none d-sm-inline-block align-middle"></i>
                         </h5>
-                    </span> --}}
+                    </span>
                 </a>
-                {{-- <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
                     <!-- item-->
                     <div class=" dropdown-header noti-title">
                         <h6 class="text-overflow m-0">Welcome !</h6>
@@ -223,8 +223,8 @@ new #[Layout('layouts.guest')] class extends Component {
                         <i class="ri-logout-circle-r-line align-middle me-1"></i>
                         <span>Logout</span>
                     </a>
-                </div> --}}
-            </li>
+                </div>
+            </li> --}}
         </ul>
     </div>
 </div>

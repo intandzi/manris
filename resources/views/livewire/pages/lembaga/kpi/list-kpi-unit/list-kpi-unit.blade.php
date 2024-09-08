@@ -144,9 +144,9 @@
                                         <th wire:click.live="doSort('kpi_periode')" style="cursor: pointer;">
                                             Periode
                                         </th>
-                                        <th wire:click.live="doSort('kpi_activeStatus')" style="cursor: pointer;">
+                                        {{-- <th wire:click.live="doSort('kpi_activeStatus')" style="cursor: pointer;">
                                             Status
-                                        </th>
+                                        </th> --}}
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -172,14 +172,14 @@
                                             <td>
                                                 {{ $kpi->kpi_periode }}
                                             </td>
-                                            <td>
+                                            {{-- <td>
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" type="checkbox"
                                                         id="toggle_{{ $kpi->kpi_id }}"
                                                         wire:click="toggleActive({{ $kpi->kpi_id }})"
                                                         @if ($kpi->kpi_activeStatus === 1) checked @endif>
                                                 </div>
-                                            </td>
+                                            </td> --}}
                                             <td>
                                                 <div class="btn-group gap-2" role="group">
                                                     @if (!$kpi->kpi_lockStatus)

@@ -165,9 +165,23 @@
                         {!! $risks->links() !!}
                     </div>
                 </div>
-
             </div> <!-- end card body-->
         </div> <!-- end card -->
+        <div class="row mt-2 mb-2">
+            <div class="col-md-6 text-start">
+                {{-- <button class="btn btn-dark">Sebelumnya</button> --}}
+            </div>
+            <div class="col-md-6 text-end">
+                <button type="button" wire:click.prevent="toggleTab('kriteriaContent')" class="btn btn-dark"
+                    wire:loading.attr="disabled" wire:target="toggleTab('kriteriaContent')">
+                    Selanjutnya
+                    <span wire:loading class="ms-2" wire:target="toggleTab('kriteriaContent')">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+
     </div><!-- end col-->
 </div><!-- end row -->
 

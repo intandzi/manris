@@ -30,7 +30,7 @@
                                     <td style="vertical-align: top;">:</td>
                                     <td style="vertical-align: bottom;">
                                         <p class="card-text" style="word-wrap: break-word;">
-                                            {{ ucwords($kategoriStandar_id) }}
+                                            {{ ucwords($kategoriStandar_desc) }}
                                         </p>
                                     </td>
                                 </tr>

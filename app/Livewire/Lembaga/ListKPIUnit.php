@@ -39,6 +39,7 @@ class ListKPIUnit extends Component
            $kpi_tanggalAkhir, 
            $kpi_periode, 
            $kategoriStandar_id, 
+           $kategoriStandar_desc, 
            $kpi_kategoriKinerja, 
            $kpi_indikatorKinerja, 
            $dokumen, 
@@ -261,11 +262,12 @@ class ListKPIUnit extends Component
         $this->isShow = true;
 
         // FIND KPI
-        $kpi = KPI::find($id);
+        $kpi = KPI::with(['kategoriStandar'])->find($id);
         
         // PASSING KPI
         $this->kpi_id               = $kpi->kpi_id;
         $this->kategoriStandar_id   = $kpi->kategoriStandar_id;
+        $this->kategoriStandar_desc = $kpi->kategoriStandar->kategoriStandar_desc;
         $this->kpi_kode             = $kpi->kpi_kode;
         $this->kpi_nama             = $kpi->kpi_nama;
         $this->kpi_tanggalMulai     = $kpi->kpi_tanggalMulai;

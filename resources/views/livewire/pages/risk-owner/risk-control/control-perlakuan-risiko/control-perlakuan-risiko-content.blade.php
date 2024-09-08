@@ -239,6 +239,27 @@
 
             </div> <!-- end card body-->
         </div> <!-- end card -->
+        <div class="row mt-2 mb-2">
+            <div class="col-md-6 text-start">
+                {{-- <button type="button" wire:click.prevent="toggleTab('identifikasiContent')" class="btn btn-dark"
+                    wire:loading.attr="disabled" wire:target="toggleTab('identifikasiContent')">
+                    Sebelumnya
+                    <span wire:loading class="ms-2" wire:target="toggleTab('identifikasiContent')">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </button> --}}
+            </div>
+            <div class="col-md-6 text-end">
+                <button type="button" wire:click.prevent="toggleTab('evaluasiKontrolRisikoContent')"
+                    class="btn btn-dark" wire:loading.attr="disabled"
+                    wire:target="toggleTab('evaluasiKontrolRisikoContent')">
+                    Selanjutnya
+                    <span wire:loading class="ms-2" wire:target="toggleTab('evaluasiKontrolRisikoContent')">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
     </div><!-- end col-->
 </div><!-- end row -->
 

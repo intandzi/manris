@@ -297,6 +297,26 @@
         </div> <!-- end card -->
     </div><!-- end col-->
 </div><!-- end row -->
+<div class="row mt-2 mb-2">
+    <div class="col-md-6 text-start">
+        <button type="button" wire:click.prevent="toggleTab('pemantauanTinjauanContent')" class="btn btn-dark"
+            wire:loading.attr="disabled" wire:target="toggleTab('pemantauanTinjauanContent')">
+            Sebelumnya
+            <span wire:loading class="ms-2" wire:target="toggleTab('pemantauanTinjauanContent')">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </span>
+        </button>
+    </div>
+    <div class="col-md-6 text-end">
+        <button type="button" wire:click.prevent="toggleTab('komunikasiKonsultasiContent')" class="btn btn-dark"
+            wire:loading.attr="disabled" wire:target="toggleTab('komunikasiKonsultasiContent')">
+            Selanjutnya
+            <span wire:loading class="ms-2" wire:target="toggleTab('komunikasiKonsultasiContent')">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </span>
+        </button>
+    </div>
+</div>
 
 
 @if ($isOpenConfirmRACI)

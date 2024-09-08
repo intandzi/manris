@@ -390,6 +390,26 @@
             </div> <!-- end card body-->
         </div> <!-- end card -->
     </div><!-- end col-->
+    <div class="row mt-2 mb-2">
+            <div class="col-md-6 text-start">
+                <button type="button" wire:click.prevent="toggleTab('RACIContent')" class="btn btn-dark"
+                    wire:loading.attr="disabled" wire:target="toggleTab('RACIContent')">
+                    Sebelumnya
+                    <span wire:loading class="ms-2" wire:target="toggleTab('RACIContent')">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="col-md-6 text-end">
+                {{-- <button type="button" wire:click.prevent="toggleTab('analisisContent')" class="btn btn-dark"
+                    wire:loading.attr="disabled" wire:target="toggleTab('analisisContent')">
+                    Selanjutnya
+                    <span wire:loading class="ms-2" wire:target="toggleTab('analisisContent')">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </button> --}}
+            </div>
+        </div>
 </div><!-- end row -->
 
 

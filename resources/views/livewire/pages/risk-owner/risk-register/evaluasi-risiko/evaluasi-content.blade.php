@@ -202,38 +202,62 @@
 
             </div> <!-- end card body-->
         </div> <!-- end card -->
-    </div><!-- end col-->
-</div><!-- end row -->
 
-<div class="row mt-1 mb-3">
-    <div class="col-12">
-        <div class="">
-            <div class="">
-                <div class="row">
-                    <div class="col-12">
-                        <label for="" class="form-label">Kategori Kekritisan</label>
+        <div class="row mt-1 mb-3">
+            <div class="col-12">
+                <div class="">
+                    <div class="">
                         <div class="row">
-                            <div class="col-md-12">
-                                <span>
-                                    <div class="badge bg-danger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                                    Tinggi 501 - 1000
-                                </span>
-                                <span> <br>
-                                    <div class="badge bg-warning">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <div class="col-12">
+                                <label for="" class="form-label">Kategori Kekritisan</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <span>
+                                            <div class="badge bg-danger">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                                            Tinggi 501 - 1000
+                                        </span>
+                                        <span> <br>
+                                            <div class="badge bg-warning">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                            Sedang 251 - 500
+                                        </span> <br>
+                                        <span>
+                                            <div class="badge bg-primary">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                            Rendah 1 - 250
+                                        </span>
                                     </div>
-                                    Sedang 251 - 500
-                                </span> <br>
-                                <span>
-                                    <div class="badge bg-primary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    </div>
-                                    Rendah 1 - 250
-                                </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div> <!-- end card body-->
-        </div> <!-- end card -->
+                    </div> <!-- end card body-->
+                </div> <!-- end card -->
+            </div><!-- end col-->
+        </div><!-- end row -->
+
+        <div class="row mt-2 mb-2">
+            <div class="col-md-6 text-start">
+                <button type="button" wire:click.prevent="toggleTab('analisisContent')" class="btn btn-dark"
+                    wire:loading.attr="disabled" wire:target="toggleTab('analisisContent')">
+                    Sebelumnya
+                    <span wire:loading class="ms-2" wire:target="toggleTab('analisisContent')">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="col-md-6 text-end">
+                <button type="button" wire:click.prevent="toggleTab('rencanaPerlakuanContent')" class="btn btn-dark"
+                    wire:loading.attr="disabled" wire:target="toggleTab('rencanaPerlakuanContent')">
+                    Selanjutnya
+                    <span wire:loading class="ms-2" wire:target="toggleTab('rencanaPerlakuanContent')">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
     </div><!-- end col-->
 </div><!-- end row -->
 

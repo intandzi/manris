@@ -40,7 +40,7 @@ new class extends Component {
     <!-- Logo Light -->
     <a href="index.html" class="logo logo-light">
         <span class="logo-lg">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="logo">
+            <img src="{{ asset('assets/images/logo2.png') }}" alt="logo">
         </span>
         <span class="logo-sm">
             <img src="{{ asset('assets/images/logo-sm.png') }}" alt="small logo">
@@ -50,7 +50,7 @@ new class extends Component {
     <!-- Logo Dark -->
     <a href="index.html" class="logo logo-dark">
         <span class="logo-lg">
-            <img src="{{ asset('assets/images/logo-dark.png') }}" alt="dark logo">
+            <img src="{{ asset('assets/images/logo-dark2.png') }}" alt="dark logo">
         </span>
         <span class="logo-sm">
             <img src="{{ asset('assets/images/logo-sm.png') }}" alt="small logo">

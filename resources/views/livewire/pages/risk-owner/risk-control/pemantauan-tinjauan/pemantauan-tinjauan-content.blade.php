@@ -9,10 +9,12 @@
                     <p>Pemantauan dan Tinjauan untuk kontrol risiko.</p>
                 </div>
                 <div>
-                    <button type="button" wire:click.prevent="openCetakPemantauanTinjauan({{ $kpi_id }})" class="btn btn-dark"
-                        wire:loading.attr="disabled" wire:target="openCetakPemantauanTinjauan({{ $kpi_id }})">
+                    <button type="button" wire:click.prevent="openCetakPemantauanTinjauan({{ $kpi_id }})"
+                        class="btn btn-dark" wire:loading.attr="disabled"
+                        wire:target="openCetakPemantauanTinjauan({{ $kpi_id }})">
                         <i class="ri-printer-line"></i> Cetak Pemantauan dan Tinjauan
-                        <span wire:loading class="ms-2" wire:target="openCetakPemantauanTinjauan({{ $kpi_id }})">
+                        <span wire:loading class="ms-2"
+                            wire:target="openCetakPemantauanTinjauan({{ $kpi_id }})">
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         </span>
                     </button>
@@ -260,38 +262,60 @@
 
             </div> <!-- end card body-->
         </div> <!-- end card -->
-    </div><!-- end col-->
-</div><!-- end row -->
-
-<div class="row mt-1 mb-3">
-    <div class="col-12">
-        <div class="">
-            <div class="">
-                <div class="row">
-                    <div class="col-12">
-                        <label for="" class="form-label">Kategori Kekritisan</label>
+        <div class="row mt-1 mb-3">
+            <div class="col-12">
+                <div class="">
+                    <div class="">
                         <div class="row">
-                            <div class="col-md-12">
-                                <span>
-                                    <div class="badge bg-danger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                                    Tinggi 501 - 1000
-                                </span>
-                                <span> <br>
-                                    <div class="badge bg-warning">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <div class="col-12">
+                                <label for="" class="form-label">Kategori Kekritisan</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <span>
+                                            <div class="badge bg-danger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                            Tinggi 501 - 1000
+                                        </span>
+                                        <span> <br>
+                                            <div class="badge bg-warning">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                            Sedang 251 - 500
+                                        </span> <br>
+                                        <span>
+                                            <div class="badge bg-primary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                            Rendah 1 - 250
+                                        </span>
                                     </div>
-                                    Sedang 251 - 500
-                                </span> <br>
-                                <span>
-                                    <div class="badge bg-primary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    </div>
-                                    Rendah 1 - 250
-                                </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div> <!-- end card body-->
-        </div> <!-- end card -->
+                    </div> <!-- end card body-->
+                </div> <!-- end card -->
+            </div><!-- end col-->
+        </div><!-- end row -->
+    
+        <div class="row mt-2 mb-2">
+            <div class="col-md-6 text-start">
+                <button type="button" wire:click.prevent="toggleTab('evaluasiKontrolRisikoContent')"
+                    class="btn btn-dark" wire:loading.attr="disabled"
+                    wire:target="toggleTab('evaluasiKontrolRisikoContent')">
+                    Sebelumnya
+                    <span wire:loading class="ms-2" wire:target="toggleTab('evaluasiKontrolRisikoContent')">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="col-md-6 text-end">
+                <button type="button" wire:click.prevent="toggleTab('RACIContent')" class="btn btn-dark"
+                    wire:loading.attr="disabled" wire:target="toggleTab('RACIContent')">
+                    Selanjutnya
+                    <span wire:loading class="ms-2" wire:target="toggleTab('RACIContent')">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
     </div><!-- end col-->
 </div><!-- end row -->
 
@@ -344,7 +368,8 @@
                         wire:click="closeXCetakPemantauanTinjauan"></button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin mencetak Pemantauan dan Tinjauan? (Hanya data yang sudah terkunci akan dicetak.)
+                    Apakah Anda yakin ingin mencetak Pemantauan dan Tinjauan? (Hanya data yang sudah terkunci akan
+                    dicetak.)
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" wire:click='closeCetakPemantauanTinjauan'

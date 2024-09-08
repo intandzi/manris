@@ -94,11 +94,11 @@ new #[Layout('layouts.guest')] class extends Component {
                             <div class="d-flex flex-column h-100">
                                 <div class="auth-brand p-4 text-center">
                                     <a href="index.html" class="logo-light">
-                                        <img src="{{ asset('assets/images/logo.png') }}" alt="logo" height="28">
+                                        <img src="{{ asset('assets/images/logo2.png') }}" alt="logo" height="28">
                                     </a>
                                     <a href="index.html" class="logo-dark">
-                                        <img src="{{ asset('assets/images/logo-dark.png') }}" alt="dark logo"
-                                            height="28">
+                                        <img src="{{ asset('assets/images/logo-dark2.png') }}" alt="dark logo"
+                                            height="50">
                                     </a>
                                 </div>
                                 <div class="p-4 text-center">
