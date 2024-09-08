@@ -38,7 +38,7 @@ new class extends Component {
 <div class="leftside-menu">
 
     <!-- Logo Light -->
-    <a href="index.html" class="logo logo-light">
+    <a href="#" class="logo logo-light">
         <span class="logo-lg">
             <img src="{{ asset('assets/images/logo2.png') }}" alt="logo">
         </span>
@@ -48,7 +48,7 @@ new class extends Component {
     </a>
 
     <!-- Logo Dark -->
-    <a href="index.html" class="logo logo-dark">
+    <a href="#" class="logo logo-dark">
         <span class="logo-lg">
             <img src="{{ asset('assets/images/logo-dark2.png') }}" alt="dark logo">
         </span>
