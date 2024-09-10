@@ -126,7 +126,7 @@
                                                         wire:loading.attr="disabled"
                                                         wire:target="konteksRisiko({{ $kpi->kpi_id }})"
                                                         class="btn btn-primary btn-sm d-flex text-center align-items-center">
-                                                        <i class="ri-eye-line me-1" wire:loading.remove
+                                                        <i class="ri-eye-fill me-1" wire:loading.remove
                                                             wire:target='konteksRisiko({{ $kpi->kpi_id }})'>
                                                         </i>
                                                         Lihat
