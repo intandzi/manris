@@ -117,9 +117,9 @@ new #[Layout('layouts.guest')] class extends Component {
                                             <span class="invalid-feedback">{{ $errors->first('form.email') }}</span>
                                         </div>
                                         <div class="mb-3">
-                                            <a href="auth-forgotpw.html" class="text-muted float-end"><small>Forgot
+                                            {{-- <a href="auth-forgotpw.html" class="text-muted float-end"><small>Forgot
                                                     your
-                                                    password?</small></a>
+                                                    password?</small></a> --}}
                                             <label for="password" class="form-label">Password</label>
                                             <input type="password" wire:model="form.password" name="password"
                                                 autocomplete="current-password" id="password"

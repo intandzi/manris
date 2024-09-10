@@ -192,7 +192,7 @@
                                                             wire:loading.attr="disabled"
                                                             wire:target="openHistoryPengembalian({{ $kpi->kpi_id }})"
                                                             class="btn btn-secondary btn-sm btn-icon">
-                                                            <i class="ri-login-box-line me-1" wire:loading.remove
+                                                            <i class="ri-history-line me-1" wire:loading.remove
                                                                 wire:target='openHistoryPengembalian({{ $kpi->kpi_id }})'>
                                                             </i>
                                                             History
