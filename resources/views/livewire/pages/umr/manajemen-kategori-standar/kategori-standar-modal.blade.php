@@ -13,7 +13,7 @@
                                 style="color: red">*</span></label>
                         <input type="text" wire:model="kategoriStandar_desc"
                             class="form-control @error('kategoriStandar_desc') is-invalid @enderror {{ $kategoriStandar_desc ? 'is-valid' : '' }}"
-                            id="formrow-firstkategoriStandar_desc-input" placeholder="ketik nama unit...">
+                            id="formrow-firstkategoriStandar_desc-input" placeholder="ketik nama kategori standar...">
                         <span class="invalid-feedback">{{ $errors->first('kategoriStandar_desc') }}</span>
                     </div>
                     <div class="mt-3 border-top mb-3"></div>

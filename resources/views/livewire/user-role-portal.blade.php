@@ -11,6 +11,7 @@ new #[Layout('layouts.portal')] class extends Component {
     {
         $this->userRoles = json_decode(Auth::user()->role);
     }
+    
 }; ?>
 <div>
     <div class="container mt-4">

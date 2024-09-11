@@ -96,7 +96,7 @@
                                             style="color: red">*</span></label>
                                     <input type="jabatan" wire:model="kpi_nama"
                                         class="form-control @error('kpi_nama') is-invalid @enderror {{ $kpi_nama ? 'is-valid' : '' }}"
-                                        id="formrow-kpi_nama-input" placeholder="ketik nama kpi..."
+                                        id="formrow-kpi_nama-input" placeholder="ketik deskripsi kpi..."
                                         {{ $isShow ? 'disabled' : '' }}>
                                     <span class="invalid-feedback">{{ $errors->first('kpi_nama') }}</span>
                                 </div>
@@ -125,7 +125,7 @@
                                             style="color: red">*</span></label>
                                     <input type="date" wire:model="kpi_tanggalMulai"
                                         class="form-control @error('kpi_tanggalMulai') is-invalid @enderror {{ $kpi_tanggalMulai ? 'is-valid' : '' }}"
-                                        id="formrow-kpi_tanggalMulai-input" placeholder="ketik nama kpi..."
+                                        id="formrow-kpi_tanggalMulai-input" placeholder="ketik tanggal mulai kpi..."
                                         {{ $isShow ? 'disabled' : '' }}>
                                     <span class="invalid-feedback">{{ $errors->first('kpi_tanggalMulai') }}</span>
                                 </div>
@@ -136,7 +136,7 @@
                                             style="color: red">*</span></label>
                                     <input type="date" wire:model="kpi_tanggalAkhir"
                                         class="form-control @error('kpi_tanggalAkhir') is-invalid @enderror {{ $kpi_tanggalAkhir ? 'is-valid' : '' }}"
-                                        id="formrow-kpi_tanggalAkhir-input" placeholder="ketik nama kpi..."
+                                        id="formrow-kpi_tanggalAkhir-input" placeholder="ketik tanggal selesai kpi..."
                                         {{ $isShow ? 'disabled' : '' }}>
                                     <span class="invalid-feedback">{{ $errors->first('kpi_tanggalAkhir') }}</span>
                                 </div>

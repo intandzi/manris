@@ -17,10 +17,21 @@
                                 id="formrow-firstunit_name-input" placeholder="ketik nama unit...">
                             <span class="invalid-feedback">{{ $errors->first('unit_name') }}</span>
                         </div>
+                        @if ($isEdit)
+                            <div class="mb-3">
+                                <label class="form-label" for="formrow-firstname-input">Status Unit <span
+                                        style="color: red">*</span></label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="toggle_{{ $unit_id }}"
+                                        wire:click="toggleActive({{ $unit_id }})"
+                                        @if ($unit_activeStatus) checked @endif>
+                                </div>
+                            </div>
+                        @endif
                         <div class="mt-3 border-top mb-3"></div>
                         <div class="mt-4 text-end">
-                            <button type="button" class="btn btn-secondary" wire:click='closeModal' wire:loading.attr="disabled"
-                                wire:target="closeModal">
+                            <button type="button" class="btn btn-secondary" wire:click='closeModal'
+                                wire:loading.attr="disabled" wire:target="closeModal">
                                 Close
                                 <span wire:loading class="ms-2" wire:target="closeModal">
                                     <span class="spinner-border spinner-border-sm" role="status"
@@ -28,13 +39,12 @@
                                 </span>
                             </button>
                             <button type="button" wire:click.prevent='storeUnit' wire:loading.attr="disabled"
-                                    wire:target="storeUnit"
-                                    class="btn btn-primary w-md waves-effect waves-light">Submit
-                                    <span wire:loading class="ms-2" wire:target="storeUnit">
-                                        <span class="spinner-border spinner-border-sm" role="status"
-                                            aria-hidden="true"></span>
-                                    </span>
-                                </button>
+                                wire:target="storeUnit" class="btn btn-primary w-md waves-effect waves-light">Submit
+                                <span wire:loading class="ms-2" wire:target="storeUnit">
+                                    <span class="spinner-border spinner-border-sm" role="status"
+                                        aria-hidden="true"></span>
+                                </span>
+                            </button>
                         </div>
                     </form>
                 </div>

@@ -48,7 +48,7 @@ use Livewire\Volt\Volt;
 Volt::route('/', 'pages.auth.login')
     ->name('login');
 
-Route::group(['middleware' => ['auth', 'role:lembaga|unit manajemen risiko|risk owner|risk officer']], function(){
+Route::group(['middleware' => ['auth', 'check.user.status', 'role:lembaga|unit manajemen risiko|risk owner|risk officer']], function(){
         
     // Route::get('/portal-login', UserRolePortal::class)->middleware('auth')->name('select-role');
 

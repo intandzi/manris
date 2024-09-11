@@ -3,6 +3,7 @@
 namespace App\Livewire\UMR;
 
 use App\Models\Unit;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -21,7 +22,15 @@ class ManajemenUnit extends Component
     public $search      = '';
 
     // VARIABLE GLOBAL CREATE UNIT
-    public $unit_id, $unit_name;
+    public $unit_id, $unit_name, $unit_activeStatus;
+
+
+    // CONSTRUCTOR COMPONENT
+    public function mount()
+    {
+        // COMPONENT CONSTRUCTOR
+        $units = Unit::all();
+    }
 
     public function render()
     {
@@ -87,14 +96,19 @@ class ManajemenUnit extends Component
         // OPEN MODAL
         $this->isOpen = true;
 
+        // IS EDIT
+        $this->isEdit = true;
+
         $this->resetForm();
+
         $this->resetValidation(); // This will clear any validation errors
 
         $unit   = Unit::find($id);
 
         // ASSIGN DATA TO VARIABLES
-        $this->unit_id          = $unit->unit_id;
-        $this->unit_name        = $unit->unit_name;// Assign the user's roles to selectedRoles
+        $this->unit_id                  = $unit->unit_id;
+        $this->unit_name                = $unit->unit_name;// Assign the user's roles to selectedRoles
+        $this->unit_activeStatus        = $unit->unit_activeStatus;// Assign the user's roles to selectedRoles
     }
 
 
@@ -115,11 +129,78 @@ class ManajemenUnit extends Component
     public bool $isActive = false;
     public function toggleActive($unitId)
     {
+
+        // SET UNIT_ID MATCH WITH PARAMETER
+        $this->unit_id = $unitId;
+
         // Find the unit by unit_id
-        $unit = Unit::find($unitId);
+        $unit = Unit::find($this->unit_id);
+
+        // OPEN MODAL
+        $this->isOpen = false;
         
+        if($unit->unit_activeStatus){
+
+            // OPEN CONFIRM NON AKTIF
+            $this->openModalConfirmNonaktif();
+
+        }else{
+
+            // NON AKTIFKAN USER THAT RELATED WITH UNIT
+            $user = User::where('unit_id', $this->unit_id)->get();
+
+            foreach($user as $item){
+                $item->update(['status' => 0]);
+            }
+
+            // Toggle the status between 0 and 1 (assuming 0 represents inactive and 1 represents active)
+            $unit->update(['unit_activeStatus' => 1, 'updated_by'   => Auth::user()->user_id]);
+    
+            flash()
+                ->option('position', 'bottom-right')
+                ->option('timeout', 3000)
+                ->success('Data Anda telah disimpan!');
+        }
+
+    }
+
+    // CONFIRM NONAKTIF UNIT
+    public function confirmNonaktif()
+    {
+        // Find the unit by unit_id
+        $unit = Unit::find($this->unit_id);
+
         // Toggle the status between 0 and 1 (assuming 0 represents inactive and 1 represents active)
-        $unit->update(['unit_activeStatus' => !$unit->unit_activeStatus, 'updated_by'   => Auth::user()->user_id]);
+        $unit->update(['unit_activeStatus' => 0, 'updated_by'   => Auth::user()->user_id]);
+
+        // NON AKTIFKAN USER THAT RELATED WITH UNIT
+        $users = User::where('unit_id', $this->unit_id)->get();
+
+        foreach($users as $item) {
+            // Update the status of each user to 0
+            $item->update(['status' => 0]);
+
+            // Check if the current user is the one being updated
+            if($item->user_id === Auth::user()->user_id) {
+                // Perform logout
+                Auth::logout();
+
+                // Optionally, you can invalidate the user's session and regenerate the token
+                request()->session()->invalidate();
+                request()->session()->regenerateToken();
+
+                flash()
+                ->option('position', 'bottom-right')
+                ->option('timeout', 3000)
+                ->error('Your account has been deactivated.');
+
+                // Redirect the user to the login page or another page
+                return redirect()->route('login');
+            }
+        }
+
+        // Close the modal
+        $this->closeXModalConfirmNonaktif();
 
         flash()
             ->option('position', 'bottom-right')
@@ -130,6 +211,9 @@ class ManajemenUnit extends Component
     // LIFE CYCLE HOOKS
     // OPEN MODAL LIVEWIRE 
     public $isOpen = 0;
+
+    public $isEdit = 0;
+    public $isOpenConfirmNonaktif = 0;
     public function create()
     {
         $this->openModal();
@@ -142,6 +226,15 @@ class ManajemenUnit extends Component
         $this->resetValidation(); // This will clear any validation errors
 
         $this->isOpen = true;
+
+        // IS EDIT
+        $this->isEdit = false;
+    }
+
+    // OPEN MODAL CONFIRM NON AKTIF
+    public function openModalConfirmNonaktif()
+    {
+        $this->isOpenConfirmNonaktif = true;
     }
 
     // CLOSE MODAL
@@ -156,6 +249,12 @@ class ManajemenUnit extends Component
         $this->resetValidation();
     } 
 
+    // CLOSE MODAL CONFIRM NON AKTIF
+    public function closeModalConfirmNonaktif()
+    {
+        $this->isOpenConfirmNonaktif = false;
+    } 
+
     // CLOSE MODAL
     public function closeXModal()
     {
@@ -166,6 +265,12 @@ class ManajemenUnit extends Component
 
         // Reset form validation
         $this->resetValidation();
+    } 
+
+    // CLOSE MODAL CONFIRM NON AKTIF
+    public function closeXModalConfirmNonaktif()
+    {
+        $this->isOpenConfirmNonaktif = false;
     } 
 
     // RESET PAGINATION AFTER SEARCH

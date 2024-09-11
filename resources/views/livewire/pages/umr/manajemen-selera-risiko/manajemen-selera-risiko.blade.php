@@ -52,10 +52,10 @@
                                 </select>
                             </div>
                             <div class="col-3 ms-auto">
-                                <label for="" class="form-label">Search Pertanyaan</label>
+                                <label for="" class="form-label">Search Selera</label>
                                 <div class="input-group">
                                     <input wire:model.live.debounce.100ms="search" type="text" class="form-control"
-                                        placeholder="Search Pertanyaan...">
+                                        placeholder="Search Selera ...">
                                     @if ($search)
                                         <button type="button" wire:click.prevent="clearSearch"
                                             class="btn btn-primary d-flex align-items-center btn-sm"

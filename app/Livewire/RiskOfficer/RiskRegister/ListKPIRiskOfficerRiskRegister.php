@@ -6,6 +6,7 @@ use App\Models\KategoriStandar;
 use App\Models\KonteksRisiko;
 use App\Models\KPI;
 use App\Models\Unit;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
