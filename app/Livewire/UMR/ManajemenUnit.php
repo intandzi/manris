@@ -150,7 +150,7 @@ class ManajemenUnit extends Component
             $user = User::where('unit_id', $this->unit_id)->get();
 
             foreach($user as $item){
-                $item->update(['status' => 0]);
+                $item->update(['status' => 1]);
             }
 
             // Toggle the status between 0 and 1 (assuming 0 represents inactive and 1 represents active)
