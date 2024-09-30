@@ -57,73 +57,18 @@
                                 $no = 1;
                             @endphp
                             @if ($evaluasis && count($evaluasis) > 0)
-                                {{-- @forelse ($evaluasis as $index => $item)
-                                    <tr>
-                                        <td>{{ $no++ }}</td>
-                                        <td>
-                                            {{ $item->risk_kode }}
-                                        </td>
-                                        <td style="word-break: break-word;">
-                                            {{ $item->risk_riskDesc }}
-                                        </td>
-                                        <td>
-                                            @if ($item->first()->controlRisk->isNotEmpty())
-                                                @php
-                                                    $controlRiskRPN = $item->controlRisk->first()->controlRisk_RPN;
-                                                    $background = '';
-
-                                                    if ($controlRiskRPN <= 250) {
-                                                        $background = 'success';
-                                                    } elseif ($controlRiskRPN <= 500) {
-                                                        $background = 'warning';
-                                                    } elseif ($controlRiskRPN <= 1000) {
-                                                        $background = 'danger';
-                                                    }
-                                                @endphp
-
-                                                <button class="btn btn-{{ $background }}">
-                                                    {{ $controlRiskRPN }}
-                                                </button>
-                                            @else
-                                                <button class="btn btn-secondary">
-                                                    -
-                                                </button>
-                                            @endif
-
-                                        </td>
-                                        <td>
-                                            {{ ucwords($item->controlRisk->first()->derajatRisiko->derajatRisiko_desc) }}
-                                        </td>
-                                        
-                                        @php //GET ACTIVE SELERA RISIKO
-                                            $tindakLanjut = '';
-                                            $controlRisk = $item->controlRisk->first(); // Assuming controlRisk is a relationship that returns a collection or null
-
-                                            if ($controlRisk) {
-                                                $derajatRisiko = $controlRisk->derajatRisiko; // Assuming derajatRisiko is a relationship
-                                                if ($derajatRisiko) {
-                                                    foreach ($derajatRisiko->seleraRisiko as $data) {
-                                                        if ($data->seleraRisiko_activeStatus) {
-                                                            $tindakLanjut = $data->seleraRisiko_tindakLanjut;
-                                                            break; // Exit the loop as we found the first active seleraRisiko
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        @endphp
-
-                                        <td style="word-break: break-word;">
-                                            {{ ucwords($tindakLanjut) }}
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <div class="alert alert-danger mt-2 mb-2">
-                                        No data available.
-                                    </div>
-                                @endforelse --}}
                                 @php
                                     $groupedEvaluasis = $evaluasis->groupBy('risk_id')->map(function ($group) {
                                         return $group->first();
+                                    })->values()->all();
+
+                                    // Sort the grouped evaluasis by controlRisk_RPN in descending order
+                                    usort($groupedEvaluasis, function ($a, $b) {
+                                        // Handle cases where controlRisk or controlRisk_RPN might be null
+                                        $aRpn = optional($a->controlRisk->first())->controlRisk_RPN ?? 0;
+                                        $bRpn = optional($b->controlRisk->first())->controlRisk_RPN ?? 0;
+
+                                        return $bRpn <=> $aRpn; // Sort in descending order of RPN
                                     });
                                 @endphp
 

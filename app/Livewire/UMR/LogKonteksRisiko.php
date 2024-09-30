@@ -99,8 +99,12 @@ class LogKonteksRisiko extends Component
     // RENDER COMPONENT
     public function render()
     {
-        $konteksRisikos = KonteksRisiko::with(['kpi'])->where('kpi_id', $this->kpi_id)->search($this->search)
+        $konteksRisikos = KonteksRisiko::with(['kpi', 'risk'])->where('kpi_id', $this->kpi_id)->search($this->search)
             ->where('konteks_isSendUMR', true)
+            ->whereHas('risk', function ($query) {
+                $query->whereNotNull('risk_id') // Ensures the risk relationship is not empty
+                    ->where('risk_validateRiskRegister', false); // Filters out validated risks
+            })
             // ->whereHas('kpi', function ($query) {
             //     $query->where('kpi_sendUMRStatus', true); // Adjust the condition as needed
             // })
@@ -192,7 +196,7 @@ class LogKonteksRisiko extends Component
         ]);
 
         // Update KonteksRisiko lock status
-        $konteksRisiko->update(['konteks_lockStatus' => false, 'konteks_isSendUMR' => false]);
+        $konteksRisiko->update(['konteks_lockStatus' => true, 'konteks_isSendUMR' => false]);
 
         foreach ($konteksRisiko->risk as $risk) {
             // Check if risk_validateRiskRegister is false

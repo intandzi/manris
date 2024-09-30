@@ -94,13 +94,11 @@ class ListKPIUMR extends Component
     public function countKontekssWithStatusTrue($kpi)
     {
         return $kpi->konteks->filter(function ($konteks) {
-            return $konteks->konteks_isSendUMR === 1;
+            return $konteks->konteks_isSendUMR === 1 
+                && $konteks->risk->contains(function ($risk) {
+                    return $risk->risk_validateRiskRegister === 0; // Ensure risk is not validated for the risk register
+                });
         })->count();
-        // return $kpi->konteks->flatMap(function ($konteks) {
-        //     return $konteks->risk->filter(function ($risk) {
-        //         return $risk->risk_isSendUMR === 1;
-        //     });
-        // })->count();
     }
 
     // REDIRECT TO DETAIL KPI FOR KONTEKS RISIKO
