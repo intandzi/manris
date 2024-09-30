@@ -323,4 +323,10 @@ class ListKPIRiskOwnerRiskRegister extends Component
     {
         $this->isOpenHistoryPengembalian = 0;
     }
+
+    // CLEAR SEARCH
+    public function clearSearch()
+    {
+        $this->search = '';
+    }
 }
