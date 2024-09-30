@@ -5,8 +5,14 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
-                    <h4>Pemantauan dan Tinjauan</h4>
-                    <p>Pemantauan dan Tinjauan untuk kontrol risiko.</p>
+                    <label for="" class="form-label">Show Data</label>
+                    <select wire:model.live="perPage" class="form-control" id="">
+                        <option selected value="5">--</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
                 </div>
                 <div>
                     <button type="button" wire:click.prevent="openCetakPemantauanTinjauan({{ $kpi_id }})"
@@ -21,7 +27,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="row">
+                {{-- <div class="row">
                     <div class="col-1 me-2">
                         <label for="" class="form-label">Show Data</label>
                         <select wire:model.live="perPage" class="form-control" id="">
@@ -46,7 +52,7 @@
                             @endif
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="table-responsive mt-2">
                     <table class="table table-centered mb-0">
@@ -272,17 +278,20 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <span>
-                                            <div class="badge bg-danger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <div class="badge bg-danger">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                             </div>
                                             Tinggi 501 - 1000
                                         </span>
                                         <span> <br>
-                                            <div class="badge bg-warning">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <div class="badge bg-warning">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                             </div>
                                             Sedang 251 - 500
                                         </span> <br>
                                         <span>
-                                            <div class="badge bg-primary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <div class="badge bg-primary">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                             </div>
                                             Rendah 1 - 250
                                         </span>
@@ -294,7 +303,7 @@
                 </div> <!-- end card -->
             </div><!-- end col-->
         </div><!-- end row -->
-    
+
         <div class="row mt-2 mb-2">
             <div class="col-md-6 text-start">
                 <button type="button" wire:click.prevent="toggleTab('evaluasiKontrolRisikoContent')"

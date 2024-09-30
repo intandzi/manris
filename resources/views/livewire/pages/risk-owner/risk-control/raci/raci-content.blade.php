@@ -5,8 +5,14 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
-                    <h4>RACI</h4>
-                    <p>Pemilihan Stakeholder untuk konteks RACI.</p>
+                    <label for="" class="form-label">Show Data</label>
+                    <select wire:model.live="perPage" class="form-control" id="">
+                        <option selected value="5">--</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
                 </div>
                 <div>
                     <button type="button" wire:click.prevent="openCetakRaci({{ $kpi_id }})" class="btn btn-dark"
@@ -19,7 +25,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="row">
+                {{-- <div class="row">
                     <div class="col-1 me-2">
                         <label for="" class="form-label">Show Data</label>
                         <select wire:model.live="perPage" class="form-control" id="">
@@ -44,7 +50,7 @@
                             @endif
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="table-responsive mt-2">
                     <table class="table table-centered mb-0">

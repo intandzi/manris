@@ -4,6 +4,16 @@
 
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div class="section-description-actions">
+                    <label for="" class="form-label">Show Data</label>
+                    <select wire:model.live="perPage" class="form-control" id="">
+                        <option selected value="5">--</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <div class="section-description-actions">
                     <button type="button" wire:click.prevent="createControlRisk" class="btn btn-primary"
                         wire:loading.attr="disabled" wire:target="createControlRisk"><i class="ri-add-line"></i>
                         Create
@@ -16,7 +26,7 @@
             </div>
 
             <div class="card-body">
-                <div class="row">
+                {{-- <div class="row">
                     <div class="col-1 me-2">
                         <label for="" class="form-label">Show Data</label>
                         <select wire:model.live="perPage" class="form-control" id="">
@@ -41,7 +51,7 @@
                             @endif
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <div class="table-responsive mt-2">
                     <table class="table table-centered mb-0">
                         <thead class="table-dark">

@@ -24,12 +24,18 @@ class Konsultasi extends Model
     ];
 
     // Search Model
-    public function scopeSearch($query, $value){
+    public function scopeSearch($query, $value)
+    {
         $query->where('konsultasi_tujuan', 'like', "%{$value}%")
             ->orWhere('konsultasi_konten', 'like', "%{$value}%")
             ->orWhere('konsultasi_metode', 'like', "%{$value}%")
-            ->orWhere('konsultasi_media', 'like', "%{$value}%");
+            ->orWhere('konsultasi_media', 'like', "%{$value}%")
+            ->orWhereHas('konsultasiStakeholder.stakeholder', function ($q) use ($value) {
+                $q->where('stakeholder_jabatan', 'like', "%{$value}%")
+                    ->orWhere('stakeholder_singkatan', 'like', "%{$value}%");
+            });
     }
+
 
     // relationship with risk
     public function risk()

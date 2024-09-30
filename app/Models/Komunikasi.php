@@ -26,12 +26,17 @@ class Komunikasi extends Model
     ];
 
     // Search Model
-    public function scopeSearch($query, $value){
+    public function scopeSearch($query, $value)
+    {
         $query->where('komunikasi_tujuan', 'like', "%{$value}%")
             ->orWhere('komunikasi_konten', 'like', "%{$value}%")
             ->orWhere('komunikasi_media', 'like', "%{$value}%")
             ->orWhere('komunikasi_pemilihanWaktu', 'like', "%{$value}%")
-            ->orWhere('komunikasi_frekuensi', 'like', "%{$value}%");
+            ->orWhere('komunikasi_frekuensi', 'like', "%{$value}%")
+            ->orWhereHas('komunikasiStakeholder.stakeholder', function ($q) use ($value) {
+                $q->where('stakeholder_jabatan', 'like', "%{$value}%")
+                    ->orWhere('stakeholder_singkatan', 'like', "%{$value}%");
+            });
     }
 
     // relationship with risk

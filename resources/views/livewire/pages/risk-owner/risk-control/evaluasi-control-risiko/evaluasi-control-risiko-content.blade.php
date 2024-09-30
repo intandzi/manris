@@ -16,7 +16,7 @@
                         </select>
                     </div>
                     <div class="col-3 ms-auto">
-                        <label for="" class="form-label">Search</label>
+                        {{-- <label for="" class="form-label">Search</label>
                         <div class="input-group">
                             <input wire:model.live.debounce.100ms="searchControlRisk" type="text"
                                 class="form-control" placeholder="Search...">
@@ -27,7 +27,7 @@
                                     </i>
                                 </button>
                             @endif
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 
